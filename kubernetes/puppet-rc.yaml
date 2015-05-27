@@ -24,6 +24,8 @@ spec:
               mountPath: /etc/puppet
             - name: puppetssl
               mountPath: /var/lib/puppet/ssl
+            - name: puppetmodules
+              mountPath: /usr/share/puppet/modules
         - name: puppetdb
           image: rochaporto/puppetdb
           ports:
@@ -38,5 +40,8 @@ spec:
         - name: puppet
           hostPath:
             path: /tmp/puppet
+        - name: puppetmodules
+          hostPath:
+            path: /tmp/puppet-modules
         - name: puppetssl
           emptyDir: {}
