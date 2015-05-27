@@ -20,21 +20,23 @@ spec:
           ports:
             - containerPort: 8140
           volumeMounts:
-            - name: puppetmodules
-              mountPath: /etc/puppet/modules
+            - name: puppet
+              mountPath: /etc/puppet
             - name: puppetssl
-              mountPath: /etc/puppet/ssl
+              mountPath: /var/lib/puppet/ssl
         - name: puppetdb
           image: rochaporto/puppetdb
           ports:
             - containerPort: 8080
             - containerPort: 8081
           volumeMounts:
+            - name: puppet
+              mountPath: /etc/puppet
             - name: puppetssl
-              mountPath: /etc/puppet/ssl
+              mountPath: /var/lib/puppet/ssl
       volumes:
-        - name: puppetssl
-          emptyDir: {}
-        - name: puppetmodules
+        - name: puppet
           hostPath:
             path: /tmp/puppet
+        - name: puppetssl
+          emptyDir: {}
