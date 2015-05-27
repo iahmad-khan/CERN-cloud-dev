@@ -27,17 +27,11 @@ spec:
         - name: puppetdb
           image: rochaporto/puppetdb
           ports:
+            - containerPort: 8080
             - containerPort: 8081
           volumeMounts:
             - name: puppetssl
               mountPath: /etc/puppet/ssl
-          env:
-            - name: TERM
-              value: xterm
-          command:
-            - "sh"
-            - "-c"
-            - "top -b"
       volumes:
         - name: puppetssl
           emptyDir: {}
