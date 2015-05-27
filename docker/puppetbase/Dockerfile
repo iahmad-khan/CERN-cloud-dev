@@ -7,5 +7,3 @@ RUN rpm --import https://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs && \
 RUN yum install yum-utils -y && \
     yum clean all
     
-ADD puppet.conf /etc/puppet/puppet.conf
-

@@ -1,7 +1,9 @@
 FROM rochaporto/puppetbase:latest
 MAINTAINER Ricardo Rocha <ricardo.rocha@cern.ch>
 
-RUN yum install puppet-server -y && \
+RUN yum install -y \
+    puppet-server \
+    puppetdb-terminus && \
     yum clean all
 
 RUN echo '*.kubdomain.local' > /etc/puppet/autosign.conf
