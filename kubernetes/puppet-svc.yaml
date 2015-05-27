@@ -1,0 +1,19 @@
+apiVersion: v1beta3
+kind: Service
+metadata:
+  labels:
+    name: puppet
+  name: puppet
+spec:
+  ports:
+  - name: puppet-master
+    port: 8140
+    protocol: TCP
+  - name: puppetdb
+    port: 8080
+    protocol: TCP
+  - name: puppetdb-ssl
+    port: 8081
+    protocol: TCP
+  selector:
+    name: puppet

@@ -1,0 +1,7 @@
+export ETCD=/home/ricardo/ws/etcd-v2.0.5-linux-amd64
+export GOROOT=/home/ricardo/ws/go
+export GOPATH=/home/ricardo/ws/gopath
+export KUBROOT=/home/ricardo/ws/kubernetes-0.17.0
+export PATH=$KUBROOT/cluster:$GOPATH/bin:$GOROOT/bin:$ETCD:$PATH
+export PROMPT_DIRTRIM=3
+
