@@ -1,0 +1,6 @@
+# cloud_identity
+iaas_release: 'juno'
+iaas_include_pkgs:
+  - python-pyws
+openstack_rdo_include_pkgs:
+  - python-oslo*
