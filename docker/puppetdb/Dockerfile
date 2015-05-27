@@ -4,7 +4,4 @@ MAINTAINER Ricardo Rocha <ricardo.rocha@cern.ch>
 RUN yum install puppetdb -y && \
     yum clean all
 
-CMD /usr/bin/sleep 3 && \
-    /usr/sbin/puppetdb ssl-setup
-
-ENTRYPOINT [ "/usr/sbin/puppetdb", "foreground" ]
+ENTRYPOINT [ "sh", "-c", "sleep 5; /usr/sbin/puppetdb ssl-setup || true; echo 'Starting puppetdb...'; /usr/sbin/puppetdb foreground" ]
