@@ -1,0 +1,33 @@
+apiVersion: v1beta3
+kind: ReplicationController
+metadata:
+  name: controller
+  labels:
+    name: controller
+spec:
+  replicas: 1
+  selector:
+    name: controller
+  template:
+    metadata:
+      name: controller
+      labels:
+        name: controller
+    spec:
+      containers:
+        - name: keystone
+          image: rochaporto/puppetagent:latest
+          volumeMounts:
+            - name: puppetcfg
+              mountPath: /etc/puppet
+          env:
+            - name: TERM
+              value: xterm
+          command:
+            - sh
+            - -c
+            - top -b
+      volumes:
+        - name: puppetcfg
+          hostPath:
+            path: /tmp/puppet
