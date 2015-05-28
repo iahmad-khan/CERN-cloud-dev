@@ -21,8 +21,8 @@ spec:
             - name: puppetcfg
               mountPath: /etc/puppet
           env:
-            - name: TERM
-              value: xterm
+            - name: CONTAINER_TYPE
+              value: keystone
           command:
             - sh
             - -c
