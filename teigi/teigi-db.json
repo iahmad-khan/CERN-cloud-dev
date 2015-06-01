@@ -1,3 +1,4 @@
 {
-	"unit_test_secret_key": "unit_test_secret_value"
+	"unit_test_secret_key": "unit_test_secret_value",
+	"keystone_sql_connection_localdev": "mysql://keystone:123456@localhost/keystone"
 }
