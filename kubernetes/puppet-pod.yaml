@@ -16,6 +16,8 @@ spec:
       volumeMounts:
         - name: puppet
           mountPath: /etc/puppet
+        - name: factercfg
+          mountPath: /etc/facter
         - name: puppetssl
           mountPath: /var/lib/puppet/ssl
         - name: puppetmodules
@@ -34,6 +36,9 @@ spec:
     - name: puppet
       hostPath:
         path: /opt/puppet
+    - name: factercfg
+      hostPath:
+        path: /opt/facter
     - name: puppetmodules
       hostPath:
         path: /opt/puppet-modules

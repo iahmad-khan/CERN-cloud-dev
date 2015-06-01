@@ -6,10 +6,12 @@ vim /etc/default/docker
 DOCKER_OPTS="--dns 137.138.17.5 --dns 8.8.8.8"
 
 sudo ln -s ~ws/cloud-dev/puppet /opt/puppet
+sudo ln -s ~ws/cloud-dev/facter /opt/facter
 sudo ln -s ~ws/cern /opt/puppet-modules
-sudo chown -h ricardo:ricardo /opt/puppet /opt/puppet-modules
+sudo chown -h ricardo:ricardo /opt/puppet /opt/facter /opt/puppet-modules
 ls -l /opt/puppe*
 lrwxrwxrwx 1 ricardo ricardo 33 May 29 14:21 puppet -> /home/ricardo/ws/cloud-dev/puppet
+lrwxrwxrwx 1 ricardo ricardo 33 May 29 14:21 facter -> /home/ricardo/ws/cloud-dev/facter
 lrwxrwxrwx 1 ricardo ricardo 21 May 29 14:21 puppet-modules -> /home/ricardo/ws/cern
 ```
 
