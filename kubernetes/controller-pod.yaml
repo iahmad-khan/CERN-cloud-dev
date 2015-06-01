@@ -1,0 +1,25 @@
+apiVersion: v1beta3
+kind: Pod
+metadata:
+  name: controller
+  labels:
+    name: controller
+spec:
+  containers:
+    - name: keystone
+      image: rochaporto/puppetagent:latest
+      privileged: true
+      #capabilities:
+      #  add: [SYS_ADMIN]
+      volumeMounts:
+        - name: puppetcfg
+          mountPath: /etc/puppet
+      env:
+        - name: CONTAINER_TYPE
+          value: keystone
+      command:
+        - /usr/sbin/init
+  volumes:
+    - name: puppetcfg
+      hostPath:
+        path: /opt/puppet
