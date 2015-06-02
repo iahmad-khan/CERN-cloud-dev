@@ -15,5 +15,8 @@ spec:
   - name: puppetdb-ssl
     port: 8081
     protocol: TCP
+  - name: teigi
+    port: 8082
+    protocol: TCP
   selector:
     name: puppet
