@@ -32,6 +32,13 @@ spec:
           mountPath: /etc/puppet
         - name: puppetssl
           mountPath: /var/lib/puppet/ssl
+    - name: teigi
+      image: rochaporto/teigi
+      ports:
+        - containerPort: 8082
+      volumeMounts:
+        - name: puppetssl
+          mountPath: /ssl
   volumes:
     - name: puppet
       hostPath:
