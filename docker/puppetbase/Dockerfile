@@ -6,4 +6,8 @@ RUN rpm --import https://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs && \
 
 RUN yum install yum-utils -y && \
     yum clean all
-    
+
+RUN mkdir -p /etc/yum-puppet.repos.d && \
+    curl -s http://linux.web.cern.ch/linux/centos7/CentOS-CERN.repo -o /etc/yum-puppet.repos.d/CentOS-CERN.repo && \
+    echo "reposdir=/etc/yum-puppet.repos.d,/etc/yum.repos.d" >> /etc/yum.conf && \
+    cat /etc/yum.conf
