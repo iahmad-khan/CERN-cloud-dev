@@ -15,6 +15,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -24,26 +25,64 @@ var (
 	PubCert  = flag.String("pubcert", "", "location of the public certificate for the server")
 	PrivCert = flag.String("privcert", "", "location of the private certificate for the server")
 	CaCert   = flag.String("cacert", "", "location of the CA root certificate for the server")
+	Db       = flag.String("db", "", "location of db with secrets to preload")
 	Sleep    = flag.Int("sleep", 0, "sleep seconds before starting server")
 )
 
+func New(db string) (*SecretHandler, error) {
+	sh := SecretHandler{}
+	err := sh.LoadDB(db)
+	if err != nil {
+		return nil, err
+	}
+	return &sh, nil
+}
+
+type Secret struct {
+	secret string
+}
+
 // SecretHandler handles requests for secrets.
 type SecretHandler struct {
+	Secrets map[string]string
+}
+
+func (sh *SecretHandler) LoadDB(location string) error {
+	f, err := ioutil.ReadFile(location)
+	if err != nil {
+		return fmt.Errorf("Failed to load db :: %v\n", err)
+	}
+	err = json.Unmarshal(f, &sh.Secrets)
+	if err != nil {
+		return fmt.Errorf("Failed to load dd :: %v\n", err)
+	}
+	return nil
 }
 
 // ServeHTTP is the SecretHandler implementation of http.Server.ServerHTTP.
 // Returns the md5sum of the url request.
-func (*SecretHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (sh *SecretHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	req := fmt.Sprintf("%v%v", r.URL.Path, r.URL.RawQuery)
 	if req == "" {
 		return
 	}
-	resp, _ := json.Marshal(map[string]string{"secret": fmt.Sprintf("%x", md5.Sum([]byte(req)))})
-	fmt.Printf("http: %v %v %x\n", r, req, string(resp))
+	var item string
+	items := strings.Split(r.URL.Path, "/")
+	if len(items) > 7 {
+		item = items[7]
+	}
+
+	var secret string
+	if s, ok := sh.Secrets[item]; ok {
+		secret = s
+	} else {
+		secret = fmt.Sprintf("%x", md5.Sum([]byte(req)))
+	}
+	resp, _ := json.Marshal(map[string]string{"secret": secret})
 	fmt.Fprintf(w, "%v", string(resp))
 }
 
-func getServer(ca string) (*http.Server, error) {
+func getServer(db string, ca string) (*http.Server, error) {
 	mTLSConfig := &tls.Config{
 		CipherSuites: []uint16{
 			tls.TLS_RSA_WITH_RC4_128_SHA,
@@ -67,21 +106,25 @@ func getServer(ca string) (*http.Server, error) {
 	certs.AppendCertsFromPEM(pemData)
 	mTLSConfig.RootCAs = certs
 
+	sh, err := New(db)
+	if err != nil {
+		return nil, err
+	}
 	server := &http.Server{Addr: fmt.Sprintf("%v:%v", *Host, *Port),
-		TLSConfig: mTLSConfig, Handler: &SecretHandler{}}
+		TLSConfig: mTLSConfig, Handler: sh}
 	return server, nil
 }
 
 func main() {
 	flag.Parse()
-	server, err := getServer(*CaCert)
+	server, err := getServer(*Db, *CaCert)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 		os.Exit(-1)
 	}
 	time.Sleep(time.Duration(*Sleep) * time.Second)
-	fmt.Printf("Starting teigi server\n  %v\n  %v\n  %v\n  %v\n  %v\n  %v\n",
-		*Host, *Port, *PubCert, *PrivCert, *CaCert, int64(time.Duration(*Sleep)*time.Second))
+	fmt.Printf("Starting teigi server\n  %v\n  %v\n  %v\n  %v\n  %v\n  %v\n  %v\n",
+		*Host, *Port, *PubCert, *PrivCert, *CaCert, int64(time.Duration(*Sleep)*time.Second), *Db)
 	err = server.ListenAndServeTLS(*PubCert, *PrivCert)
 	if err != nil {
 		fmt.Printf("Failed to initialize server :: %v\n", err)
