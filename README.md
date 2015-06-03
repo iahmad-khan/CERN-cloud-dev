@@ -15,6 +15,15 @@ lrwxrwxrwx 1 ricardo ricardo 33 May 29 14:21 facter -> /home/ricardo/ws/cloud-de
 lrwxrwxrwx 1 ricardo ricardo 21 May 29 14:21 puppet-modules -> /home/ricardo/ws/cern
 ```
 
+Using Ubuntu Vivid 15.04 (or probably any systemd based system)? Docker 1.5 at least is not ready for it. Here's a workaround:
+http://nknu.net/how-to-configure-docker-on-ubuntu-15-04/
+```
+sudo vim /lib/systemd/system/docker.service
+[Service]
+EnvironmentFile=/etc/default/docker
+ExecStart=/usr/bin/docker -d -H fd:// $DOCKER_OPTS
+```
+
 # Lauching the base cluster setup
 ```
 ./kubernetes/start.sh
@@ -54,3 +63,13 @@ killall -9 kube-apiserver kube-controller-manager kube-proxy kube-scheduler etcd
 ## Delete all non running containers
 
 sudo docker ps -f 'status=exited' | awk '{print $1}' | xargs sudo docker rm
+
+## httpd failing to install with cap_set_file error
+
+Seen in ubuntu trusty, seems to be related to AUFS and missing CONFIG_AUFS_XATTR in the kernel (3.16.x). Upgrading to Vivit and kernel 3.19 makes it look like:
+```
+grep -R CONFIG_AUFS_XATTR /boot/config-3.19.0-18-generic
+CONFIG_AUFS_XATTR=y
+```
+
+and it works.
