@@ -1,33 +1,39 @@
 # Overview
 
-Provides a lightweight container based environment for local deployments of the CERN cloud infrastructure.
+Simulates the CERN cloud environment in containers running on a local box.
 
 It does this by providing:
 * puppet node, which includes a master, puppetdb, mock of teigi, ldap, ...
 * controller node, with keystone, cinder, glance, ...
 * compute nodes, running nova compute, etc
 
-The important files (puppet configuration, puppet modules, ...) are local to the host, and 'mounted' in the containers so that you can easily update them in your box and have the changes available in all container nodes immediately.
+Your workspace (puppet modules, puppet configuration, etc) are 'mounted' on each node, so changes are seen live.
 
-## Example
+This allows you to run a full CERN cloud environment in a normal desktop (thanks shared kernel!).
 
-The setup is done using kubernetes, which introduces the notion of a pod as a group of containers. The relevant thing here is that all containers in a pod share the same networking features (ip, etc) so even if services are run in individual containers, they still share the same IP address and can reference themselves are localhost.
+# Quick Start
 
-In this case we have a puppet pod (with master, puppetdb and teigi containers), a controller pod (with a keystone container), and a client pod (with an admin container).
+A useful script launches the required starting pods (dns and puppet):
 ```
+./start.sh
 kubectl.sh get pod
 POD              IP            CONTAINER(S)   IMAGE(S)                                         HOST                  LABELS                                                STATUS    CREATED         MESSAGE
-client           172.17.0.45                                                                   127.0.0.1/127.0.0.1   name=client                                           Running   About an hour   
-                               admin          rochaporto/puppetagent:latest                                                                                                Running   About an hour   
 kube-dns-wnkt0   172.17.0.43                                                                   127.0.0.1/127.0.0.1   k8s-app=kube-dns,kubernetes.io/cluster-service=true   Running   About an hour   
                                skydns         gcr.io/google_containers/skydns:2015-03-11-001                                                                               Running   About an hour   
                                kube2sky       gcr.io/google_containers/kube2sky:1.3                                                                                        Running   About an hour   
                                etcd           gcr.io/google_containers/etcd:2.0.9                                                                                          Running   About an hour   
 puppet           172.17.0.44                                                                   127.0.0.1/127.0.0.1   name=puppet                                           Running   About an hour   
-                               teigi          rochaporto/teigi                                                                                                             Running   About an hour   last termination: exit code 255
                                puppetdb       rochaporto/puppetdb                                                                                                          Running   About an hour   
-                               puppetmaster   rochaporto/puppetmaster:latest            
+                               puppetmaster   rochaporto/puppetmaster:latest                                                                                               Running   About an hour   
+                               teigi          rochaporto/teigi                                                                                                             Running   About an hour  
 ```
+
+You can then launch the pods you're interested to work with. Example for the controller:
+```
+kubectl.sh create -f controller-pod.yaml
+```
+
+A pod is a group of containers sharing the same networking environment (IP, etc), so they can reference localhost between themselves.
 
 ## Common Operations
 
@@ -50,8 +56,56 @@ Replace 'admin' with the actual container name.
 sudo docker exec -it $(sudo docker ps | grep admin | awk '{print $1}') /bin/bash
 ```
 
-# Setup
+# Maintenance
 
+## Generating the fake root CA
+
+The CA is committed to the git repo, so you shouldn't have to do this again. In any case:
+```
+openssl genrsa -out root-ca.key 2048
+
+openssl req -x509 -new -nodes -key root-ca.key -days 36000 -out root-ca.pem
+Country Name (2 letter code) [AU]:CH
+State or Province Name (full name) [Some-State]:Geneva
+Locality Name (eg, city) []:
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:CERN
+Organizational Unit Name (eg, section) []:OIS
+Common Name (e.g. server FQDN or YOUR name) []:devca
+```
+
+You can store it in teigi/certs/root-ca... to have it propagated.
+
+# Generating new certificates using the root CA
+
+Many services require these. Usually you'll fetch them via teigi, so save the output in teigi/certs/... appropriately.
+```
+# openssl genrsa -out keystone.key 2048
+
+# openssl req -new -key keystone.key -out keystone.csr
+Country Name (2 letter code) [AU]:CH
+State or Province Name (full name) [Some-State]:Geneva
+Locality Name (eg, city) []:
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:CERN
+Organizational Unit Name (eg, section) []:OIS
+Common Name (e.g. server FQDN or YOUR name) []:keystone
+Email Address []:
+
+# openssl x509 -req -in keystone.csr -CA root-ca.pem -CAkey root-ca.key -CAcreateserial -out keystone.pem -days 36000
+
+# openssl x509 -in keystone.pem -text
+Certificate:
+    Data:
+        Version: 1 (0x0)
+        Serial Number: 9416355589148117231 (0x82ad9d84b1f008ef)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=CH, ST=Geneva, O=CERN, OU=OIS, CN=devca
+        Validity
+            Not Before: Jun  3 20:03:48 2015 GMT
+            Not After : Dec 26 20:03:48 2113 GMT
+        Subject: C=CH, ST=Geneva, O=CERN, OU=OIS, CN=keystone
+```
+
+# Setup
 
 ## Host / dev machine setup
 ```
@@ -77,48 +131,29 @@ EnvironmentFile=/etc/default/docker
 ExecStart=/usr/bin/docker -d -H fd:// $DOCKER_OPTS
 ```
 
-# Lauching the base cluster setup
+# Troubleshooting
+
+## Kubernetes fails to start, running already
+
+}ERROR starting API SERVER, exiting.  Some host on 127.0.0.1 is serving already on 8080
+
+killall -9 kube-apiserver kube-controller-manager kube-proxy kube-scheduler etcd
+./hack/local-up-cluster.sh
+
+## My cluster is misbehaving, how to i clean it all up and start from scratch?
 ```
-./kubernetes/start.sh
+./cleanup.sh
 ```
 
-# Generating the CA cert
+## httpd failing to install with cap_set_file error
+
+Seen in ubuntu trusty, seems to be related to AUFS and missing CONFIG_AUFS_XATTR in the kernel (3.16.x). Upgrading to Vivit and kernel 3.19 makes it look like:
 ```
-openssl genrsa -out root-ca.key 2048
-openssl req -x509 -new -nodes -key root-ca.key -days 36000 -out root-ca.pem
-Country Name (2 letter code) [AU]:CH
-State or Province Name (full name) [Some-State]:Geneva
-Locality Name (eg, city) []:
-Organization Name (eg, company) [Internet Widgits Pty Ltd]:CERN
-Organizational Unit Name (eg, section) []:OIS
-Common Name (e.g. server FQDN or YOUR name) []:devca
+grep -R CONFIG_AUFS_XATTR /boot/config-3.19.0-18-generic
+CONFIG_AUFS_XATTR=y
 ```
 
-# Generating new certificates
-```
-# openssl genrsa -out keystone.key 2048
-# openssl req -new -key keystone.key -out keystone.csr
-Country Name (2 letter code) [AU]:CH
-State or Province Name (full name) [Some-State]:Geneva
-Locality Name (eg, city) []:
-Organization Name (eg, company) [Internet Widgits Pty Ltd]:CERN
-Organizational Unit Name (eg, section) []:OIS
-Common Name (e.g. server FQDN or YOUR name) []:keystone
-Email Address []:
-
-# openssl x509 -req -in keystone.csr -CA root-ca.pem -CAkey root-ca.key -CAcreateserial -out keystone.pem -days 36000
-# openssl x509 -in keystone.pem -text
-Certificate:
-    Data:
-        Version: 1 (0x0)
-        Serial Number: 9416355589148117231 (0x82ad9d84b1f008ef)
-    Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C=CH, ST=Geneva, O=CERN, OU=OIS, CN=devca
-        Validity
-            Not Before: Jun  3 20:03:48 2015 GMT
-            Not After : Dec 26 20:03:48 2113 GMT
-        Subject: C=CH, ST=Geneva, O=CERN, OU=OIS, CN=keystone
-```
+and it works.
 
 # TODO
 
@@ -138,29 +173,3 @@ https://github.com/GoogleCloudPlatform/kubernetes/blob/master/docs/containers.md
 
 Unclear right now which capabilities in addition are required, but running on a privileged container does work (though not good). For this to work, edit ./hack/local-up-cluster.sh and add --allow_privileged to both kubelet and kube-apiserver.
 
-# Common Operations
-
-## Start a shell on a running container
-
-kubectl.sh exec -p <pod> -c <container> -i -t -- /bin/bash
-
-## Kubernetes fails to start, running already
-
-}ERROR starting API SERVER, exiting.  Some host on 127.0.0.1 is serving already on 8080
-
-killall -9 kube-apiserver kube-controller-manager kube-proxy kube-scheduler etcd
-./hack/local-up-cluster.sh
-
-## Delete all non running containers
-
-sudo docker ps -f 'status=exited' | awk '{print $1}' | xargs sudo docker rm
-
-## httpd failing to install with cap_set_file error
-
-Seen in ubuntu trusty, seems to be related to AUFS and missing CONFIG_AUFS_XATTR in the kernel (3.16.x). Upgrading to Vivit and kernel 3.19 makes it look like:
-```
-grep -R CONFIG_AUFS_XATTR /boot/config-3.19.0-18-generic
-CONFIG_AUFS_XATTR=y
-```
-
-and it works.
