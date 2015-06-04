@@ -1,4 +1,57 @@
+# Overview
+
+Provides a lightweight container based environment for local deployments of the CERN cloud infrastructure.
+
+It does this by providing:
+* puppet node, which includes a master, puppetdb, mock of teigi, ldap, ...
+* controller node, with keystone, cinder, glance, ...
+* compute nodes, running nova compute, etc
+
+The important files (puppet configuration, puppet modules, ...) are local to the host, and 'mounted' in the containers so that you can easily update them in your box and have the changes available in all container nodes immediately.
+
+## Example
+
+The setup is done using kubernetes, which introduces the notion of a pod as a group of containers. The relevant thing here is that all containers in a pod share the same networking features (ip, etc) so even if services are run in individual containers, they still share the same IP address and can reference themselves are localhost.
+
+In this case we have a puppet pod (with master, puppetdb and teigi containers), a controller pod (with a keystone container), and a client pod (with an admin container).
+```
+kubectl.sh get pod
+POD              IP            CONTAINER(S)   IMAGE(S)                                         HOST                  LABELS                                                STATUS    CREATED         MESSAGE
+client           172.17.0.45                                                                   127.0.0.1/127.0.0.1   name=client                                           Running   About an hour   
+                               admin          rochaporto/puppetagent:latest                                                                                                Running   About an hour   
+kube-dns-wnkt0   172.17.0.43                                                                   127.0.0.1/127.0.0.1   k8s-app=kube-dns,kubernetes.io/cluster-service=true   Running   About an hour   
+                               skydns         gcr.io/google_containers/skydns:2015-03-11-001                                                                               Running   About an hour   
+                               kube2sky       gcr.io/google_containers/kube2sky:1.3                                                                                        Running   About an hour   
+                               etcd           gcr.io/google_containers/etcd:2.0.9                                                                                          Running   About an hour   
+puppet           172.17.0.44                                                                   127.0.0.1/127.0.0.1   name=puppet                                           Running   About an hour   
+                               teigi          rochaporto/teigi                                                                                                             Running   About an hour   last termination: exit code 255
+                               puppetdb       rochaporto/puppetdb                                                                                                          Running   About an hour   
+                               puppetmaster   rochaporto/puppetmaster:latest            
+```
+
+## Common Operations
+
+### Launching a new pod
+Replace 'controller' with the actual pod you want to launch.
+```
+kubectl.sh create -f controller-pod.yaml
+```
+
+### Connecting to a specific container
+Replace 'controller' and 'keystone' with the pod/container you want to connect to.
+```
+kubectl.sh exec -ti -p controller -c keystone -- /bin/bash
+```
+
+Due to a [bug in kubernetes](https://github.com/GoogleCloudPlatform/kubernetes/issues/9180) we need a workaround for now as the session times out after ~5 minutes.
+
+Replace 'admin' with the actual container name.
+```
+sudo docker exec -it $(sudo docker ps | grep admin | awk '{print $1}') /bin/bash
+```
+
 # Setup
+
 
 ## Host / dev machine setup
 ```
