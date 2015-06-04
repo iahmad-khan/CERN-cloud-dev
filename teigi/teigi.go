@@ -37,8 +37,26 @@ func New(db string, filePath string) (*SecretHandler, error) {
 	sh := SecretHandler{FilePath: filePath}
 	err := sh.LoadDB(db)
 	if err != nil {
-		return nil, err
+		fmt.Printf("failed to reload json secret db :: %v", err)
 	}
+	// enable refresh of json secrets without restart
+	ticker := time.NewTicker(5 * time.Second)
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				err := sh.LoadDB(db)
+				if err != nil {
+					fmt.Printf("failed to reload json secret db :: %v", err)
+				}
+			case <-quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
+
 	return &sh, nil
 }
 
