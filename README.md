@@ -29,6 +29,44 @@ ExecStart=/usr/bin/docker -d -H fd:// $DOCKER_OPTS
 ./kubernetes/start.sh
 ```
 
+# Generating the CA cert
+```
+openssl genrsa -out root-ca.key 2048
+openssl req -x509 -new -nodes -key root-ca.key -days 36000 -out root-ca.pem
+Country Name (2 letter code) [AU]:CH
+State or Province Name (full name) [Some-State]:Geneva
+Locality Name (eg, city) []:
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:CERN
+Organizational Unit Name (eg, section) []:OIS
+Common Name (e.g. server FQDN or YOUR name) []:devca
+```
+
+# Generating new certificates
+```
+# openssl genrsa -out keystone.key 2048
+# openssl req -new -key keystone.key -out keystone.csr
+Country Name (2 letter code) [AU]:CH
+State or Province Name (full name) [Some-State]:Geneva
+Locality Name (eg, city) []:
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:CERN
+Organizational Unit Name (eg, section) []:OIS
+Common Name (e.g. server FQDN or YOUR name) []:keystone
+Email Address []:
+
+# openssl x509 -req -in keystone.csr -CA root-ca.pem -CAkey root-ca.key -CAcreateserial -out keystone.pem -days 36000
+# openssl x509 -in keystone.pem -text
+Certificate:
+    Data:
+        Version: 1 (0x0)
+        Serial Number: 9416355589148117231 (0x82ad9d84b1f008ef)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=CH, ST=Geneva, O=CERN, OU=OIS, CN=devca
+        Validity
+            Not Before: Jun  3 20:03:48 2015 GMT
+            Not After : Dec 26 20:03:48 2113 GMT
+        Subject: C=CH, ST=Geneva, O=CERN, OU=OIS, CN=keystone
+```
+
 # TODO
 
 ## Specify required container privileges individually
