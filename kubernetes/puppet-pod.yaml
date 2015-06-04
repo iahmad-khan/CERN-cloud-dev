@@ -39,6 +39,8 @@ spec:
       volumeMounts:
         - name: puppetssl
           mountPath: /ssl
+        - name: teigifiles
+          mountPath: /opt/teigi
   volumes:
     - name: puppet
       hostPath:
@@ -51,3 +53,6 @@ spec:
         path: /opt/puppet-modules
     - name: puppetssl
       emptyDir: {}
+    - name: teigifiles
+      hostPath:
+        path: /opt/teigi

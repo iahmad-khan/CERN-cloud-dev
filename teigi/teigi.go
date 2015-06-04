@@ -26,11 +26,15 @@ var (
 	PrivCert = flag.String("privcert", "", "location of the private certificate for the server")
 	CaCert   = flag.String("cacert", "", "location of the CA root certificate for the server")
 	Db       = flag.String("db", "", "location of db with secrets to preload")
+	FilePath = flag.String("filepath", "", "location of the directory with secret files")
 	Sleep    = flag.Int("sleep", 0, "sleep seconds before starting server")
 )
 
-func New(db string) (*SecretHandler, error) {
-	sh := SecretHandler{}
+// New returns a new SecretHandler instance.
+// db is the location of the json database file, filePath is the local
+// directory where file secrets are stored.
+func New(db string, filePath string) (*SecretHandler, error) {
+	sh := SecretHandler{FilePath: filePath}
 	err := sh.LoadDB(db)
 	if err != nil {
 		return nil, err
@@ -38,15 +42,15 @@ func New(db string) (*SecretHandler, error) {
 	return &sh, nil
 }
 
-type Secret struct {
-	secret string
-}
-
 // SecretHandler handles requests for secrets.
 type SecretHandler struct {
+	// Secrets is a map containing key/value pairs of secrets (id/secret).
 	Secrets map[string]string
+	// FilePath is the local directory where file secrets can be found.
+	FilePath string
 }
 
+// LoadDB loads the SecretHandler with the secrets from the json file at location.
 func (sh *SecretHandler) LoadDB(location string) error {
 	f, err := ioutil.ReadFile(location)
 	if err != nil {
@@ -62,6 +66,8 @@ func (sh *SecretHandler) LoadDB(location string) error {
 // ServeHTTP is the SecretHandler implementation of http.Server.ServerHTTP.
 // Returns the md5sum of the url request.
 func (sh *SecretHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("new request :: %v\n", r)
+
 	req := fmt.Sprintf("%v%v", r.URL.Path, r.URL.RawQuery)
 	if req == "" {
 		return
@@ -73,16 +79,22 @@ func (sh *SecretHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var secret string
-	if s, ok := sh.Secrets[item]; ok {
+	// start with a check if a file with the key name exists
+	if f, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", sh.FilePath, item)); err == nil {
+		fmt.Printf("Returning file %s/%s\n", sh.FilePath, item)
+		secret = string(f)
+	} else if s, ok := sh.Secrets[item]; ok { // check if there's an entry in the json secrets
+		fmt.Printf("Returning json entry %s\n", item)
 		secret = s
-	} else {
+	} else { // nothing found, generate the md5sum of the request
+		fmt.Printf("returning md5sum for %s\n", req)
 		secret = fmt.Sprintf("%x", md5.Sum([]byte(req)))
 	}
 	resp, _ := json.Marshal(map[string]string{"secret": secret})
 	fmt.Fprintf(w, "%v", string(resp))
 }
 
-func getServer(db string, ca string) (*http.Server, error) {
+func getServer(db string, filePath string, ca string) (*http.Server, error) {
 	mTLSConfig := &tls.Config{
 		CipherSuites: []uint16{
 			tls.TLS_RSA_WITH_RC4_128_SHA,
@@ -106,7 +118,7 @@ func getServer(db string, ca string) (*http.Server, error) {
 	certs.AppendCertsFromPEM(pemData)
 	mTLSConfig.RootCAs = certs
 
-	sh, err := New(db)
+	sh, err := New(db, filePath)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +129,7 @@ func getServer(db string, ca string) (*http.Server, error) {
 
 func main() {
 	flag.Parse()
-	server, err := getServer(*Db, *CaCert)
+	server, err := getServer(*Db, *FilePath, *CaCert)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 		os.Exit(-1)

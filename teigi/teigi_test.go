@@ -18,6 +18,7 @@ var secretTests = []SecretTest{
 	SecretTest{m: "GET", q: "", r: "", c: http.StatusOK},
 	SecretTest{m: "GET", q: "/aaaa?bbbb", r: "{\"secret\":\"31b743f97660a22af6012ca6d0ffe7c9\"}", c: http.StatusOK},
 	SecretTest{m: "GET", q: "/tbag/v1/hosttree//controller-keystone/secret/unit_test_secret_key?hostgroup=", r: "{\"secret\":\"unit_test_secret_value\"}", c: http.StatusOK},
+	SecretTest{m: "GET", q: "/tbag/v1/hosttree//controller-keystone/secret/unit_test_secret_file?hostgroup=", r: "{\"secret\":\"unit_test_secret_file_value\\n\"}", c: http.StatusOK},
 }
 
 func TestSecretHandler(t *testing.T) {
@@ -25,7 +26,7 @@ func TestSecretHandler(t *testing.T) {
 	for _, test := range secretTests {
 		req, _ := http.NewRequest(test.m, test.q, nil)
 		resp := httptest.NewRecorder()
-		secretHandler, nil := New("teigi-db.json")
+		secretHandler, nil := New("teigi-db.json", "certs")
 		secretHandler.ServeHTTP(resp, req)
 		if resp.Code != test.c {
 			t.Errorf("Failed %v :: expected %v got %v\n", test, test.c, resp.Code)
