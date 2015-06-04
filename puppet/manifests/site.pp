@@ -1,22 +1,8 @@
+stage { 'osrepos': }
+
 node default {
 
   include osrepos::params
-
-  file {'/root/openrc':
-    ensure  => present,
-    owner   => root,
-    group   => root,
-    mode    => 0700,
-    content => "
-export OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem 
-export OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem
-export OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem
-export OS_USERNAME=admin
-export OS_PASSWORD=123456
-export OS_TENANT_NAME=services
-export OS_AUTH_URL=https://keystone.default.kubdomain.local:443/admin/v2.0
-",
-  }
 
 }
 
@@ -199,6 +185,23 @@ node /.*cinder.*/ inherits default {
 
 }
 
+node /.*client.*/ inherits default {
+
+  class { 'osrepos::centos': }
+  ->
+  exec { '/etc/pki/rpm-gpg/RPM-GPG-KEY-cern':
+    command => '/usr/bin/wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-cern http://linuxsoft.cern.ch/cern/centos/7/os/x86_64/RPM-GPG-KEY-cern',
+    creates => '/etc/pki/rpm-gpg/RPM-GPG-KEY-cern',
+  }
+  ->
+  class { 'motd': }
+  ->
+  class { 'hg_cloud_adm': }
+  ->
+  class { 'hg_cloud_adm::client::linux': }
+
+}
+
 # workaround to ignore lemon for now
 define lemon::metric( $timing = undef , $smoothing = undef, $params = undef, $offset = undef, $tags = undef, $local = undef, $enable = undef ) {
 
@@ -206,3 +209,4 @@ define lemon::metric( $timing = undef , $smoothing = undef, $params = undef, $of
 class { 'lemon::osrepos':
 
 }
+

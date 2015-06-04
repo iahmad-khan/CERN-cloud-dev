@@ -329,3 +329,25 @@ openstack_rdo_include_pkgs:
   - python-alembic
   - python-keystonemiddleware
   - python-ldappool
+
+# cloud_adm
+osclients_rdo_include_pkgs:
+  - python-glanceclient
+  - python-heatclient
+  - python-cinderclient
+  - python-novaclient
+  - python-openstackclient
+  - python-oslo*
+  - python-keystoneclient
+  - python-ceilometerclient
+  - python-oslo-messaging
+  - python-paste-deploy
+  - python-sqlalchemy
+  - python-jinja2
+  - python-routes
+  - python-six
+
+osclients_iaas_include_pkgs:
+  - python-kombu
+  - python-urllib3
+  - python-cornerstoneclient

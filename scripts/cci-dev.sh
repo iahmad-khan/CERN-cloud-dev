@@ -24,7 +24,7 @@ PUPPET_MODULES="abrt apache:upstream_150 cernlib cinder cloud_common cloud_monit
 PUPPET_HOSTGROUPS="cloud_adm cloud_blockstorage cloud_identity cloud_image"
 
 # OS_PODS holds the list of pods to be started on 'launch'
-OS_PODS=${OS_PODS:-keystone glance cinder}
+OS_PODS=${OS_PODS:-keystone glance cinder client}
 
 # docker registry to push container images to (see push)
 DOCKER_REGISTRY=${DOCKER_REGISTRY:-docker-reg.cern.ch:5000}
@@ -147,15 +147,17 @@ cluster_pod_rebuild() {
 	do
 		echo "creating pod ${pod}..."
 		kubectl create -f ${pod}-pod.yaml
-		kubectl create -f ${pod}-svc.yaml
+		if [ -e ${pod}-svc.yaml ]; then
+			kubectl create -f ${pod}-svc.yaml
+		fi
+	done
+	echo "waiting for pods to be ready..."
+	while kubectl get pod | grep Pending > /dev/null 2>&1
+	do
+		sleep 2
 	done
 	for pod in $OS_PODS
 	do
-		echo "waiting for ${pod} pod to be ready to run puppet..."
-		while kubectl get pod $pod | grep Pending > /dev/null 2>&1
-		do
-			sleep 2
-		done
 		# run puppet on pod
 		sudo docker exec $(sudo docker ps | grep $pod | grep init | awk '{print $1}') /usr/bin/puppet agent -t
 		if [[ $? > 2  ]]; then
