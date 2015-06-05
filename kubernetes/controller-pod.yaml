@@ -9,8 +9,6 @@ spec:
     - name: keystone
       image: rochaporto/puppetagent:latest
       privileged: true
-      #capabilities:
-      #  add: [SYS_ADMIN]
       volumeMounts:
         - name: puppetcfg
           mountPath: /etc/puppet
@@ -21,6 +19,9 @@ spec:
           value: keystone
       command:
         - /usr/sbin/init
+      ports:
+        - containerPort: 80
+        - containerPort: 443
   volumes:
     - name: puppetcfg
       hostPath:

@@ -1,0 +1,16 @@
+apiVersion: v1beta3
+kind: Service
+metadata:
+  labels:
+    name: controller
+  name: controller
+spec:
+  ports:
+  - name: keystone-plain
+    port: 80
+    protocol: TCP
+  - name: keystone-ssl
+    port: 443
+    protocol: TCP
+  selector:
+    name: controller
