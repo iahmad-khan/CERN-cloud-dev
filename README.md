@@ -78,31 +78,54 @@ You can store it in teigi/certs/root-ca... to have it propagated.
 # Generating new certificates using the root CA
 
 Many services require these. Usually you'll fetch them via teigi, so save the output in teigi/certs/... appropriately.
+
+If you need alternate names, edit openssl.conf and uncomment subjectAltName and the alt_names lines with appropriate values.
+
+```
+vim openssl.conf
+...
+[ v3_req ]
+
+# Extensions to add to a certificate request
+
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+# subjectAltName = @alt_names
+
+# [alt_names]
+
+# DNS.1 = keystone.default.kubdomain.local
+# DNS.2 = controller.default.kubdomain.local
+
+```
+
 ```
 # openssl genrsa -out keystone.key 2048
 
-# openssl req -new -key keystone.key -out keystone.csr
-Country Name (2 letter code) [AU]:CH
-State or Province Name (full name) [Some-State]:Geneva
+# openssl req -new -key keystone.key -out keystone.csr -config openssl.conf
+Country Name (2 letter code) [CH]:
+State or Province Name (full name) [Geneva]:
 Locality Name (eg, city) []:
-Organization Name (eg, company) [Internet Widgits Pty Ltd]:CERN
-Organizational Unit Name (eg, section) []:OIS
+Organization Name (eg, company) [CERN]:
+Organizational Unit Name (eg, section) [OIS]:
 Common Name (e.g. server FQDN or YOUR name) []:keystone
 Email Address []:
 
-# openssl x509 -req -in keystone.csr -CA root-ca.pem -CAkey root-ca.key -CAcreateserial -out keystone.pem -days 36000
+# openssl x509 -req -in keystone.csr -CA root-ca.pem -CAkey root-ca.key -CAcreateserial -out keystone.pem -days 36000 -extensions v3_req -extfile openssl.conf
 
 # openssl x509 -in keystone.pem -text
-Certificate:
-    Data:
-        Version: 1 (0x0)
-        Serial Number: 9416355589148117231 (0x82ad9d84b1f008ef)
+...
     Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C=CH, ST=Geneva, O=CERN, OU=OIS, CN=devca
+        Issuer: C=CH, ST=Geneva, O=CERN, OU=OIS, CN=keystone
         Validity
-            Not Before: Jun  3 20:03:48 2015 GMT
-            Not After : Dec 26 20:03:48 2113 GMT
-        Subject: C=CH, ST=Geneva, O=CERN, OU=OIS, CN=keystone
+...
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            X509v3 Key Usage: 
+                Digital Signature, Non Repudiation, Key Encipherment
+            X509v3 Subject Alternative Name: 
+                DNS:keystone.default.kubdomain.local, DNS:controller.default.kubdomain.local, DNS:keystone, DNS:controller
 ```
 
 # Setup
