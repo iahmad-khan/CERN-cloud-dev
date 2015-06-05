@@ -28,6 +28,11 @@ spec:
               value: keystone
           command:
             - /usr/sbin/init
+        - name: mysql
+          image: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: 123456
       volumes:
         - name: puppetcfg
           hostPath:

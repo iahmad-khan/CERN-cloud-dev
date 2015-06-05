@@ -22,6 +22,15 @@ spec:
       ports:
         - containerPort: 80
         - containerPort: 443
+    - name: mysql
+      image: mysql
+      env:
+        - name: 'MYSQL_ROOT_PASSWORD'
+          value: '123456'
+      ports:
+        - containerPort: 3306
+    - name: rabbitmq
+      image: rabbitmq
   volumes:
     - name: puppetcfg
       hostPath:
