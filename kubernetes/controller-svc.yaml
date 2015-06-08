@@ -12,5 +12,7 @@ spec:
   - name: keystone-ssl
     port: 443
     protocol: TCP
+  - name: mysql
+    port: 3306
   selector:
     name: controller
