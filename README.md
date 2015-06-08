@@ -75,7 +75,7 @@ Common Name (e.g. server FQDN or YOUR name) []:devca
 
 You can store it in teigi/certs/root-ca... to have it propagated.
 
-# Generating new certificates using the root CA
+## Generating new certificates using the root CA
 
 Many services require these. Usually you'll fetch them via teigi, so save the output in teigi/certs/... appropriately.
 
@@ -128,6 +128,15 @@ Email Address []:
                 DNS:keystone.default.kubdomain.local, DNS:controller.default.kubdomain.local, DNS:keystone, DNS:controller
 ```
 
+## Setting up the docker private registry
+
+The images are stored in a CEPH volume (rbritoda/docker-images), mount it on the host under /docker-images.
+
+Then the easiest is to use the built-in docker registry image (we can do proper auth later).
+```
+docker run --privileged -e LOGLEVEL=debug -e SETTINGS_FLAVOR=local -e STORAGE_PATH=/docker-images -v /docker-images:/docker-images -p 5000:5000 registry
+```
+
 # Setup
 
 ## Host / dev machine setup
@@ -153,6 +162,15 @@ sudo vim /lib/systemd/system/docker.service
 EnvironmentFile=/etc/default/docker
 ExecStart=/usr/bin/docker -d -H fd:// $DOCKER_OPTS
 ```
+
+Setup the docker-reg.cern.ch private registry. As it's no auth for now, you need to add the following:
+```
+sudo vim /etc/sysconfig/docker
+# Modify these options if you want to change the way the docker daemon runs
+OPTIONS='--selinux-enabled --insecure-registry docker-reg.cern.ch:5000'
+```
+
+On Ubuntu do this on /etc/default/docker and DOCKER_OPTS.
 
 # Troubleshooting
 

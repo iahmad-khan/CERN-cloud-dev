@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
     - name: keystone
-      image: rochaporto/puppetagent:latest
+      image: docker-reg.cern.ch:5000/puppetagent:latest
       privileged: true
       volumeMounts:
         - name: puppetcfg
