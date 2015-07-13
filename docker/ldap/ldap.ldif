@@ -1,0 +1,46 @@
+dn: dc=default,dc=kubdomain,dc=local
+dc: default
+o: OIS
+objectClass: top
+objectClass: dcObject
+objectClass: organization
+
+dn: cn=admin,dc=default,dc=kubdomain,dc=local
+userPassword: {SSHA}hRfHVVDQoB36/LNBG4P+C73n8jCz/ubH
+description: LDAP administrator
+cn: admin
+objectClass: simpleSecurityObject
+objectClass: organizationalRole
+
+dn: ou=e-groups,dc=default,dc=kubdomain,dc=local
+ou: e-groups
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=users,dc=default,dc=kubdomain,dc=local
+ou: users
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=roles,dc=default,dc=kubdomain,dc=local
+ou: roles
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=projects,dc=default,dc=kubdomain,dc=local
+ou: projects
+objectClass: top
+objectClass: organizationalUnit
+
+dn: cn=test,ou=users,dc=default,dc=kubdomain,dc=local
+userPassword: 123456
+givenName: Test
+sn: User
+cn: test
+mail: test@default.kubdomain.local
+tokenGroups: : AQUAAB6wIz8MzFhlGye7AJ8fBEyN8BOjA4tWHg=
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: user

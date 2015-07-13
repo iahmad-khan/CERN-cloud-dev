@@ -14,5 +14,7 @@ spec:
     protocol: TCP
   - name: mysql
     port: 3306
+  - name: ldap
+    port: 389
   selector:
     name: controller

@@ -37,6 +37,13 @@ A pod is a group of containers sharing the same networking environment (IP, etc)
 
 ## Common Operations
 
+### Initialization
+
+Soon all will be integrated in the setup, but for now:
+```
+ldapadd -h 10.0.0.154 -w 123456 -D 'cn=admin,dc=default,dc=kubdomain,dc=local' -c -f docker/ldap/ldap.ldif
+```
+
 ### Launching a new pod
 Replace 'controller' with the actual pod you want to launch.
 ```
@@ -195,6 +202,12 @@ CONFIG_AUFS_XATTR=y
 ```
 
 and it works.
+
+
+## Querying the ldap directory
+```
+ldapsearch -h 10.0.0.154 -w 123456 -D 'cn=admin,dc=default,dc=kubdomain,dc=local' -b 'dc=default,dc=kubdomain,dc=local' '(objectclass=*)'
+```
 
 # TODO
 

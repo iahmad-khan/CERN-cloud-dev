@@ -31,6 +31,22 @@ spec:
         - containerPort: 3306
     - name: rabbitmq
       image: rabbitmq
+    - name: ldap
+      image: osixia/openldap
+      env:
+        - name: USE_TLS
+          value: 'False'
+        - name: LDAP_ORGANISATION
+          value: OIS
+        - name: LDAP_DOMAIN
+          value: default.kubdomain.local
+        - name: LDAP_ADMIN_PASSWORD
+          value: '123456'
+        - name: SERVER_NAME
+          value: controller
+      ports:
+        - containerPort: 389
+
   volumes:
     - name: puppetcfg
       hostPath:
