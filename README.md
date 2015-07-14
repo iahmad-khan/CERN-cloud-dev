@@ -35,6 +35,26 @@ kubectl.sh create -f controller-pod.yaml
 
 A pod is a group of containers sharing the same networking environment (IP, etc), so they can reference localhost between themselves.
 
+Currently you need a workaround in the kubernetes local cluster setup (add cluster_dns, cluster_domain and host-network-sources):
+```
+vim kubernetes/hack/local-up-cluster.sh
+...
+  sudo -E "${GO_OUT}/kubelet" \
+    --v=${LOG_LEVEL} \
+    --chaos_chance="${CHAOS_CHANCE}" \
+    --container_runtime="${CONTAINER_RUNTIME}" \
+    --hostname_override="127.0.0.1" \
+    --address="127.0.0.1" \
+    --api_servers="${API_HOST}:${API_PORT}" \
+    --auth_path="${KUBE_ROOT}/hack/.test-cmd-auth" \
+    --port="$KUBELET_PORT" >"${KUBELET_LOG}" 2>&1 \
+    --cluster_dns=10.0.0.10 \
+    --cluster_domain=kubdomain.local \
+    --host-network-sources=* \
+    --allow_privileged &
+
+```
+
 ## Common Operations
 
 ### Initialization
@@ -153,6 +173,7 @@ DOCKER_OPTS="--dns 137.138.17.5 --dns 8.8.8.8"
 
 sudo ln -s ~ws/cloud-dev/puppet /opt/puppet
 sudo ln -s ~ws/cloud-dev/facter /opt/facter
+sudo ln -s ~ws/cloud-dev/ceph /opt/ceph
 sudo ln -s ~ws/cern /opt/puppet-modules
 sudo chown -h ricardo:ricardo /opt/puppet /opt/facter /opt/puppet-modules
 ls -l /opt/puppe*

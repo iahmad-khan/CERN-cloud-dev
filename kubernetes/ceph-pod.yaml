@@ -1,0 +1,25 @@
+apiVersion: v1beta3
+kind: Pod
+metadata:
+  name: ceph
+  labels:
+    name: ceph
+spec:
+  hostNetwork: true
+  containers:
+    - name: cephall
+      image: docker-reg.cern.ch:5000/cephdemo
+      env:
+        - name: MON_IP
+          value: 172.17.42.1
+        - name: CEPH_NETWORK
+          value: 172.17.42.1/24
+      ports:
+        - containerPort: 6789
+      volumeMounts:
+        - name: cephcfg
+          mountPath: /etc/ceph
+  volumes:
+    - name: cephcfg
+      hostPath:
+        path: /opt/ceph
