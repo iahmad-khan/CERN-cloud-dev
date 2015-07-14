@@ -1,5 +1,6 @@
 {
 	"unit_test_secret_key": "unit_test_secret_value",
+	"keystone_admin_token": "512c2b7c2d94b5bb731469955d4b7455",
         "keystone_sql_connection_localdev": "mysql://keystone:123456@controller/keystone",
         "keystone_ldap_user": "cn=admin,dc=default,dc=kubdomain,dc=local",
         "keystone_ldap_password": "123456",
