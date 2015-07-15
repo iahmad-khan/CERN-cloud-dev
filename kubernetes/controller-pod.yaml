@@ -32,7 +32,7 @@ spec:
     - name: rabbitmq
       image: rabbitmq
     - name: ldap
-      image: osixia/openldap
+      image: docker-reg.cern.ch:5000/ldap
       env:
         - name: USE_TLS
           value: 'False'
