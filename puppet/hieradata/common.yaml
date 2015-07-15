@@ -22,9 +22,9 @@ keystone_default_catalog:
   - identity:
     - name: 'keystone'
     - description: 'Openstack Identity Service'
-    - publicURL : 'https://controller:5001/v2.0'
-    - adminURL: 'https://controller:35358/v2.0'
-    - internalURL: 'https://controller:5001/v2.0'
+    - publicURL : 'https://controller:443/main/v2.0'
+    - adminURL: 'https://controller:443/admin/v2.0'
+    - internalURL: 'https://controller:443/main/v2.0'
   - image:
     - name: 'glance'
     - description: 'Openstack Image Service'
