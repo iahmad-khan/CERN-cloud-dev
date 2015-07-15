@@ -1,16 +1,15 @@
-dn: cn={14}kube 
-objectClass: olcSchemaConfig 
-cn: {14}kube 
+dn: cn={14}kube
+objectClass: olcSchemaConfig
+cn: {14}kube
 olcAttributeTypes: {0}( 1.3.6.1.4.1.4203.666.1.90 NAME 'tokenGroups' DESC 't
  oken groups' EQUALITY caseIgnoreMatch SUBSTR caseIgnoreSubstr
  ingsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
-olcObjectClasses: {0}( 1.3.6.1.4.1.4203.666.1.100 NAME 'user' DESC 'User' 
- SUP inetOrgPerson STRUCTURAL MAY ( tokenGroups ) ) 
-structuralObjectClass: olcSchemaConfig 
-entryUUID: 8c11b9b2-be4e-1034-96f0-dbb0f1e6a1da 
-creatorsName: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth 
-createTimestamp: 20150714083203Z 
-entryCSN: 20150714083203.065245Z#000000#000#000000 
-modifiersName: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth 
-modifyTimestamp: 20150714083203Z 
-
+olcObjectClasses: {0}( 1.3.6.1.4.1.4203.666.1.100 NAME 'user' DESC 'User'
+ SUP inetOrgPerson STRUCTURAL MAY ( tokenGroups ) )
+structuralObjectClass: olcSchemaConfig
+entryUUID: 8c11b9b2-be4e-1034-96f0-dbb0f1e6a1da
+creatorsName: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+createTimestamp: 20150714083203Z
+entryCSN: 20150714083203.065245Z#000000#000#000000
+modifiersName: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+modifyTimestamp: 20150714083203Z

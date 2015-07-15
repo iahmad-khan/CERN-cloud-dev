@@ -1,3 +1,4 @@
 FROM osixia/openldap
+MAINTAINER Ricardo Rocha <ricardo.rocha@cern.ch> 
 
-ADD cn={14}kube.ldif /etc/ldap/slapd.d/cn\=config/cn\=schema/
+ADD cn={14}kube.ldif /tmp/kube.ldif
