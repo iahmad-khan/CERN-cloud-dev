@@ -1,8 +1,11 @@
 {
-	"unit_test_secret_key": "unit_test_secret_value",
 	"keystone_admin_token": "512c2b7c2d94b5bb731469955d4b7455",
         "keystone_sql_connection_localdev": "mysql://keystone:123456@controller/keystone",
         "keystone_ldap_user": "cn=admin,dc=default,dc=kubdomain,dc=local",
         "keystone_ldap_password": "123456",
-        "keystone_rabbit_password": "123456"
+        "keystone_rabbit_password": "123456",
+        "unit_test_secret_key": "unit_test_secret_value",
+        "glance_database_connection": "mysql://glance:123456@controller/glance",
+        "glance_keystone_password": "123456",
+        "ceph_client_images_keyring": "AQDFIqlVdr2VMRAAeZjXcV3DwpWxuJfaSAdUMg=="
 }

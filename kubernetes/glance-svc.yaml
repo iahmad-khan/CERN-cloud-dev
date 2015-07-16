@@ -1,0 +1,16 @@
+apiVersion: v1beta3
+kind: Service
+metadata:
+  labels:
+    name: glance
+  name: glance
+spec:
+  ports:
+  - name: glanceapi
+    port: 9292
+    protocol: TCP
+  - name: glanceregistry
+    port: 9191
+    protocol: TCP
+  selector:
+    name: glance

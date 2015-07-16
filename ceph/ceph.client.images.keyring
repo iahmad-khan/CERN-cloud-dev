@@ -1,0 +1,4 @@
+[client.images]
+	key = AQDFIqlVdr2VMRAAeZjXcV3DwpWxuJfaSAdUMg==
+	caps mon = "allow r"
+	caps osd = "allow *"
