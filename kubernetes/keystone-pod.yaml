@@ -1,0 +1,33 @@
+apiVersion: v1beta3
+kind: Pod
+metadata:
+  name: keystone
+  labels:
+    name: keystone
+spec:
+  containers:
+    - name: keystone
+      image: docker-reg.cern.ch:5000/puppetagent:latest
+      privileged: true
+      volumeMounts:
+        - name: puppetcfg
+          mountPath: /etc/puppet
+        - name: puppetssl
+          mountPath: /var/lib/puppet/ssl
+        - name: factercfg
+          mountPath: /etc/facter
+      command:
+        - /usr/sbin/init
+      ports:
+        - containerPort: 80
+        - containerPort: 443
+  volumes:
+    - name: puppetcfg
+      hostPath:
+        path: /opt/puppet
+    - name: puppetssl
+      hostPath:
+        path: /opt/puppetssl
+    - name: factercfg
+      hostPath:
+        path: /opt/facter

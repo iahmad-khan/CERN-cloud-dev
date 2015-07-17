@@ -6,24 +6,6 @@ metadata:
     name: controller
 spec:
   containers:
-    - name: keystone
-      image: docker-reg.cern.ch:5000/puppetagent:latest
-      privileged: true
-      volumeMounts:
-        - name: puppetcfg
-          mountPath: /etc/puppet
-        - name: puppetssl
-          mountPath: /var/lib/puppet/ssl
-        - name: factercfg
-          mountPath: /etc/facter
-      env:
-        - name: CONTAINER
-          value: keystone
-      command:
-        - /usr/sbin/init
-      ports:
-        - containerPort: 80
-        - containerPort: 443
     - name: mysql
       image: mysql
       env:
@@ -48,14 +30,3 @@ spec:
           value: controller
       ports:
         - containerPort: 389
-
-  volumes:
-    - name: puppetcfg
-      hostPath:
-        path: /opt/puppet
-    - name: puppetssl
-      hostPath:
-        path: /opt/puppetssl
-    - name: factercfg
-      hostPath:
-        path: /opt/facter
