@@ -99,7 +99,7 @@ keystone_signing_keyfile: "%{keystone_ssl_keyfile}"
 keystone_ssl_ca_certs: '/etc/keystone/ssl/certs'
 keystone_ssl_ca_key: '/etc/keystone/ssl/key/cakey.pem'
 keystone_ssl_cafile: '/etc/keystone/ssl/certs/ca.pem'
-keystone_ssl_cert_subject: '/CN=keystone'
+keystone_ssl_cert_subject: '/CN=keystone.default.kubdomain.local'
 keystone_ssl_certfile: '/etc/keystone/ssl/certs/hostcert.pem'
 keystone_ssl_chain: '/etc/keystone/ssl/certs/ca.pem'
 keystone_ssl_keyfile: '/etc/keystone/ssl/keys/hostkey.pem'
