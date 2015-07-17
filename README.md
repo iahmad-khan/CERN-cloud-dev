@@ -172,6 +172,7 @@ vim /etc/default/docker
 DOCKER_OPTS="--dns 137.138.17.5 --dns 8.8.8.8"
 
 sudo ln -s ~ws/cloud-dev/puppet /opt/puppet
+sudo ln -s ~ws/cloud-dev/puppetssl /opt/puppetssl
 sudo ln -s ~ws/cloud-dev/facter /opt/facter
 sudo ln -s ~ws/cloud-dev/ceph /opt/ceph
 sudo ln -s ~ws/cern /opt/puppet-modules

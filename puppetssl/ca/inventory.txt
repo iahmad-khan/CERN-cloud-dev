@@ -1,0 +1,4 @@
+0x0001 2015-07-16T09:01:18UTC 2020-07-15T09:01:18UTC /CN=Puppet CA: puppet.default.kubdomain.local
+0x0002 2015-07-16T09:01:19UTC 2020-07-15T09:01:19UTC /CN=puppet.default.kubdomain.local
+0x0003 2015-07-16T09:01:36UTC 2020-07-15T09:01:36UTC /CN=glance.default.kubdomain.local
+0x0004 2015-07-16T09:06:40UTC 2020-07-15T09:06:40UTC /CN=controller.default.kubdomain.local
