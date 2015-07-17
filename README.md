@@ -85,75 +85,12 @@ sudo docker exec -it $(sudo docker ps | grep admin | awk '{print $1}') /bin/bash
 
 # Maintenance
 
-## Generating the fake root CA
+## Generating new certificates (using the puppet ca)
 
-The CA is committed to the git repo, so you shouldn't have to do this again. In any case:
-```
-openssl genrsa -out root-ca.key 2048
-
-openssl req -x509 -new -nodes -key root-ca.key -days 36000 -out root-ca.pem
-Country Name (2 letter code) [AU]:CH
-State or Province Name (full name) [Some-State]:Geneva
-Locality Name (eg, city) []:
-Organization Name (eg, company) [Internet Widgits Pty Ltd]:CERN
-Organizational Unit Name (eg, section) []:OIS
-Common Name (e.g. server FQDN or YOUR name) []:devca
-```
-
-You can store it in teigi/certs/root-ca... to have it propagated.
-
-## Generating new certificates using the root CA
-
-Many services require these. Usually you'll fetch them via teigi, so save the output in teigi/certs/... appropriately.
-
-If you need alternate names, edit openssl.conf and uncomment subjectAltName and the alt_names lines with appropriate values.
-
-```
-vim openssl.conf
-...
-[ v3_req ]
-
-# Extensions to add to a certificate request
-
-basicConstraints = CA:FALSE
-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
-# subjectAltName = @alt_names
-
-# [alt_names]
-
-# DNS.1 = keystone.default.kubdomain.local
-# DNS.2 = controller.default.kubdomain.local
-
-```
-
-```
-# openssl genrsa -out keystone.key 2048
-
-# openssl req -new -key keystone.key -out keystone.csr -config openssl.conf
-Country Name (2 letter code) [CH]:
-State or Province Name (full name) [Geneva]:
-Locality Name (eg, city) []:
-Organization Name (eg, company) [CERN]:
-Organizational Unit Name (eg, section) [OIS]:
-Common Name (e.g. server FQDN or YOUR name) []:keystone
-Email Address []:
-
-# openssl x509 -req -in keystone.csr -CA root-ca.pem -CAkey root-ca.key -CAcreateserial -out keystone.pem -days 36000 -extensions v3_req -extfile openssl.conf
-
-# openssl x509 -in keystone.pem -text
-...
-    Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C=CH, ST=Geneva, O=CERN, OU=OIS, CN=keystone
-        Validity
-...
-        X509v3 extensions:
-            X509v3 Basic Constraints: 
-                CA:FALSE
-            X509v3 Key Usage: 
-                Digital Signature, Non Repudiation, Key Encipherment
-            X509v3 Subject Alternative Name: 
-                DNS:keystone.default.kubdomain.local, DNS:controller.default.kubdomain.local, DNS:keystone, DNS:controller
-```
+kubectl.sh exec -it puppet -c master /bin/bash
+puppet cert --allow-dns-alt-names generate glance.default.kubdomain.local --dns_alt_names=glance,glance.default
+puppet cert --allow-dns-alt-names sign glance.default.kubdomain.local
+exit
 
 ## Setting up the docker private registry
 
