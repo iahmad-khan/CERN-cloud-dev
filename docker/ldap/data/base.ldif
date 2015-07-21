@@ -55,3 +55,16 @@ objectClass: person
 objectClass: organizationalPerson
 objectClass: inetOrgPerson
 #objectClass: user
+
+dn: cn=cinder,ou=users,dc=default,dc=kubdomain,dc=local
+userPassword: 123456
+givenName: Cinder
+sn: User
+cn: cinder
+mail: cinder@default.kubdomain.local
+#tokenGroups: : AQUAAB6wIz8MzFhlGye7AJ8fBEyN8BOjA4tWHg=
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+#objectClass: user

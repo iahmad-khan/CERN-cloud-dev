@@ -107,7 +107,7 @@ node /.*keystone.*/ inherits default {
   ->
   Service['keystone']
   ~>
-  exec { "/usr/bin/sleep 5 && /usr/bin/keystone tenant-create --name services && /usr/bin/keystone role-create --name admin && /usr/bin/keystone role-create --name Member && /usr/bin/keystone user-role-add --user admin --role admin --tenant services && /usr/bin/keystone user-role-add --user glance --role admin --tenant services && /usr/bin/keystone tenant-list":
+  exec { "/usr/bin/sleep 5 && /usr/bin/keystone tenant-create --name services && /usr/bin/keystone role-create --name admin && /usr/bin/keystone role-create --name Member && /usr/bin/keystone user-role-add --user admin --role admin --tenant services && /usr/bin/keystone user-role-add --user glance --role admin --tenant services && /usr/bin/keystone user-role-add --user cinder --role admin --tenant services && /usr/bin/keystone tenant-list":
     path        => "/usr/bin:/usr/sbin",
     environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_SERVICE_TOKEN=512c2b7c2d94b5bb731469955d4b7455','OS_SERVICE_ENDPOINT=https://keystone.default.kubdomain.local:443/admin/v2.0'],
     refreshonly => true,
@@ -158,5 +158,41 @@ node /.*glance.*/ inherits default {
   glance_registry_config { 'keystone_authtoken/cafile': value => '/var/lib/puppet/ssl/certs/ca.pem'; }
   ->
   Service['openstack-glance-api']
+
+}
+
+node /.*cinder.*/ inherits default {
+
+  class {'hg_cloud_blockstorage': }
+  class {'hg_cloud_blockstorage::controller': }
+  class {'hg_cloud_blockstorage::controller::frontend': }
+
+  package {'mariadb':
+    ensure => 'present',
+  } 
+  ~>
+  exec {'create-cinder-db':
+    command     => "/usr/bin/mysql -u root -h controller -p123456 -e \"create database cinder CHARACTER SET utf8 COLLATE utf8_general_ci; grant all privileges on cinder.* to 'cinder'@'%' identified by '123456';\" || true",
+    environment => 'TERM=xterm',
+    refreshonly => true,
+  }
+  ~> 
+  Package['openstack-cinder']
+  ->
+  Teigi::Secret<||>
+  ->
+  Cinder_config <||>
+  ~>
+  exec { '/usr/bin/cinder-manage db sync':
+    refreshonly => true,
+  }
+  ~>
+  exec {'/usr/sbin/usermod -a -G puppet cinder':
+    refreshonly => true,
+  }
+  ->
+  cinder_api_paste_ini { 'filter:authtoken/cafile': value => '/var/lib/puppet/ssl/certs/ca.pem'; }
+  ->
+  Service['openstack-cinder-api']
 
 }

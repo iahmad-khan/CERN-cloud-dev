@@ -1,5 +1,101 @@
 roger_server: puppet
 
+# cloud_blockstorage
+cinder_api_port: '8776'
+cinder_ceph_user: 'volumes'
+cinder_ceph_mon_host: '172.17.42.1'
+cinder_database_idle_timeout: 3600
+cinder_rpc_backend: 'cinder.openstack.common.rpc.impl_kombu'
+cinder_glance_host: 'glance.default.kubdomain.local'
+cinder_control_exchange: 'cinder'
+cinder_rabbit_host: ''
+cinder_rabbit_port: '5672'
+cinder_rabbit_hosts:
+     - 'controller'
+cinder_rabbit_virtual_host: '/'
+cinder_rabbit_userid: 'guest'
+cinder_qpid_hostname: 'controller'
+cinder_qpid_port: 5672
+cinder_qpid_username: 'guest'
+cinder_qpid_password: false
+cinder_qpid_reconnect: true
+cinder_qpid_reconnect_timeout: 0
+cinder_qpid_reconnect_limit: 0
+cinder_qpid_reconnect_interval_min: 0
+cinder_qpid_reconnect_interval_max: 0
+cinder_qpid_reconnect_interval: 0
+cinder_qpid_heartbeat: 60
+cinder_qpid_protocol: 'tcp'
+cinder_qpid_tcp_nodelay: true
+cinder_package_ensure: 'present'
+cinder_api_paste_config: '/etc/cinder/api-paste.ini'
+cinder_use_syslog: false
+cinder_log_facility: 'LOG_USER'
+cinder_log_dir: '/var/log/cinder'
+cinder_verbose: false
+cinder_debug: true
+
+cinder_api_keystone_enabled: true
+cinder_api_keystone_tenant: 'services'
+cinder_api_keystone_user: 'cinder'
+cinder_api_keystone_auth_host: 'keystone.default.kubdomain.local'
+cinder_api_keystone_auth_port: '443'
+cinder_api_keystone_auth_protocol: 'https'
+cinder_api_keystone_auth_admin_prefix: '/admin'
+cinder_api_keystone_auth_uri: false
+cinder_api_service_port: '443'
+cinder_api_package_ensure: 'present'
+cinder_api_bind_host: '0.0.0.0'
+cinder_api_enabled: true 
+cinder_api_ratelimits: undef
+cinder_api_ratelimits_factory: 'cinder.api.v1.limits:RateLimitingMiddleware.factory'
+cinder_api_default_volume_type: 'standard'
+
+cinder_scheduler_scheduler_driver: false
+cinder_scheduler_package_ensure: 'present'
+cinder_scheduler_enabled: true
+
+cinder_volume_package_ensure: 'present'
+cinder_volume_enabled: true
+
+cinder_quota_gigabytes: 50
+cinder_quota_volumes: 5
+cinder_quota_snapshots: 5
+cinder_volume_driver: 'cinder.volume.drivers.rbd.RBDDriver'
+cinder_rbd_pool: 'volumes' 
+cinder_rbd_user: 'volumes'
+cinder_rbd_secret_uuid: '00000000-1111-1111-1111-000000000001'
+cinder_scheduler_driver: 'cinder.scheduler.filter_scheduler.FilterScheduler'
+cinder_scheduler_default_filters: 'CapabilitiesFilter'
+cinder_scheduler_default_weighers: 'CapacityWeigher'
+cinder_enabled_backends: 'standard,critical'
+cinder_volume_usage_audit: true
+cinder_volume_usage_audit_period: 'hour'
+cinder_notification_driver: 'cinder.openstack.common.notifier.rpc_notifier'
+
+cinder_standard_volume_driver: 'cinder.volume.drivers.rbd.RBDDriver'
+cinder_standard_volume_group: 'standard'
+cinder_standard_volume_backend_name: 'standard'
+cinder_standard_rbd_pool: 'volumes'
+cinder_standard_rbd_user: 'volumes'
+cinder_standard_rbd_secret_uuid: '00000000-1111-1111-1111-000000000001'
+
+cinder_critical_volume_driver: 'cinder.volume.drivers.rbd.RBDDriver'
+cinder_critical_volume_backend_name: 'CEPH_CRITICAL'
+cinder_critical_rbd_pool: 'cinder-critical'
+cinder_critical_rbd_user: 'volumes'
+cinder_critical_rbd_secret_uuid: '00000000-1111-1111-1111-000000000001'
+
+overwrite_cinder_policy: true
+
+iaas7_juno_include_pkgs:
+    - openstack-cinder
+    - python-cinder
+    - python-cinderclient
+rabbitmq7_include_pkgs:
+    - rabbitmq-server
+    - lemon-sensor-rabbitmq
+
 # cloud_image
 haproxy_enable: false
 glance_api_auth_admin_prefix: '/admin'
@@ -103,6 +199,13 @@ keystone_default_catalog:
     - publicURL : 'http://glance.default.kubdomain.local:9292'
     - adminURL: 'http://glance.default.kubdomain.local:9292'
     - internalURL: 'http://glance.default.kubdomain.local:9292'
+  - volume:
+    - name: 'cinder'
+    - description: 'Openstack Volume Service'
+    - publicURL: 'http://cinder.default.kubdomain.local:8776/v1/%(tenant_id)s'
+    - adminURL: 'http://cinder.default.kubdomain.local:8776/v1/%(tenant_id)s'
+    - internalURL: 'http://cinder.default.kubdomain.local:8776/v1/%(tenant_id)s'
+
 keystone_domains:
   - /etc/keystone/domains/keystone.heat.conf
 keystone_enable_pki_setup: false
