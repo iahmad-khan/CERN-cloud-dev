@@ -13,6 +13,9 @@ spec:
           value: '123456'
       ports:
         - containerPort: 3306
+      volumeMounts:
+        - name: mysqlvar
+          mountPath: /var/lib/mysql
     - name: rabbitmq
       image: rabbitmq
     - name: ldap
@@ -30,3 +33,7 @@ spec:
           value: controller
       ports:
         - containerPort: 389
+  volumes:
+    - name: mysqlvar
+      hostPath:
+        path: /opt/mysqlvar
