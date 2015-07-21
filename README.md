@@ -1,4 +1,16 @@
-# Overview
+## Table of Contents
+
+**[Overview](#overview)**
+**[Requirements](#requirements)**
+**[Setup](#setup)**
+**[Quick Start](#quick-start)**
+
+* [Start from latest](#start-from-latest)
+* [Build node from scratch](#build-node-from-scratch)
+
+**[Common Operations](#common-operations)**
+
+### Overview
 
 Goals:
 * simulate the CERN cloud environment in containers running on your local box
@@ -11,15 +23,15 @@ What it provides:
 * one additional pod per service (keystone, glance, cinder, ...)
 * a dns service (addon to kubernetes)
 
-# Requirements
+### Requirements
 
 Basic knowledge of kubernetes (what is a pod, what is a service, ...).
 
-# Setup
+### Setup
 
 Soon.
 
-# Quick Start
+### Quick Start
 
 ```
 ./start.sh
@@ -57,7 +69,7 @@ puppet          name=puppet                                                     
 
 With all the required basic infrastructure set, you can now either start from the 'latest' pre-built image for all nodes, or build nodes from scratch.
 
-## Start from latest
+#### Start from latest
 
 This is the most common use case. You want to quickly get an environment that allows you to work on any of the services.
 ```
@@ -71,7 +83,7 @@ kubectl.sh exec -it -p keystone -c keystone /bin/bash
 puppet agent -t
 ```
 
-## Build node from scratch
+#### Build node from scratch
 
 You want to test a node builds properly from scratch (example for keystone):
 ```
@@ -82,9 +94,9 @@ kubectl.sh exec -it -p keystone -p keystone /bin/bash
 puppet agent -t
 ```
 
-# Common Operations
+### Common Operations
 
-## Cleanup and rebuilt the environment
+#### Cleanup and rebuilt the environment
 ```
 cd kubernetes
 ./cleanup.sh
