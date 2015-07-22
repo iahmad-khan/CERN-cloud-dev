@@ -97,6 +97,33 @@ kubectl.sh exec -it -p keystone -p keystone /bin/bash
 puppet agent -t
 ```
 
+### Test the environment
+
+Let's try to create an image in glance, the client is available in the glance pod/container:
+```
+kubectl.sh exec -it -p glance -c glance -- /bin/bash
+. root/openrc
+wget http://download.cirros-cloud.net/0.3.3/cirros-0.3.3-x86_64-disk.img
+glance image-create --name cirros --disk-format aki --file cirros-0.3.3-x86_64-disk.img
+glance image-list   
++--------------------------------------+--------+-------------+------------------+----------+--------+
+| ID                                   | Name   | Disk Format | Container Format | Size     | Status |
++--------------------------------------+--------+-------------+------------------+----------+--------+
+| 64a34d63-0f85-4fad-9324-ee58b62d9868 | cirros | aki         | aki              | 13200896 | active |
++--------------------------------------+--------+-------------+------------------+----------+--------+
+```
+
+As an exercise let's check the data is actually in our local ceph container:
+```
+kubectl.sh exec -it -p ceph -c cephall -- /bin/bash
+rados ls -p images
+rbd_data.10155d46d745.0000000000000001
+rbd_directory
+rbd_id.64a34d63-0f85-4fad-9324-ee58b62d9868
+rbd_data.10155d46d745.0000000000000000
+rbd_header.10155d46d745
+```
+
 ## Common Operations
 
 ### Cleanup and rebuilt the environment
