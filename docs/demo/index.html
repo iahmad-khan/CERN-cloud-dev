@@ -55,8 +55,9 @@
 				<section>
 					<h2>How</h2>
 					<p>Simplified setup (machine containers, think init)</p>
+					<p>Relying on local workspace (manifests, hiera, ...)</p>
+					<p>Build node from scratch or from latest</p>
 					<p>Self contained (no deps on other setups)</p>
-					<p>Easy integration with tooling (docker, jenkins, ...)</p>
 				</section>
 
 				<section>
@@ -78,7 +79,7 @@
 					<b>Pod</b> is a colocated group of containers (shared IP, ...)</p>
 					<b>Replication controller</b> manage lifecycles of pods</p>
 					<b>Service</b> is a stable name and address for a set of pods (LB)</p>
-					<b>Label</b>: key/value pairs to organize and select objects</p>
+					<b>Label</b> is a key/value pair to organize and select objects</p>
 				</section>
 
 				<section>
@@ -101,11 +102,13 @@
 					<ol>
 						<li>Submit new pull request (gitlab)</li>
 						<li>Jenkins picks it up as a new job</li>
-						<li>Job runs contained on single slave (docker latest + puppet run)</li>
+						<li>Job runs contained on single slave (docker latest + puppet + rally)</li>
 						<li>Jenkins comments on PR with result (+ or -1 and logs)</li>
 						<li>PR gets updated or merged accordingly after another +1 (human review)</li>
 					</ol>
+					<p>On merge, rebuild/retag docker latest</p>
 					<p>Additional daily job rebuilding from scratch?</p>
+					<p>Tag with build number, debug later?</p>
 				</section>
 
 				<section>
@@ -122,7 +125,7 @@
 					<p>Not for this use case, but looking forward</p>
 					<p>No vendor lock</p>
 					<p>Integration with the rest of OpenStack</p>
-					<p>Networking? Neutron L3? LanDB?</p>
+					<p>Networking? Neutron L3? LanDB? Secrets?</p>
 				</section>
 
 				<section>
