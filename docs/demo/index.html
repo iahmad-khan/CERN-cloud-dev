@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>CERN OpenStack Dev - Containers For The Win</title>
+
+		<meta name="description" content="Proposal for a CERN OpenStack development environment">
+		<meta name="author" content="Ricardo Rocha">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/league.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>CERN OpenStack Dev</h1>
+					<h3>Containers For The Win</h3>
+				</section>
+
+				<section>
+					<h2>Goals</h2>
+					<p>Speed up our own dev (manifests, pkgs, scripts)</p>
+					<p>Improve testing, integration, validation</p>
+					<p>Quick scratch and deploy</p>
+				</section>
+
+				<section>
+					<h2>How</h2>
+					<p>Simplified setup (machine containers, think init)</p>
+					<p>Self contained (no deps on other setups)</p>
+					<p>Easy integration with tooling (docker, jenkins, ...)</p>
+				</section>
+
+				<section>
+					<h2>Non Goals</h2>
+					<p>Upstream code testing</p>
+					<p>Container orchestration solution</p>
+					<p>End user solution</p>
+				</section>
+
+				<section>
+					<h2>Containers</h2>
+					<img src="docker-vm-container.png" />
+				</section>
+
+				<section>
+					<h2>Kubernetes</h2>
+					<p><b>Cluster</b> is a set of physical or virtual nodes</p>
+					<b>Node</b> is a physical or virtual machine where pods run</p>
+					<b>Pod</b> is a colocated group of containers (shared IP, ...)</p>
+					<b>Replication controller</b> manage lifecycles of pods</p>
+					<b>Service</b> is a stable name and address for a set of pods (LB)</p>
+					<b>Label</b>: key/value pairs to organize and select objects</p>
+				</section>
+
+				<section>
+					<h2>Kubernetes</h2>
+					<img src="architecture.png" />
+				</section>
+
+				<section>
+					<h2>Dev Environment</h2>
+					<p>All kubernetes pods + services</p>
+					<img src="poddiagram.png"/>
+				</section>
+
+				<section>
+					<h1>DEMO</h1>
+				</section>
+
+				<section>
+					<h2>Continuous Integration</h2>
+					<ol>
+						<li>Submit new pull request (gitlab)</li>
+						<li>Jenkins picks it up as a new job</li>
+						<li>Job runs contained on single slave (docker latest + puppet run)</li>
+						<li>Jenkins comments on PR with result (+ or -1 and logs)</li>
+						<li>PR gets updated or merged accordingly after another +1 (human review)</li>
+					</ol>
+					<p>Additional daily job rebuilding from scratch?</p>
+				</section>
+
+				<section>
+					<h2>Next</h2>
+					<p>Add rally node and tests</p>
+					<p>Add missing components<br>
+					(horizon, neutron, nova, ceilometer, kibana/ES)</p>
+					<p>Kubernetes namespaces (job isolation)</p>
+				</section>
+
+				<section>
+					<h2>Magnum</h2>
+					<h3>The icecream on top...</h3>
+					<p>Not for this use case, but looking forward</p>
+					<p>No vendor lock</p>
+					<p>Integration with the rest of OpenStack</p>
+					<p>Networking? Neutron L3? LanDB?</p>
+				</section>
+
+				<section>
+					<h1>THE END</h1>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
