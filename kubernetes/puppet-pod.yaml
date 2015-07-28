@@ -46,19 +46,19 @@ spec:
   volumes:
     - name: puppet
       hostPath:
-        path: /opt/puppet
+        path: /opt/cloud-dev/puppet
     - name: factercfg
       hostPath:
-        path: /opt/facter
+        path: /opt/cloud-dev/facter
     - name: puppetmodules
       hostPath:
         path: /opt/puppet-modules
     - name: puppetssl
       hostPath:
-        path: /opt/puppetssl
+        path: /opt/cloud-dev/puppetssl
     - name: teigifiles
       hostPath:
-        path: /opt/teigi
+        path: /opt/cloud-dev/teigi/certs
     - name: teigidb
       hostPath:
-              path: /opt/teigi-db
+        path: /opt/cloud-dev/teigi/data

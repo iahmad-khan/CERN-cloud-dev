@@ -24,10 +24,10 @@ spec:
   volumes:
     - name: puppetcfg
       hostPath:
-        path: /opt/puppet
+        path: /opt/cloud-dev/puppet
     - name: puppetssl
       hostPath:
-        path: /opt/puppetssl
+        path: /opt/cloud-dev/puppetssl
     - name: factercfg
       hostPath:
-        path: /opt/facter
+        path: /opt/cloud-dev/facter

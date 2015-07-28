@@ -30,4 +30,4 @@ spec:
   volumes:
     - name: ldif
       hostPath:
-        path: /opt/ldif
+        path: /opt/cloud-dev/docker/ldap/data
