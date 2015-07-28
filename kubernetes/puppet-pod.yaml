@@ -41,6 +41,8 @@ spec:
           mountPath: /ssl
         - name: teigifiles
           mountPath: /opt/teigi
+        - name: teigidb
+          mountPath: /data
   volumes:
     - name: puppet
       hostPath:
@@ -57,3 +59,6 @@ spec:
     - name: teigifiles
       hostPath:
         path: /opt/teigi
+    - name: teigidb
+      hostPath:
+              path: /opt/teigi-db
