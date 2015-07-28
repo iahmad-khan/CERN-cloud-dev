@@ -1,26 +1,24 @@
 dn: dc=default,dc=kubdomain,dc=local
-dc: default
-o: OIS
 objectClass: top
 objectClass: dcObject
 objectClass: organization
+dc: default
+o : default
 
 dn: cn=admin,dc=default,dc=kubdomain,dc=local
-userPassword: {SSHA}hRfHVVDQoB36/LNBG4P+C73n8jCz/ubH
-description: LDAP administrator
-cn: admin
-objectClass: simpleSecurityObject
 objectClass: organizationalRole
-
-dn: ou=e-groups,dc=default,dc=kubdomain,dc=local
-ou: e-groups
-objectClass: top
-objectClass: organizationalUnit
+cn: admin
+description: Admin User
 
 dn: ou=users,dc=default,dc=kubdomain,dc=local
-ou: users
-objectClass: top
 objectClass: organizationalUnit
+objectClass: top
+ou: users
+
+dn: ou=e-groups,dc=default,dc=kubdomain,dc=local
+objectClass: organizationalUnit
+objectClass: top
+ou: e-groups
 
 dn: ou=roles,dc=default,dc=kubdomain,dc=local
 ou: roles
@@ -38,12 +36,12 @@ givenName: Admin
 sn: User
 cn: admin
 mail: admin@default.kubdomain.local
-tokenGroups: : AQUAAB6wIz8MzFhlGye7AJ8fBEyN8BOjA4tWHg=
+#tokenGroups: : AQUAAB6wIz8MzFhlGye7AJ8fBEyN8BOjA4tWHg=
 objectClass: top
 objectClass: person
 objectClass: organizationalPerson
 objectClass: inetOrgPerson
-objectClass: user
+#objectClass: user
 
 dn: cn=glance,ou=users,dc=default,dc=kubdomain,dc=local
 userPassword: 123456
@@ -51,9 +49,9 @@ givenName: Glance
 sn: User
 cn: glance
 mail: glance@default.kubdomain.local
-tokenGroups: : AQUAAB6wIz8MzFhlGye7AJ8fBEyN8BOjA4tWHg=
+#tokenGroups: : AQUAAB6wIz8MzFhlGye7AJ8fBEyN8BOjA4tWHg=
 objectClass: top
 objectClass: person
 objectClass: organizationalPerson
 objectClass: inetOrgPerson
-objectClass: user
+#objectClass: user

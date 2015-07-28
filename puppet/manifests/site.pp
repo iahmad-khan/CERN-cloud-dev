@@ -62,6 +62,42 @@ node /.*keystone.*/ inherits default {
   exec { '/usr/bin/patch -N -p0 /usr/lib/python2.7/site-packages/keystone/common/ldap/core.py < /tmp/patch || true':
     refreshonly => true,
   }
+  ~>
+  file { '/tmp/patch2':
+    ensure  => present,
+    content => "
+--- /usr/lib/python2.7/site-packages/keystone/identity/backends/ldap.py	2015-06-18 12:49:03.000000000 +0000
++++ /etc/puppet/ldap.py	2015-07-28 09:09:22.016325224 +0000
+@@ -355,10 +355,7 @@
+         sids = []
+         try:
+             conn = self.get_connection()
+-            sids = conn.search_s(user_dn_esc,
+-                                 ldap.SCOPE_BASE,
+-                                 '(objectClass=%s)' % CONF.ldap.user_objectclass,
+-                                 ['tokenGroups'])[0][1]['tokenGroups']
++            sids = []
+         except ldap.NO_SUCH_OBJECT:
+             pass
+         finally:
+@@ -380,10 +377,7 @@
+         sids = []
+         try:
+             conn = self.get_connection()
+-            sids = conn.search_s(user_dn_esc,
+-                                 ldap.SCOPE_BASE,
+-                                 '(objectClass=%s)' % CONF.ldap.user_objectclass,
+-                                 ['tokenGroups'])[0][1]['tokenGroups']
++            sids = []
+         except ldap.NO_SUCH_OBJECT:
+             pass
+         finally:
+",
+  }
+  ~>
+  exec { '/usr/bin/patch -N -p0 /usr/lib/python2.7/site-packages/keystone/identity/backends/ldap.py < /tmp/patch2 || true':
+    refreshonly => true,
+  }
   ->
   Keystone_config <||>
   ~>
@@ -71,7 +107,7 @@ node /.*keystone.*/ inherits default {
   ->
   Service['keystone']
   ~>
-  exec { "/usr/bin/sleep 5 && /usr/bin/keystone tenant-create --name services && /usr/bin/keystone role-create --name admin && /usr/bin/keystone role-create --name Member && /usr/bin/keystone user-role-add --user admin --role admin --tenant services && /usr/bin/keystone user-role-add --user glance --role admin --tenant services && /usr/bin/keystone tenant-list || true":
+  exec { "/usr/bin/sleep 5 && /usr/bin/keystone tenant-create --name services && /usr/bin/keystone role-create --name admin && /usr/bin/keystone role-create --name Member && /usr/bin/keystone user-role-add --user admin --role admin --tenant services && /usr/bin/keystone user-role-add --user glance --role admin --tenant services && /usr/bin/keystone tenant-list":
     path        => "/usr/bin:/usr/sbin",
     environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_SERVICE_TOKEN=512c2b7c2d94b5bb731469955d4b7455','OS_SERVICE_ENDPOINT=https://keystone.default.kubdomain.local:443/admin/v2.0'],
     refreshonly => true,
