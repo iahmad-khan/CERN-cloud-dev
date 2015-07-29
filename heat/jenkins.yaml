@@ -5,24 +5,27 @@ description: Deploy jenkins master and slave(s)
 parameters:
   image:
     type: string
-    description: Image used for servers
+    description: image used for servers (master and slaves)
     default: "CC7 Base - x86_64 [2015-06-12]"
   key:
     type: string
-    description: SSH key to connect to the servers
+    description: ssh key to connect to the servers as root
   flavor_master:
     type: string
-    description: flavor used by the web servers
+    description: flavor used by the jenkins master
     default: m1.small
   flavor_slave:
     type: string
-    description: flavor used by the web servers
+    description: flavor used by the jenkins slaves
     default: m1.medium
   master_name:
     type: string
-    description: VM Name
+    description: name of the jenkins master vm
     constraints:
     - allowed_pattern: "[a-zA-Z0-9-]+"
+  master_volume:
+    type: string
+    description: UUID of the jenkins master config volume (for persistency)
   slave_min:
     type: number
     description: min number of slaves
@@ -42,12 +45,45 @@ resources:
       image: { get_param: image }
       flavor: { get_param: flavor_master }
       metadata: {"cern-services": "false"}
-      user_data: |
-        #!/bin/sh
-        echo master > /tmp/host
+      user_data:
+        str_replace:
+          template: |
+            #!/bin/sh
+            yum install -y wget
+            wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
+            rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
+            useradd jenkins -d /var/lib/jenkins
+            mount /dev/vdb /var/lib/jenkins
+            chown -R jenkins.jenkins /var/lib/jenkins
+            yum install -y jenkins java-openjdk
+            sudo -u jenkins mkdir -p /var/lib/jenkins/plugins
+            sudo -u jenkins wget -O /var/lib/jenkins/plugins/swarm.jpi http://updates.jenkins-ci.org/latest/swarm.hpi || true
+            chkconfig jenkins on
+            systemctl start jenkins
+            wc_notify --data-binary '{"status": "SUCCESS"}'
+          params:
+            wc_notify: { get_attr: ['master_handle', 'curl_cli'] }
+
+  volume_attachment:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_param: master_volume }
+      instance_uuid: { get_resource: master }
+      mountpoint: /dev/vdb
+
+  master_wait:
+    type: OS::Heat::WaitCondition
+    depends_on: master
+    properties:
+      handle: { get_resource: master_handle }
+      timeout: 1000
+
+  master_handle:
+    type: OS::Heat::WaitConditionHandle
 
   slavesgroup:
     type: OS::Heat::AutoScalingGroup
+    depends_on: master_wait
     properties:
       min_size: { get_param: slave_min }
       max_size: { get_param: slave_max }
@@ -58,9 +94,15 @@ resources:
           image: { get_param: image }
           key_name: { get_param: key }
           metadata: { "metering.stack": { get_param: "OS::stack_id" }, "cern-services": "false" }
-          user_data: |
-            #!/bin/sh
-            echo slave > /tmp/host
+          user_data:
+            str_replace:
+              template: |
+                #!/bin/sh
+                yum install -y java-openjdk
+                curl -O http://maven.jenkins-ci.org/content/repositories/releases/org/jenkins-ci/plugins/swarm-client/1.26/swarm-client-1.26-jar-with-dependencies.jar
+                java -jar swarm-client-1.26-jar-with-dependencies.jar -master http://$master_ip:8080/ &
+              params:
+                $master_ip: { get_attr: [master, first_address] }
 
   web_server_scaleup_policy:
     type: OS::Heat::ScalingPolicy
@@ -91,6 +133,9 @@ outputs:
       You can invoke the scale-down operation by doing an HTTP POST to
       this URL; no body nor extra headers are needed.
     value: {get_attr: [web_server_scaledown_policy, alarm_url]}
-  master:
+  master_host:
     value: { get_attr: [master, name] }
-    description: Jenkins master hostname
+    description: jenkins master hostname
+  master_ip:
+    value: { get_attr: [master, first_address] }
+    description: jenkins master IP address
