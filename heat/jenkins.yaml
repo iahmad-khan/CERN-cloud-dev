@@ -37,8 +37,15 @@ parameters:
 
 resources:
 
+  jenkinskey:
+    type: OS::Nova::KeyPair
+    properties:
+      name: 'jenkinskey'
+      save_private_key: True
+
   master:
     type: OS::Nova::Server
+    depends_on: jenkinskey
     properties:
       name: { get_param: master_name }
       key_name: { get_param: key }
@@ -54,15 +61,21 @@ resources:
             rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
             useradd jenkins -d /var/lib/jenkins
             mount /dev/vdb /var/lib/jenkins
-            chown -R jenkins.jenkins /var/lib/jenkins
             yum install -y jenkins java-openjdk
-            sudo -u jenkins mkdir -p /var/lib/jenkins/plugins
-            sudo -u jenkins wget -O /var/lib/jenkins/plugins/swarm.jpi http://updates.jenkins-ci.org/latest/swarm.hpi || true
+            mkdir -p /var/lib/jenkins/.ssh
+            echo 'privkey' > /var/lib/jenkins/.ssh/id_rsa
+            chmod 400 /var/lib/jenkins/.ssh/id_rsa
+            echo 'pubkey' > /var/lib/jenkins/.ssh/id_rsa.pub
+            mkdir -p /var/lib/jenkins/plugins
+            wget -O /var/lib/jenkins/plugins/swarm.jpi http://updates.jenkins-ci.org/latest/swarm.hpi || true
+            chown -R jenkins.jenkins /var/lib/jenkins
             chkconfig jenkins on
             systemctl start jenkins
             wc_notify --data-binary '{"status": "SUCCESS"}'
           params:
-            wc_notify: { get_attr: ['master_handle', 'curl_cli'] }
+            wc_notify: { get_attr: [master_handle, curl_cli] }
+            privkey: { get_attr: [jenkinskey, private_key] }
+            pubkey: { get_attr: [jenkinskey, public_key] }
 
   volume_attachment:
     type: OS::Cinder::VolumeAttachment
@@ -83,7 +96,7 @@ resources:
 
   slavesgroup:
     type: OS::Heat::AutoScalingGroup
-    depends_on: master_wait
+    depends_on: [ jenkinskey, master_wait ]
     properties:
       min_size: { get_param: slave_min }
       max_size: { get_param: slave_max }
@@ -98,11 +111,13 @@ resources:
             str_replace:
               template: |
                 #!/bin/sh
+                echo 'pubkey' >> /root/.ssh/authorized_keys
                 yum install -y java-openjdk
                 curl -O http://maven.jenkins-ci.org/content/repositories/releases/org/jenkins-ci/plugins/swarm-client/1.26/swarm-client-1.26-jar-with-dependencies.jar
-                java -jar swarm-client-1.26-jar-with-dependencies.jar -master http://$master_ip:8080/ &
+                java -jar swarm-client-1.26-jar-with-dependencies.jar -master http://master_ip:8080/ &
               params:
-                $master_ip: { get_attr: [master, first_address] }
+                master_ip: { get_attr: [master, first_address] }
+                pubkey: { get_attr: [jenkinskey, public_key] }
 
   web_server_scaleup_policy:
     type: OS::Heat::ScalingPolicy
