@@ -1,0 +1,96 @@
+heat_template_version: 2013-05-23
+
+description: Deploy jenkins master and slave(s)
+
+parameters:
+  image:
+    type: string
+    description: Image used for servers
+    default: "CC7 Base - x86_64 [2015-06-12]"
+  key:
+    type: string
+    description: SSH key to connect to the servers
+  flavor_master:
+    type: string
+    description: flavor used by the web servers
+    default: m1.small
+  flavor_slave:
+    type: string
+    description: flavor used by the web servers
+    default: m1.medium
+  master_name:
+    type: string
+    description: VM Name
+    constraints:
+    - allowed_pattern: "[a-zA-Z0-9-]+"
+  slave_min:
+    type: number
+    description: min number of slaves
+    default: 1
+  slave_max:
+    type: number
+    description: max number of slaves
+    default: 5
+
+resources:
+
+  master:
+    type: OS::Nova::Server
+    properties:
+      name: { get_param: master_name }
+      key_name: { get_param: key }
+      image: { get_param: image }
+      flavor: { get_param: flavor_master }
+      metadata: {"cern-services": "false"}
+      user_data: |
+        #!/bin/sh
+        echo master > /tmp/host
+
+  slavesgroup:
+    type: OS::Heat::AutoScalingGroup
+    properties:
+      min_size: { get_param: slave_min }
+      max_size: { get_param: slave_max }
+      resource:
+        type: OS::Nova::Server
+        properties:
+          flavor: { get_param: flavor_slave }
+          image: { get_param: image }
+          key_name: { get_param: key }
+          metadata: { "metering.stack": { get_param: "OS::stack_id" }, "cern-services": "false" }
+          user_data: |
+            #!/bin/sh
+            echo slave > /tmp/host
+
+  web_server_scaleup_policy:
+    type: OS::Heat::ScalingPolicy
+    properties:
+      adjustment_type: change_in_capacity
+      auto_scaling_group_id: { get_resource: slavesgroup }
+      cooldown: 600
+      scaling_adjustment: 1
+
+  web_server_scaledown_policy:
+    type: OS::Heat::ScalingPolicy
+    properties:
+      adjustment_type: change_in_capacity
+      auto_scaling_group_id: { get_resource: slavesgroup }
+      cooldown: 600
+      scaling_adjustment: -1
+
+outputs:
+  scale_up_url:
+    description: >
+      This URL is the webhook to scale up the autoscaling group.  You
+      can invoke the scale-up operation by doing an HTTP POST to this
+      URL; no body nor extra headers are needed.
+    value: {get_attr: [web_server_scaleup_policy, alarm_url]}
+  scale_dn_url:
+    description: >
+      This URL is the webhook to scale down the autoscaling group.
+      You can invoke the scale-down operation by doing an HTTP POST to
+      this URL; no body nor extra headers are needed.
+    value: {get_attr: [web_server_scaledown_policy, alarm_url]}
+  master:
+    value: { get_attr: [master, name] }
+    description: Jenkins master hostname
