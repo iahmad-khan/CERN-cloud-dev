@@ -1,6 +1,6 @@
 heat_template_version: 2013-05-23
 
-description: Deploy jenkins master and slave(s)
+description: Deploy jenkins master and slave(s), with slaves booting from volume
 
 parameters:
   image:
@@ -18,11 +18,6 @@ parameters:
     type: string
     description: flavor used by the jenkins slaves
     default: m1.medium
-  master_name:
-    type: string
-    description: name of the jenkins master vm
-    constraints:
-    - allowed_pattern: "[a-zA-Z0-9-]+"
   master_volume:
     type: string
     description: UUID of the jenkins master config volume (for persistency)
@@ -40,14 +35,14 @@ resources:
   jenkinskey:
     type: OS::Nova::KeyPair
     properties:
-      name: 'jenkinskey'
+      name: { get_param: 'OS::stack_name' }
       save_private_key: True
 
   master:
     type: OS::Nova::Server
     depends_on: jenkinskey
     properties:
-      name: { get_param: master_name }
+      name: { get_param: 'OS::stack_name' }
       key_name: { get_param: key }
       image: { get_param: image }
       flavor: { get_param: flavor_master }
@@ -100,24 +95,14 @@ resources:
     properties:
       min_size: { get_param: slave_min }
       max_size: { get_param: slave_max }
-      resource:
-        type: OS::Nova::Server
+      resource: 
+        type: Jenkins::Slave
         properties:
-          flavor: { get_param: flavor_slave }
+          key: { get_param: key }
           image: { get_param: image }
-          key_name: { get_param: key }
-          metadata: { "metering.stack": { get_param: "OS::stack_id" }, "cern-services": "false" }
-          user_data:
-            str_replace:
-              template: |
-                #!/bin/sh
-                echo 'pubkey' >> /root/.ssh/authorized_keys
-                yum install -y java-openjdk
-                curl -O http://maven.jenkins-ci.org/content/repositories/releases/org/jenkins-ci/plugins/swarm-client/1.26/swarm-client-1.26-jar-with-dependencies.jar
-                java -jar swarm-client-1.26-jar-with-dependencies.jar -master http://master_ip:8080/ &
-              params:
-                master_ip: { get_attr: [master, first_address] }
-                pubkey: { get_attr: [jenkinskey, public_key] }
+          flavor: { get_param: flavor_slave }
+          master_name: { get_attr: [master, first_address] }
+          jenkins_pubkey: { get_attr: [jenkinskey, public_key] }
 
   web_server_scaleup_policy:
     type: OS::Heat::ScalingPolicy

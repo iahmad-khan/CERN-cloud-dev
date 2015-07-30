@@ -1,0 +1,16 @@
+parameters:
+
+  # the ID of the volume to mount in the jenkins master, so that
+  # the configuration is persistent
+  master_volume: 67dae14c-385d-4da1-853c-c50d3cb33aab
+
+  # the existing keypair in openstack to provide root access on all nodes
+  key: rocha-cern
+
+resource_registry:
+
+  # edit this if you want another type of jenkins slave
+  # ( common options are jenkins-slave-volume.yaml for boot from volume,
+  #   or jenkins-slave-image.yaml for boot from image )
+  # you can also create your own template and reference it in here.
+  Jenkins::Slave: jenkins-slave-volume.yaml
