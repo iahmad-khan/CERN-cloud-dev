@@ -1,0 +1,48 @@
+heat_template_version: 2013-05-23
+
+description: resources for a jenkins slave node, booting from volume
+
+parameters:
+
+  flavor:
+    type: string
+  image:
+    type: string
+  key:
+    type: string
+  master_name:
+    type: string
+  jenkins_pubkey:
+    type: string
+
+resources:
+
+  slave_volume:
+    type: OS::Cinder::Volume
+    properties:
+      image: { get_param: image }
+      size: 40
+
+  slave:
+    type: OS::Nova::Server
+    depends_on: slave_volume
+    properties:
+      flavor: { get_param: flavor }
+      key_name: { get_param: key }
+      metadata: { "metering.stack": { get_param: "OS::stack_id" }, "cern-services": "false" }
+      block_device_mapping: [
+        { delete_on_termination: true,
+          device_name: vda,
+          volume_id: { get_resource: slave_volume } }
+      ]
+      user_data:
+        str_replace:
+          template: |
+            #!/bin/sh
+            echo 'pubkey' >> /root/.ssh/authorized_keys
+            yum install -y java-openjdk
+            curl -O http://maven.jenkins-ci.org/content/repositories/releases/org/jenkins-ci/plugins/swarm-client/1.26/swarm-client-1.26-jar-with-dependencies.jar
+            java -jar swarm-client-1.26-jar-with-dependencies.jar -master http://master_ip:8080/ &
+          params:
+            master_ip: { get_param: master_name }
+            jenkins_key: { get_param: jenkins_pubkey }
