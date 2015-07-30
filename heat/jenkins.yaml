@@ -119,7 +119,7 @@ resources:
                 master_ip: { get_attr: [master, first_address] }
                 pubkey: { get_attr: [jenkinskey, public_key] }
 
-  web_server_scaleup_policy:
+  slave_scaleup_policy:
     type: OS::Heat::ScalingPolicy
     properties:
       adjustment_type: change_in_capacity
@@ -127,7 +127,7 @@ resources:
       cooldown: 600
       scaling_adjustment: 1
 
-  web_server_scaledown_policy:
+  slave_scaledown_policy:
     type: OS::Heat::ScalingPolicy
     properties:
       adjustment_type: change_in_capacity
@@ -135,19 +135,47 @@ resources:
       cooldown: 600
       scaling_adjustment: -1
 
+  cpu_alarm_high:
+    type: OS::Ceilometer::Alarm
+    properties:
+      description: Scale-up if the average CPU > 10% for 10 minutes
+      meter_name: cpu_util
+      statistic: avg
+      period: 600
+      evaluation_periods: 1
+      threshold: 10
+      alarm_actions:
+        - {get_attr: [slave_scaleup_policy, alarm_url]}
+      matching_metadata: {'metadata.user_metadata.stack': {get_param: "OS::stack_id"}}
+      comparison_operator: gt
+
+  cpu_alarm_low:
+    type: OS::Ceilometer::Alarm
+    properties:
+      description: Scale-down if the average CPU < 5% for 10 minutes
+      meter_name: cpu_util
+      statistic: avg
+      period: 600
+      evaluation_periods: 1
+      threshold: 5
+      alarm_actions:
+        - {get_attr: [slave_scaledown_policy, alarm_url]}
+      matching_metadata: {'metadata.user_metadata.stack': {get_param: "OS::stack_id"}}
+      comparison_operator: lt
+
 outputs:
   scale_up_url:
     description: >
       This URL is the webhook to scale up the autoscaling group.  You
       can invoke the scale-up operation by doing an HTTP POST to this
       URL; no body nor extra headers are needed.
-    value: {get_attr: [web_server_scaleup_policy, alarm_url]}
+    value: {get_attr: [slave_scaleup_policy, alarm_url]}
   scale_dn_url:
     description: >
       This URL is the webhook to scale down the autoscaling group.
       You can invoke the scale-down operation by doing an HTTP POST to
       this URL; no body nor extra headers are needed.
-    value: {get_attr: [web_server_scaledown_policy, alarm_url]}
+    value: {get_attr: [slave_scaledown_policy, alarm_url]}
   master_host:
     value: { get_attr: [master, name] }
     description: jenkins master hostname
