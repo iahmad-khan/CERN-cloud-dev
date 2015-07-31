@@ -16,11 +16,6 @@ spec:
           mountPath: /var/lib/puppet/ssl
         - name: factercfg
           mountPath: /etc/facter
-        - name: cephcfg
-          mountPath: /etc/ceph
-      env:
-        - name: CONTAINER
-          value: glance
       command:
         - /usr/sbin/init
       ports:
@@ -35,6 +30,3 @@ spec:
     - name: factercfg
       hostPath:
         path: /opt/cloud-dev/facter
-    - name: cephcfg
-      hostPath:
-        path: /opt/cloud-dev/ceph
