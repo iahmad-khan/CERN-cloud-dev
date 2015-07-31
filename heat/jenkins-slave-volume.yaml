@@ -31,7 +31,6 @@ resources:
     properties:
       flavor: { get_param: flavor }
       key_name: { get_param: key }
-      #metadata: { "metering.stack": { get_param: "OS::stack_id" }, "cern-services": "false" }
       metadata: { get_param: metadata }
       block_device_mapping: [
         { delete_on_termination: true,
