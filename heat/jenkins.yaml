@@ -103,6 +103,7 @@ resources:
           flavor: { get_param: flavor_slave }
           master_name: { get_attr: [master, first_address] }
           jenkins_pubkey: { get_attr: [jenkinskey, public_key] }
+          metadata: { "metering.stack": { get_param: "OS::stack_id" }, "cern-services": "false" }
 
   slave_scaleup_policy:
     type: OS::Heat::ScalingPolicy
