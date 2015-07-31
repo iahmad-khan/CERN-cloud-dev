@@ -10,6 +10,8 @@ spec:
     - name: cephall
       image: docker-reg.cern.ch:5000/cephdemo
       env:
+        - name: MON_NAME
+          value: a
         - name: MON_IP
           value: 172.17.42.1
         - name: CEPH_NETWORK
