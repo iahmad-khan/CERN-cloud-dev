@@ -12,7 +12,7 @@ do
   kubectl get pod ceph | grep Pending > /dev/null 2>&1
 done
 
-kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 auth add client.images -i ../ceph/ceph.client.images.keyring
-kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 auth add client.volumes -i ../ceph/ceph.client.volumes.keyring
+kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 auth add client.images -i /etc/ceph/ceph.client.images.keyring
+kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 auth add client.volumes -i /etc/ceph/ceph.client.volumes.keyring
 kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 osd pool create images 64
 kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 osd pool create volumes 64
