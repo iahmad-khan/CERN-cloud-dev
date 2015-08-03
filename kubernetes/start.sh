@@ -7,9 +7,9 @@ done
 kubectl get pod ceph | grep Pending > /dev/null 2>&1
 while [ $? -eq 0 ]
 do
-  echo "waiting for ceph pod to be ready..."
+  echo "waiting for pods to be ready..."
   sleep 2
-  kubectl get pod ceph | grep Pending > /dev/null 2>&1
+  kubectl get pod | grep Pending > /dev/null 2>&1
 done
 
 kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 auth add client.images -i /etc/ceph/ceph.client.images.keyring
