@@ -132,3 +132,13 @@ cd kubernetes
 ./cleanup.sh
 ./start.sh
 ```
+
+### Redeploy the jenkins master
+
+If for some reason the jenkins master VM becomes unavailable and you need to redeploy, just recreate the stack:
+```
+cd heat
+heat stack-create cci-jenkins -f jenkins.yaml -e jenkins-env-clouddev.yaml
+```
+
+The environment file holds the ID of the volume where all the jenkins master config is kept persistenly, so the jobs and even the build history will still be there.
