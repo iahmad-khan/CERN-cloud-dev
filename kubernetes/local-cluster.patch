@@ -5,11 +5,11 @@
      --api_servers="${API_HOST}:${API_PORT}" \
      --auth_path="${KUBE_ROOT}/hack/.test-cmd-auth" \
 -    --port="$KUBELET_PORT" >"${KUBELET_LOG}" 2>&1 &
-+    --port="$KUBELET_PORT" >"${KUBELET_LOG}" 2>&1 & \
++    --port="$KUBELET_PORT" >"${KUBELET_LOG}" \
 +    --cluster_dns=10.0.0.10 \
 +    --cluster_domain=kubdomain.local \
 +    --host-network-sources=* \
-+    --allow_privileged &
++    --allow_privileged 2>&1 &
    KUBELET_PID=$!
  else
    # Docker won't run a container with a cidfile (container id file)
