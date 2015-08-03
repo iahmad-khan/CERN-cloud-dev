@@ -261,6 +261,7 @@ keystone_rabbit_userid: 'keystone'
 keystone_seltype_etc: 'etc_t'
 keystone_seltype_lib: 'httpd_var_lib_t'
 keystone_seltype_log: 'httpd_log_t'
+keystone_shib_cache_enable: false
 keystone_shib_enable: false
 keystone_signing_ca_certs: "%{keystone_ssl_ca_certs}"
 keystone_signing_ca_key: "%{keystone_ssl_ca_key}"
