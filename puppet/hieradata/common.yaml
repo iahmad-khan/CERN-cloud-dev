@@ -258,6 +258,7 @@ keystone_public_endpoint: "https://%{::hostname}/main"
 keystone_rabbit_host: '127.0.0.1'
 keystone_rabbit_hosts: false
 keystone_rabbit_userid: 'keystone'
+keystone_revoke_driver: 'keystone.contrib.revoke.backends.sql.Revoke'
 keystone_seltype_etc: 'etc_t'
 keystone_seltype_lib: 'httpd_var_lib_t'
 keystone_seltype_log: 'httpd_log_t'
