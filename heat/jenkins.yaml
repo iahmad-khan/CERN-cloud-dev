@@ -56,13 +56,16 @@ resources:
             rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
             useradd jenkins -d /var/lib/jenkins
             mount /dev/vdb /var/lib/jenkins
-            yum install -y jenkins java-openjdk
+            yum install -y jenkins java-openjdk git
             mkdir -p /var/lib/jenkins/.ssh
             echo 'privkey' > /var/lib/jenkins/.ssh/id_rsa
             chmod 400 /var/lib/jenkins/.ssh/id_rsa
             echo 'pubkey' > /var/lib/jenkins/.ssh/id_rsa.pub
             mkdir -p /var/lib/jenkins/plugins
             wget -O /var/lib/jenkins/plugins/swarm.jpi http://updates.jenkins-ci.org/latest/swarm.hpi || true
+            wget -O /var/lib/jenkins/plugins/git-client.jpi http://updates.jenkins-ci.org/latest/git-client.hpi || true
+            wget -O /var/lib/jenkins/plugins/git.jpi http://updates.jenkins-ci.org/latest/git.hpi || true
+            wget -O /var/lib/jenkins/plugins/scm-api.jpi http://updates.jenkins-ci.org/latest/scm-api.hpi || true
             chown -R jenkins.jenkins /var/lib/jenkins
             chkconfig jenkins on
             systemctl start jenkins
