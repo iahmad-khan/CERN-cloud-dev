@@ -71,6 +71,7 @@ kubernetes_install() {
 	mv kubernetes-0.17.1/* .
 	rm -rf kubernetes-0.17.1
 	patch -s -p0 $CLOUDDEV_KUB/hack/local-up-cluster.sh < $CLOUDDEV/kubernetes/local-cluster.patch
+	return $?
 }
 
 # start the kubernetes cluster
@@ -85,6 +86,7 @@ kubernetes_start() {
 		sleep 5
 	done
 	sudo chown -R $USER $CLOUDDEV_KUB
+	return $?
 }
 
 # start the base cluster pods
@@ -108,6 +110,7 @@ cluster_pod_base_start() {
 	kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 auth add client.volumes -i /etc/ceph/ceph.client.volumes.keyring
 	kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 osd pool create images 64
 	kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 osd pool create volumes 64
+	return $?
 }
 
 # start with a clean runtime
@@ -115,12 +118,14 @@ cluster_cleanup() {
 	echo "cleaning up any kubernetes or docker leftovers..."
 	sudo killall -9 kube-apiserver kube-controller-manager kube-proxy kube-scheduler kubelet etcd > /dev/null 2>&1
 	sudo docker ps --all | awk '{print $1}' | xargs sudo docker rm -f > /dev/null 2>&1
+	return $?
 }
 
 # start the base cluster
 cluster_restart() {
 	kubernetes_start
 	cluster_pod_base_start
+	return $?
 }
 
 # launch a specific pod
@@ -136,6 +141,7 @@ cluster_pod_start() {
 	done
 	# run puppet on keystone
 	sudo docker exec $(sudo docker ps | grep keystone | grep init | awk '{print $1}') /usr/bin/puppet agent -t
+	return $?
 }
 
 centos_install() {
@@ -147,6 +153,7 @@ centos_install() {
 	if ! sudo docker ps > /dev/null 2>&1; then
 		sudo docker -d --insecure-registry docker-reg.cern.ch:5000 > /tmp/docker.log 2>&1 &
 	fi
+	return $?
 }
 
 case "$1" in
@@ -158,23 +165,23 @@ case "$1" in
 		sudo ln -s $CLOUDDEV_PUPPET /opt/puppet-modules
 		kubernetes_install
 		kubernetes_start
-		exit 0
+		exit $?
 		;;
 	'restart')
 		cluster_restart
-		exit 0
+		exit $?
 		;;
 	'launch')
 		cluster_pod_start
-		exit 0
+		exit $?
 		;;
 	'cleanup')
 		cluster_cleanup
-		exit 0
+		exit $?
 		;;
 	'centos')
 		centos_install
-		exit 0
+		exit $?
 		;;
 	*)
 		echo "Specify one of prepare, restart, launch, cleanup, centos"
