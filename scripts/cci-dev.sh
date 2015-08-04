@@ -18,7 +18,7 @@ fi
 export PATH=$PATH:$CLOUDDEV_KUB/_output/local/go/bin
 
 # PUPPET_MODULES holds the list of module dependencies that we need to run the build
-PUPPET_MODULES="abrt apache:upstream_150 cernlib cinder cloud_common cloud_monitoring concat firewall flume glance inifile kerberos keystone lemon limits logrotate motd mysql openstack_clients osrepos psacct puppet puppetdbquery stdlib teigi"
+PUPPET_MODULES="abrt apache:upstream_150 cernlib cinder cloud_common cloud_monitoring concat firewall flume glance inifile kerberos keystone lemon limits logrotate motd mysql openstack_clients osrepos psacct puppet puppetdbquery stdlib teigi:tbag_teigiurl"
 
 # PUPPET_HOSTGROUPS holds the list of hostgroups we need to run the build(s)
 PUPPET_HOSTGROUPS="cloud_adm cloud_blockstorage cloud_identity cloud_image"
@@ -29,6 +29,7 @@ puppet_manifest_checkout() {
 		echo "$CLOUDDEV_PUPPET exists, not touching..."
 		return
 	fi
+	echo "cloning puppet modules and hostgroups into ${CLOUDDEV_PUPPET}..."
 	mkdir -p $CLOUDDEV_PUPPET
 	for mod in $PUPPET_MODULES
 	do
@@ -41,6 +42,7 @@ puppet_manifest_checkout() {
 			git checkout $branch
 			cd -
 		fi
+		branch=''
 	done
 	for hg in $PUPPET_HOSTGROUPS;
 	do
@@ -61,6 +63,7 @@ kubernetes_install() {
 		echo "$CLOUDDEV_KUB exists, not touching..."
 		return
 	fi
+	echo "installing kubernetes at ${CLOUDDEV_KUB}..."
 	mkdir -p $CLOUDDEV_KUB
 	cd $CLOUDDEV_KUB
 	wget --quiet https://github.com/GoogleCloudPlatform/kubernetes/archive/v0.17.1.tar.gz
@@ -86,6 +89,7 @@ kubernetes_start() {
 
 # start the base cluster pods
 cluster_pod_base_start() {
+	echo "starting the base pods (skydns, puppet, controller, ceph)"
 	# launch the pods	
 	cd $CLOUDDEV/kubernetes
 	for z in dns-hack.json skydns-rc.yaml skydns-svc.yaml puppet-pod.yaml puppet-svc.yaml controller-pod.yaml controller-svc.yaml ceph-pod.yaml; do
@@ -108,6 +112,7 @@ cluster_pod_base_start() {
 
 # start with a clean runtime
 cluster_cleanup() {
+	echo "cleaning up any kubernetes or docker leftovers..."
 	sudo killall -9 kube-apiserver kube-controller-manager kube-proxy kube-scheduler kubelet etcd > /dev/null 2>&1
 	sudo docker ps --all | awk '{print $1}' | xargs sudo docker rm -f > /dev/null 2>&1
 }
@@ -134,11 +139,12 @@ cluster_pod_start() {
 }
 
 centos_install() {
+	echo "installing dependencies for centos..."
 	sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
 	sudo yum install -y wget git vim docker etcd golang patch psmisc
 	sed -i "s/^# INSECURE_REGISTRY.*/INSECURE_REGISTRY='--insecure-registry docker-reg.cern.ch:5000'/g" /etc/sysconfig/docker
 	# launch docker (for some reason the systemd init script is failing right now)
-	if ! sudo docker ps; then
+	if ! sudo docker ps > /dev/null 2>&1; then
 		sudo docker -d --insecure-registry docker-reg.cern.ch:5000 > /tmp/docker.log 2>&1 &
 	fi
 }
