@@ -1,5 +1,7 @@
 node default {
 
+  include osrepos::params
+
   file {'/root/openrc':
     ensure  => present,
     owner   => root,
@@ -194,5 +196,13 @@ node /.*cinder.*/ inherits default {
   cinder_api_paste_ini { 'filter:authtoken/cafile': value => '/var/lib/puppet/ssl/certs/ca.pem'; }
   ->
   Service['openstack-cinder-api']
+
+}
+
+# workaround to ignore lemon for now
+define lemon::metric( $timing = undef , $smoothing = undef, $params = undef, $offset = undef, $tags = undef, $local = undef, $enable = undef ) {
+
+}
+class { 'lemon::osrepos':
 
 }
