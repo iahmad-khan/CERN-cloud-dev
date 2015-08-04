@@ -135,7 +135,7 @@ cluster_pod_start() {
 		kubectl get pod keystone | grep Pending > /dev/null 2>&1
 	done
 	# run puppet on keystone
-	sudo docker exec -it $(sudo docker ps | grep keystone | grep init | awk '{print $1}') /usr/bin/puppet agent -t
+	sudo docker exec $(sudo docker ps | grep keystone | grep init | awk '{print $1}') /usr/bin/puppet agent -t
 }
 
 centos_install() {
