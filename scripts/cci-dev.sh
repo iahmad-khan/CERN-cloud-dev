@@ -23,6 +23,12 @@ PUPPET_MODULES="abrt apache:upstream_150 cernlib cinder cloud_common cloud_monit
 # PUPPET_HOSTGROUPS holds the list of hostgroups we need to run the build(s)
 PUPPET_HOSTGROUPS="cloud_adm cloud_blockstorage cloud_identity cloud_image"
 
+# OS_PODS holds the list of pods to be started on 'launch'
+OS_PODS=${OS_PODS:-keystone glance}
+
+# docker registry to push container images to (see push)
+DOCKER_REGISTRY=${DOCKER_REGISTRY:-docker-reg.cern.ch:5000}
+
 # Checkout all the puppet modules and hostgroups
 puppet_manifest_checkout() {
 	if [ -e $CLOUDDEV_PUPPET ]; then
@@ -92,7 +98,7 @@ kubernetes_start() {
 # start the base cluster pods
 cluster_pod_base_start() {
 	echo "starting the base pods (skydns, puppet, controller, ceph)"
-	# launch the pods	
+	# launch the pods
 	cd $CLOUDDEV/kubernetes
 	for z in dns-hack.json skydns-rc.yaml skydns-svc.yaml puppet-pod.yaml puppet-svc.yaml controller-pod.yaml controller-svc.yaml ceph-pod.yaml; do
 		kubectl create -f $z
@@ -106,10 +112,10 @@ cluster_pod_base_start() {
 		kubectl get pod | grep Pending > /dev/null 2>&1
 	done
 
-	kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 auth add client.images -i /etc/ceph/ceph.client.images.keyring
-	kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 auth add client.volumes -i /etc/ceph/ceph.client.volumes.keyring
-	kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 osd pool create images 64
-	kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 osd pool create volumes 64
+	kubectl exec -it -p ceph -c cephall -- HOME=/ /usr/bin/ceph --connect-timeout 10 auth add client.images -i /etc/ceph/ceph.client.images.keyring
+	kubectl exec -it -p ceph -c cephall -- HOME=/ /usr/bin/ceph --connect-timeout 10 auth add client.volumes -i /etc/ceph/ceph.client.volumes.keyring
+	kubectl exec -it -p ceph -c cephall -- HOME=/ /usr/bin/ceph --connect-timeout 10 osd pool create images 64
+	kubectl exec -it -p ceph -c cephall -- HOME=/ /usr/bin/ceph --connect-timeout 10 osd pool create volumes 64
 
 	echo "waiting for puppetdb to start..."
 	while ! kubectl.sh exec -p puppet -c puppetdb -- grep 'Finished database' /var/log/puppetdb/puppetdb.log > /dev/null 2>&1
@@ -134,22 +140,68 @@ cluster_restart() {
 	return $?
 }
 
-# launch a specific pod
-cluster_pod_start() {
+# trigger a full rebuild of all OS pods
+cluster_pod_rebuild() {
 	cd $CLOUDDEV/kubernetes
-	kubectl create -f keystone-pod.yaml
-	kubectl create -f keystone-svc.yaml
-	echo "waiting for keystone pod to be ready..."
-	while [ $? -eq 0 ]
+	for pod in $OS_PODS
 	do
-		sleep 5
-		kubectl get pod keystone | grep Pending > /dev/null 2>&1
+		echo "creating pod ${pod}..."
+		kubectl create -f ${pod}-pod.yaml
+		kubectl create -f ${pod}-svc.yaml
 	done
-	# run puppet on keystone
-	sudo docker exec $(sudo docker ps | grep keystone | grep init | awk '{print $1}') /usr/bin/puppet agent -t
+	for pod in $OS_PODS
+	do
+		echo "waiting for ${pod} pod to be ready to run puppet..."
+		while kubectl get pod $pod | grep Pending > /dev/null 2>&1
+		do
+			sleep 2
+		done
+		# run puppet on pod
+		sudo docker exec $(sudo docker ps | grep $pod | grep init | awk '{print $1}') /usr/bin/puppet agent -t
+		if [[ $? > 2  ]]; then
+			return $?
+		fi
+	done
 	return $?
 }
 
+# Relaunch all OS pods using the 'latest' image
+cluster_pod_latest() {
+	cd $CLOUDDEV/kubernetes
+	for pod in $OS_PODS
+	do
+		sed -e "s/puppetagent:latest/${c}/g" ${pod}-pod.yaml > /tmp/${pod}-pod.yaml
+		kubectl create -f /tmp/${pod}-pod.yaml
+		kubectl create -f ${pod}-svc.yaml
+
+		kubectl get pod ${pod} | grep Pending > /dev/null 2>&1
+		while [ $? -eq 0 ]
+		do
+			kubectl get pod ${pod} | grep Pending > /dev/null 2>&1
+		done
+		sudo docker exec $(sudo docker ps | grep $pod | grep init | awk '{print $1}') /usr/bin/puppet agent -t
+		if [[ $? > 2 ]]; then
+			echo "${pod} puppet run failed"
+			return $?
+		fi
+	done
+}
+
+# commit the OS docker containers and push them to the registry
+cluster_pod_push() {
+	for pod in mysql $OS_PODS
+	do
+		id=$(sudo docker ps | grep init | grep keystone | awk '{print $1}')
+		docker_img=$DOCKER_REGISTRY/$pod:latest
+		sudo docker commit $id $docker_img
+		sudo docker push $docker_img
+		if [ $? -ne 0 ]; then
+			return $?
+		fi
+	done
+}
+
+# install required centos dependencies
 centos_install() {
 	echo "installing dependencies for centos..."
 	sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
@@ -177,8 +229,16 @@ case "$1" in
 		cluster_restart
 		exit $?
 		;;
-	'launch')
-		cluster_pod_start
+	'rebuild')
+		cluster_pod_rebuild
+		exit $?
+		;;
+	'latest')
+		cluster_pod_latest
+		exit $?
+		;;
+	'push')
+		cluster_pod_push
 		exit $?
 		;;
 	'cleanup')
@@ -196,7 +256,9 @@ Helper to handle a CERN openstack dev workspace.
 COMMAND can be one of:
   prepare  Prepare the dev workspace (fetch kubernetes, puppet modules, ...)
   restart  Cleanup any running containers and recreate the base containers (skydns, puppet, controller)
-  launch   Rebuild each of the openstack containers from scratch (full puppet run)
+  rebuild  Rebuild each of the openstack containers from scratch (full puppet run)
+  latest   Launch new openstack containers using the 'latest' image (and run puppet after for update)
+  push     (done by CI only) Push the current OS containers as the new 'latest' in the docker registry
   cleanup  Cleanup any running containers so we get a clean set
   centos   Install required dependencies for CentOS
 
