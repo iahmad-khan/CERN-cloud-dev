@@ -65,6 +65,10 @@ First prepare your development environment (you only need to do this once):
 export CLOUDDEV=~/ws/cloud-dev
 export CLOUDDEV_PUPPET=~/ws/cloud-dev/cern-puppet
 export CLOUDDEV_KUB=~/ws/cloud-dev/kubernetes
+
+cd ~/ws
+git clone ssh://git@gitlab.cern.ch:7999/cloud-infrastructure/cloud-dev.git
+cd cloud-dev/scripts
 ./cci-dev prepare
 ```
 
