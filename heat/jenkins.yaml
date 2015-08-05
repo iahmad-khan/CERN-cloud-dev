@@ -62,10 +62,11 @@ resources:
             chmod 400 /var/lib/jenkins/.ssh/id_rsa
             echo 'pubkey' > /var/lib/jenkins/.ssh/id_rsa.pub
             mkdir -p /var/lib/jenkins/plugins
-            wget -O /var/lib/jenkins/plugins/swarm.jpi http://updates.jenkins-ci.org/latest/swarm.hpi || true
-            wget -O /var/lib/jenkins/plugins/git-client.jpi http://updates.jenkins-ci.org/latest/git-client.hpi || true
+            wget -O /var/lib/jenkins/plugins/ansicolor.jpi http://updates.jenkins-ci.org/latest/ansicolor.hpi || true
             wget -O /var/lib/jenkins/plugins/git.jpi http://updates.jenkins-ci.org/latest/git.hpi || true
+            wget -O /var/lib/jenkins/plugins/git-client.jpi http://updates.jenkins-ci.org/latest/git-client.hpi || true
             wget -O /var/lib/jenkins/plugins/scm-api.jpi http://updates.jenkins-ci.org/latest/scm-api.hpi || true
+            wget -O /var/lib/jenkins/plugins/swarm.jpi http://updates.jenkins-ci.org/latest/swarm.hpi || true
             chown -R jenkins.jenkins /var/lib/jenkins
             chkconfig jenkins on
             systemctl start jenkins
@@ -123,34 +124,6 @@ resources:
       auto_scaling_group_id: { get_resource: slavesgroup }
       cooldown: 600
       scaling_adjustment: -1
-
-  cpu_alarm_high:
-    type: OS::Ceilometer::Alarm
-    properties:
-      description: Scale-up if the average CPU > 10% for 10 minutes
-      meter_name: cpu_util
-      statistic: avg
-      period: 600
-      evaluation_periods: 1
-      threshold: 10
-      alarm_actions:
-        - {get_attr: [slave_scaleup_policy, alarm_url]}
-      matching_metadata: {'metadata.user_metadata.stack': {get_param: "OS::stack_id"}}
-      comparison_operator: gt
-
-  cpu_alarm_low:
-    type: OS::Ceilometer::Alarm
-    properties:
-      description: Scale-down if the average CPU < 5% for 10 minutes
-      meter_name: cpu_util
-      statistic: avg
-      period: 600
-      evaluation_periods: 1
-      threshold: 5
-      alarm_actions:
-        - {get_attr: [slave_scaledown_policy, alarm_url]}
-      matching_metadata: {'metadata.user_metadata.stack': {get_param: "OS::stack_id"}}
-      comparison_operator: lt
 
 outputs:
   scale_up_url:

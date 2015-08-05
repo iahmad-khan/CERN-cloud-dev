@@ -42,7 +42,7 @@ resources:
           template: |
             #!/bin/sh
             echo 'pubkey' >> /root/.ssh/authorized_keys
-            yum install -y java-openjdk
+            yum install -y java-openjdk git
             curl -O http://maven.jenkins-ci.org/content/repositories/releases/org/jenkins-ci/plugins/swarm-client/1.26/swarm-client-1.26-jar-with-dependencies.jar
             java -jar swarm-client-1.26-jar-with-dependencies.jar -master http://master_ip:8080/ &
           params:

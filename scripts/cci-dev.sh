@@ -209,7 +209,7 @@ cluster_pod_push() {
 centos_install() {
 	echo "installing dependencies for centos..."
 	sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
-	sudo yum install -y wget git vim docker etcd golang patch psmisc patch git
+	sudo yum install -y wget git vim docker etcd golang patch psmisc
 	sed -i "s/^# INSECURE_REGISTRY.*/INSECURE_REGISTRY='--insecure-registry docker-reg.cern.ch:5000'/g" /etc/sysconfig/docker
 	# launch docker (for some reason the systemd init script is failing right now)
 	if ! sudo docker ps > /dev/null 2>&1; then
