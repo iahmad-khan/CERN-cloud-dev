@@ -19,6 +19,8 @@ Basic knowledge of kubernetes (what is a pod, what is a service, ...).
 
 If you're in CentOS 7, the following command should help you (we use it in the CI setup):
 ```
+cd ~/ws
+git clone ssh://git@gitlab.cern.ch:7999/cloud-infrastructure/cloud-dev.git
 cd scripts
 ./cci-dev.sh centos
 ```
