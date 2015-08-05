@@ -75,7 +75,7 @@ cd cloud-dev/scripts
 After this you'll be relaunching the containers from scratch quite often:
 ```
 ./cci-dev restart
-./cci-dev latest
+./cci-dev rebuild
 ```
 
 Once you've done this you can *login* to a container, and run the usual commands:
