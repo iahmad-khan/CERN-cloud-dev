@@ -268,8 +268,8 @@ COMMAND can be one of:
 
 Required environment settings:
 export CLOUDDEV=~/ws/cloud-dev
-export CLOUDDEV_PUPPET=~/ws/cloud-dev/cern-puppet
-export CLOUDDEV_KUB=~/ws/cloud-dev/kubernetes
+export CLOUDDEV_PUPPET=~/ws/cern-puppet
+export CLOUDDEV_KUB=~/ws/kubernetes
 "
 		exit 1
 		;;
