@@ -1,18 +1,3 @@
-## Table of Contents
-
-**[Overview](#overview)**
-
-**[Requirements](#requirements)**
-
-**[Setup](#setup)**
-
-**[Quick Start](#quick-start)**
-
-* [Start from latest](#start-from-latest)
-* [Build node from scratch](#build-node-from-scratch)
-
-**[Common Operations](#common-operations)**
-
 ## Overview
 
 Goals:
@@ -32,80 +17,81 @@ Basic knowledge of kubernetes (what is a pod, what is a service, ...).
 
 ## Setup
 
-Soon.
+If you're in CentOS 7, the following command should help you (we use it in the CI setup):
+```
+cd scripts
+./cci-dev.sh centos
+```
+
+Otherwise here are the detailed steps:
+```
+sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
+sudo yum install -y wget git vim docker etcd golang patch psmisc
+sed -i "s/^# INSECURE_REGISTRY.*/INSECURE_REGISTRY='--insecure-registry docker-reg.cern.ch:5000'/g" /etc/sysconfig/docker
+systemctl restart docker
+```
 
 ## Quick Start
 
+There are 3 relevant locations in the workspace:
+* CLOUDDEV is where you clone the cloud-dev repo
+* CLOUDDEV_PUPPET is the directory where the CERN puppet modules will be cloned
+* CLOUDDEV_KUB is where the kubernetes installation will be placed
+
+The script *scripts/cci-dev.sh* should help with the setup commands.
+
 ```
-./start.sh
-kubectl.sh get pod
-POD              IP             CONTAINER(S)   IMAGE(S)                                         HOST                  LABELS                                                STATUS    CREATED      MESSAGE
-ceph                                                                                            127.0.0.1/127.0.0.1   name=ceph                                             Running   26 minutes   
-                                cephall        docker-reg.cern.ch:5000/cephdemo                                                                                             Running   26 minutes   
-controller       172.17.0.206                                                                   127.0.0.1/127.0.0.1   name=controller                                       Running   26 minutes   
-                                rabbitmq       rabbitmq                                                                                                                     Running   26 minutes   
-                                mysql          mysql                                                                                                                        Running   26 minutes   
-                                ldap           docker-reg.cern.ch:5000/ldap                                                                                                 Running   26 minutes   
-puppet           172.17.0.205                                                                   127.0.0.1/127.0.0.1   name=puppet                                           Running   26 minutes   
-                                puppetdb       docker-reg.cern.ch:5000/puppetdb                                                                                             Running   25 minutes   
-                                puppetmaster   docker-reg.cern.ch:5000/puppetmaster:latest                                                                                  Running   25 minutes   
-                                teigi          docker-reg.cern.ch:5000/teigi                                                                                                Running   25 minutes   
-kube-dns-ywmmu   172.17.0.207                                                                   127.0.0.1/127.0.0.1   k8s-app=kube-dns,kubernetes.io/cluster-service=true   Running   26 minutes   
-                                skydns         gcr.io/google_containers/skydns:2015-03-11-001                                                                               Running   26 minutes   
-                                etcd           gcr.io/google_containers/etcd:2.0.9                                                                                          Running   26 minutes   
-                                kube2sky       gcr.io/google_containers/kube2sky:1.3                                                                                        Running   26 minutes   
+cloud-dev/scripts$ ./cci-dev.sh 
+Usage: cci-dev COMMAND
+Helper to handle a CERN openstack dev workspace.
+
+COMMAND can be one of:
+  prepare  Prepare the dev workspace (fetch kubernetes, puppet modules, ...)
+  restart  Cleanup any running containers and recreate the base containers (skydns, puppet, controller)
+  rebuild  Rebuild each of the openstack containers from scratch (full puppet run)
+  latest   Launch new openstack containers using the 'latest' image (and run puppet after for update)
+  push     (done by CI only) Push the current OS containers as the new 'latest' in the docker registry
+  cleanup  Cleanup any running containers so we get a clean set
+  centos   Install required dependencies for CentOS
+
+Required environment settings:
+export CLOUDDEV=~/ws/cloud-dev
+export CLOUDDEV_PUPPET=~/ws/cloud-dev/cern-puppet
+export CLOUDDEV_KUB=~/ws/cloud-dev/kubernetes
 ```
 
-As we cannot control the IPs containers get, we rely on kubernetes 'services' and the built-in DNS service, so we can reference each 'pod' by its name as its hostname.
+First prepare your development environment (you only need to do this once):
 ```
-kubectl.sh get service
-
-NAME            LABELS                                                              SELECTOR           IP(S)        PORT(S)
-controller      name=controller                                                     name=controller    10.0.0.123   3306/TCP
-                                                                                                                    389/TCP
-kube-dns        k8s-app=kube-dns,kubernetes.io/cluster-service=true,name=kube-dns   k8s-app=kube-dns   10.0.0.10    53/UDP
-                                                                                                                    53/TCP
-kubernetes      component=apiserver,provider=kubernetes                             <none>             10.0.0.2     443/TCP
-kubernetes-ro   component=apiserver,provider=kubernetes                             <none>             10.0.0.1     80/TCP
-puppet          name=puppet                                                         name=puppet        10.0.0.233   8140/TCP
+export CLOUDDEV=~/ws/cloud-dev
+export CLOUDDEV_PUPPET=~/ws/cloud-dev/cern-puppet
+export CLOUDDEV_KUB=~/ws/cloud-dev/kubernetes
+./cci-dev prepare
 ```
 
-With all the required basic infrastructure set, you can now either start from the 'latest' pre-built image for all nodes, or build nodes from scratch.
-
-### Start from latest
-
-This is the most common use case. You want to quickly get an environment that allows you to work on any of the services.
+After this you'll be relaunching the containers from scratch quite often:
 ```
-cd kubernetes
-./latest.sh
+./cci-dev restart
+./cci-dev latest
 ```
 
-You can then go ahead with changes in your local puppet manifests, and then run puppet in the corresponding node:
+Once you've done this you can *login* to a container, and run the usual commands:
 ```
-kubectl.sh exec -it -p keystone -c keystone /bin/bash
-puppet agent -t
+kubectl exec -it -p keystone -c keystone -- /bin/bash
+[root@keystone /]# puppet agent -t
 ```
 
-### Build node from scratch
+Whatever changes you do to the puppet modules in CLOUDDEV_PUPPET are seen immediately.
 
-You want to test a node builds properly from scratch (example for keystone):
-```
-cd kubernetes
-kubectl.sh create -f keystone-pod.yaml
-kubectl.sh create -f keystone-svc.yaml
-kubectl.sh exec -it -p keystone -p keystone /bin/bash
-puppet agent -t
-```
 
 ### Test the environment
 
 Let's try to create an image in glance, the client is available in the glance pod/container:
 ```
 kubectl.sh exec -it -p glance -c glance -- /bin/bash
-. root/openrc
-wget http://download.cirros-cloud.net/0.3.3/cirros-0.3.3-x86_64-disk.img
-glance image-create --name cirros --disk-format aki --file cirros-0.3.3-x86_64-disk.img
-glance image-list   
+[root@glance /]# . root/openrc
+[root@glance /]# wget http://download.cirros-cloud.net/0.3.3/cirros-0.3.3-x86_64-disk.img
+[root@glance /]# glance image-create --name cirros --disk-format aki --file cirros-0.3.3-x86_64-disk.img
+[root@glance /]# glance image-list
 +--------------------------------------+--------+-------------+------------------+----------+--------+
 | ID                                   | Name   | Disk Format | Container Format | Size     | Status |
 +--------------------------------------+--------+-------------+------------------+----------+--------+
@@ -113,10 +99,10 @@ glance image-list
 +--------------------------------------+--------+-------------+------------------+----------+--------+
 ```
 
-As an exercise let's check the data is actually in our local ceph container:
+And check the data is actually in our local ceph container:
 ```
 kubectl.sh exec -it -p ceph -c cephall -- /bin/bash
-rados ls -p images
+root@ /# rados ls -p images
 rbd_data.10155d46d745.0000000000000001
 rbd_directory
 rbd_id.64a34d63-0f85-4fad-9324-ee58b62d9868
@@ -126,19 +112,14 @@ rbd_header.10155d46d745
 
 ## Common Operations
 
-### Cleanup and rebuilt the environment
-```
-cd kubernetes
-./cleanup.sh
-./start.sh
-```
-
 ### Redeploy the jenkins master
 
-If for some reason the jenkins master VM becomes unavailable and you need to redeploy, just recreate the stack:
+Jenkins resources are held under the *Cloud CI* tenant.
+
+There should be a volume name jenkins-config already holding the master configuration.
+
+You can confidently recreate the heat stack as the configuration is kept persistent in the volume:
 ```
-cd heat
+cd $CLOUDDEV/heat
 heat stack-create cci-jenkins -f jenkins.yaml -e jenkins-env-clouddev.yaml
 ```
-
-The environment file holds the ID of the volume where all the jenkins master config is kept persistenly, so the jobs and even the build history will still be there.
