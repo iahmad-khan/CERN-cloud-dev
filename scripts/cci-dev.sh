@@ -110,6 +110,12 @@ cluster_pod_base_start() {
 	kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 auth add client.volumes -i /etc/ceph/ceph.client.volumes.keyring
 	kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 osd pool create images 64
 	kubectl exec -it -p ceph -c cephall -- /usr/bin/ceph --connect-timeout 10 osd pool create volumes 64
+
+	echo "waiting for puppetdb to start..."
+	while ! kubectl.sh exec -p puppet -c puppetdb -- grep 'Finished database' /var/log/puppetdb/puppetdb.log > /dev/null 2>&1
+	do
+		sleep 2
+	done
 	return $?
 }
 
@@ -184,7 +190,21 @@ case "$1" in
 		exit $?
 		;;
 	*)
-		echo "Specify one of prepare, restart, launch, cleanup, centos"
+		echo "Usage: cci-dev COMMAND
+Helper to handle a CERN openstack dev workspace.
+
+COMMAND can be one of:
+  prepare  Prepare the dev workspace (fetch kubernetes, puppet modules, ...)
+  restart  Cleanup any running containers and recreate the base containers (skydns, puppet, controller)
+  launch   Rebuild each of the openstack containers from scratch (full puppet run)
+  cleanup  Cleanup any running containers so we get a clean set
+  centos   Install required dependencies for CentOS
+
+Required environment settings:
+export CLOUDDEV=~/ws/cloud-dev
+export CLOUDDEV_PUPPET=~/ws/cloud-dev/cern-puppet
+export CLOUDDEV_KUB=~/ws/cloud-dev/kubernetes
+"
 		exit 1
 		;;
 esac
