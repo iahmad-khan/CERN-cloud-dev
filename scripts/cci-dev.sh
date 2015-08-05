@@ -170,10 +170,14 @@ cluster_pod_latest() {
 	cd $CLOUDDEV/kubernetes
 	for pod in $OS_PODS
 	do
-		sed -e "s/puppetagent:latest/${c}/g" ${pod}-pod.yaml > /tmp/${pod}-pod.yaml
+		echo "creating pod ${pod}..."
+		sed -e "s/puppetagent:latest/${pod}/g" ${pod}-pod.yaml > /tmp/${pod}-pod.yaml
 		kubectl create -f /tmp/${pod}-pod.yaml
 		kubectl create -f ${pod}-svc.yaml
-
+	done
+	for pod in $OS_PODS
+	do
+		echo "waiting for ${pod} pod to be ready to run puppet..."
 		kubectl get pod ${pod} | grep Pending > /dev/null 2>&1
 		while [ $? -eq 0 ]
 		do
@@ -205,7 +209,7 @@ cluster_pod_push() {
 centos_install() {
 	echo "installing dependencies for centos..."
 	sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
-	sudo yum install -y wget git vim docker etcd golang patch psmisc
+	sudo yum install -y wget git vim docker etcd golang patch psmisc patch git
 	sed -i "s/^# INSECURE_REGISTRY.*/INSECURE_REGISTRY='--insecure-registry docker-reg.cern.ch:5000'/g" /etc/sysconfig/docker
 	# launch docker (for some reason the systemd init script is failing right now)
 	if ! sudo docker ps > /dev/null 2>&1; then
@@ -216,10 +220,10 @@ centos_install() {
 
 case "$1" in
 	'prepare')
-		sudo rm /opt/cloud-dev
+		sudo rm -f /opt/cloud-dev
 		sudo ln -s $CLOUDDEV /opt/cloud-dev
 		puppet_manifest_checkout
-		sudo rm /opt/puppet-modules
+		sudo rm -f /opt/puppet-modules
 		sudo ln -s $CLOUDDEV_PUPPET /opt/puppet-modules
 		kubernetes_install
 		kubernetes_start
