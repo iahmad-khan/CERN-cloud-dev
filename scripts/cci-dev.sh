@@ -118,7 +118,7 @@ cluster_pod_base_start() {
 	kubectl exec -it -p ceph -c cephall -- HOME=/ /usr/bin/ceph --connect-timeout 10 osd pool create volumes 64
 
 	echo "waiting for puppetdb to start..."
-	while ! kubectl.sh exec -p puppet -c puppetdb -- grep 'Finished database' /var/log/puppetdb/puppetdb.log > /dev/null 2>&1
+	while ! kubectl exec -p puppet -c puppetdb -- grep 'Finished database' /var/log/puppetdb/puppetdb.log > /dev/null 2>&1
 	do
 		sleep 2
 	done
