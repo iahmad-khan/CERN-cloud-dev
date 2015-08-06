@@ -24,7 +24,7 @@ PUPPET_MODULES="abrt apache:upstream_150 cernlib cinder cloud_common cloud_monit
 PUPPET_HOSTGROUPS="cloud_adm cloud_blockstorage cloud_identity cloud_image"
 
 # OS_PODS holds the list of pods to be started on 'launch'
-OS_PODS=${OS_PODS:-keystone glance}
+OS_PODS=${OS_PODS:-keystone glance cinder}
 
 # docker registry to push container images to (see push)
 DOCKER_REGISTRY=${DOCKER_REGISTRY:-docker-reg.cern.ch:5000}

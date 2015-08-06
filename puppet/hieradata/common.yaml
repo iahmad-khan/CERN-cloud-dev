@@ -37,6 +37,15 @@ cinder_use_syslog: false
 cinder_log_facility: 'LOG_USER'
 cinder_log_dir: '/var/log/cinder'
 cinder_verbose: false
+cinder_critical_iscsi01_volume_backend_name: 'NETAPP_CRITICAL'
+cinder_critical_iscsi01_netapp_storage_family: 'ontap_cluster'
+cinder_critical_iscsi01_netapp_vserver: 'vs2rac51'
+cinder_critical_iscsi01_netapp_storage_protocol: 'iscsi'
+cinder_critical_iscsi01_netapp_server_hostname: ''
+cinder_critical_iscsi01_netapp_server_port: '443'
+cinder_critical_iscsi01_netapp_size_multiplier: '1.0'
+cinder_critical_iscsi01_netapp_transport_type: 'https'
+cinder_critical_iscsi01_netapp_login: 'cinder'
 cinder_debug: true
 
 cinder_api_keystone_enabled: true

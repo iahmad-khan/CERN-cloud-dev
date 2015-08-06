@@ -11,5 +11,8 @@
         "ceph_client_volumes_keyring": "[client.volumes]\n\tkey = AQArZa5VqkPjOhAAXxRwNIXXN9jxnzrC8zxnEA==\n\tcaps mon = allow r\n\tcaps osd = allow *",
         "cinder_keystone_password": "123456",
         "cinder_rabbit_password": "guest",
-        "cinder_database_connection": "mysql://cinder:123456@controller/cinder"
+        "cinder_database_connection": "mysql://cinder:123456@controller/cinder",
+        "cinder_critical_iscsi01_netapp_password": "123456",
+        "cinder_critical_iscsi01_netapp_sa_password": "123456"
+
 }
