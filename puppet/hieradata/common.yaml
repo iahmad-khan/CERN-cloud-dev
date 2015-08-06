@@ -30,6 +30,7 @@ cinder_qpid_heartbeat: 60
 cinder_qpid_protocol: 'tcp'
 cinder_qpid_tcp_nodelay: true
 cinder_package_ensure: 'present'
+cinder_state_path: '/var/lib/cinder'
 cinder_api_paste_config: '/etc/cinder/api-paste.ini'
 cinder_use_syslog: false
 cinder_log_facility: 'LOG_USER'
