@@ -4,6 +4,26 @@ node default {
 
   include osrepos::params
 
+  package { 'initscripts':
+    ensure => present,
+  }
+  ->
+  service { 'firewalld':
+    enable => false,
+    ensure => stopped,
+  }
+  ->
+  package { 'iptables-services':
+    ensure => present,
+  }
+  ->
+  service { 'iptables':
+    enable => true,
+    ensure => running,
+  }
+  ->
+  Firewall<||>
+
 }
 
 node /.*keystone.*/ inherits default {
