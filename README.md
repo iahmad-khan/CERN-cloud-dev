@@ -116,6 +116,18 @@ rbd_data.10155d46d745.0000000000000000
 rbd_header.10155d46d745
 ```
 
+## Tempest
+
+The client node gets a tempest checkout in /tempest. You can use cci-dev.sh to run the tests (uses config in cloud-dev/tempest):
+```
+cd scripts
+./cci-dev.sh tempest
+...
+```
+
+The list of tests enabled is in cloud-dev/tempest/tempest.list.
+
+
 ## Common Operations
 
 ### Redeploy the jenkins master
@@ -129,3 +141,12 @@ You can confidently recreate the heat stack as the configuration is kept persist
 cd $CLOUDDEV/heat
 heat stack-create cci-jenkins -f jenkins.yaml -e jenkins-env-clouddev.yaml
 ```
+
+### Jenkins / Gitlab integration
+
+Same recipe as in:
+http://jenkinsdocs.web.cern.ch/jenkinsdocs/chapters/demos/jenkinsdocs-build.html
+
+and:
+http://jenkinsdocs.web.cern.ch/jenkinsdocs/chapters/revision-control-systems/git/gitlab.html
+

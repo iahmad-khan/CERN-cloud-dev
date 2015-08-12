@@ -224,6 +224,14 @@ exit_on_err() {
 	fi
 }
 
+# run tempest tests against the dev setup
+tempest_run() {
+	echo "running tempest tests..."
+	sudo docker exec $(sudo docker ps | grep client | grep init | awk '{print $1}') /etc/tempest/run.sh
+	exit_on_err $?
+
+}
+
 case "$1" in
 	'prepare')
 		sudo rm -f /opt/cloud-dev
@@ -252,6 +260,10 @@ case "$1" in
 	'centos')
 		centos_install
 		;;
+	'tempest')
+		tempest_run
+		exit $?
+		;;
 	*)
 		echo "Usage: cci-dev COMMAND
 Helper to handle a CERN openstack dev workspace.
@@ -264,6 +276,7 @@ COMMAND can be one of:
   push     (done by CI only) Push the current OS containers as the new 'latest' in the docker registry
   cleanup  Cleanup any running containers so we get a clean set
   centos   Install required dependencies for CentOS
+  tempest  Run tempest tests against the dev environment
 
 Required environment settings:
 export CLOUDDEV=~/ws/cloud-dev

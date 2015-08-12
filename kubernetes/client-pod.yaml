@@ -16,6 +16,8 @@ spec:
           mountPath: /var/lib/puppet/ssl
         - name: factercfg
           mountPath: /etc/facter
+        - name: tempestcfg
+          mountPath: /etc/tempest
       command:
         - /usr/sbin/init
   volumes:
@@ -28,3 +30,6 @@ spec:
     - name: factercfg
       hostPath:
         path: /opt/cloud-dev/facter
+    - name: tempestcfg
+      hostPath:
+        path: /opt/cloud-dev/tempest

@@ -68,3 +68,29 @@ objectClass: person
 objectClass: organizationalPerson
 objectClass: inetOrgPerson
 #objectClass: user
+
+dn: cn=tempest1,ou=users,dc=default,dc=kubdomain,dc=local
+userPassword: 123456
+givenName: Tempest1
+sn: User
+cn: tempest1
+mail: tempest1@default.kubdomain.local
+#tokenGroups: : AQUAAB6wIz8MzFhlGye7AJ8fBEyN8BOjA4tWHg=
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+#objectClass: user
+
+dn: cn=tempest2,ou=users,dc=default,dc=kubdomain,dc=local
+userPassword: 123456
+givenName: Admin
+sn: User
+cn: tempest2
+mail: tempest2@default.kubdomain.local
+#tokenGroups: : AQUAAB6wIz8MzFhlGye7AJ8fBEyN8BOjA4tWHg=
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+#objectClass: user
