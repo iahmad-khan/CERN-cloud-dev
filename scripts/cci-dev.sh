@@ -77,7 +77,7 @@ kubernetes_install() {
 	mv kubernetes-0.17.1/* .
 	rm -rf kubernetes-0.17.1
 	patch -s -p0 $CLOUDDEV_KUB/hack/local-up-cluster.sh < $CLOUDDEV/kubernetes/local-cluster.patch
-	return $?
+	exit_on_err $?
 }
 
 # start the kubernetes cluster
@@ -91,8 +91,9 @@ kubernetes_start() {
 	do
 		sleep 5
 	done
+	exit_on_err $?
 	sudo chown -R $USER $CLOUDDEV_KUB
-	return $?
+	exit_on_err $?
 }
 
 # start the base cluster pods
@@ -122,7 +123,7 @@ cluster_pod_base_start() {
 	do
 		sleep 2
 	done
-	return $?
+	exit_on_err $?
 }
 
 # start with a clean runtime
@@ -130,14 +131,14 @@ cluster_cleanup() {
 	echo "cleaning up any kubernetes or docker leftovers..."
 	sudo killall -9 kube-apiserver kube-controller-manager kube-proxy kube-scheduler kubelet etcd > /dev/null 2>&1
 	sudo docker ps --all | awk '{print $1}' | xargs sudo docker rm -f > /dev/null 2>&1
-	return $?
 }
 
 # start the base cluster
 cluster_restart() {
 	kubernetes_start
+	exit_on_err $?
 	cluster_pod_base_start
-	return $?
+	exit_on_err $?
 }
 
 # trigger a full rebuild of all OS pods
@@ -161,10 +162,9 @@ cluster_pod_rebuild() {
 		# run puppet on pod
 		sudo docker exec $(sudo docker ps | grep $pod | grep init | awk '{print $1}') /usr/bin/puppet agent -t
 		if [[ $? > 2  ]]; then
-			return $?
+			exit_on_err 1
 		fi
 	done
-	return $?
 }
 
 # Relaunch all OS pods using the 'latest' image
@@ -186,10 +186,7 @@ cluster_pod_latest() {
 			kubectl get pod ${pod} | grep Pending > /dev/null 2>&1
 		done
 		sudo docker exec $(sudo docker ps | grep $pod | grep init | awk '{print $1}') /usr/bin/puppet agent -t
-		if [[ $? > 2 ]]; then
-			echo "${pod} puppet run failed"
-			return $?
-		fi
+		exit_on_err $?
 	done
 }
 
@@ -200,10 +197,9 @@ cluster_pod_push() {
 		id=$(sudo docker ps | grep init | grep keystone | awk '{print $1}')
 		docker_img=$DOCKER_REGISTRY/$pod:latest
 		sudo docker commit $id $docker_img
+		exit_on_err $?
 		sudo docker push $docker_img
-		if [ $? -ne 0 ]; then
-			return $?
-		fi
+		exit_on_err $?
 	done
 }
 
@@ -212,12 +208,20 @@ centos_install() {
 	echo "installing dependencies for centos..."
 	sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
 	sudo yum install -y wget git vim docker etcd golang patch psmisc
+	exit_on_err $?
 	sed -i "s/^# INSECURE_REGISTRY.*/INSECURE_REGISTRY='--insecure-registry docker-reg.cern.ch:5000'/g" /etc/sysconfig/docker
 	# launch docker (for some reason the systemd init script is failing right now)
 	if ! sudo docker ps > /dev/null 2>&1; then
 		sudo docker -d --insecure-registry docker-reg.cern.ch:5000 > /tmp/docker.log 2>&1 &
+		exit_on_err $?
 	fi
-	return $?
+
+}
+
+exit_on_err() {
+	if [[ $1 != 0 ]]; then
+		exit $1
+	fi
 }
 
 case "$1" in
@@ -229,31 +233,24 @@ case "$1" in
 		sudo ln -s $CLOUDDEV_PUPPET /opt/puppet-modules
 		kubernetes_install
 		kubernetes_start
-		exit $?
 		;;
 	'restart')
 		cluster_restart
-		exit $?
 		;;
 	'rebuild')
 		cluster_pod_rebuild
-		exit $?
 		;;
 	'latest')
 		cluster_pod_latest
-		exit $?
 		;;
 	'push')
 		cluster_pod_push
-		exit $?
 		;;
 	'cleanup')
 		cluster_cleanup
-		exit $?
 		;;
 	'centos')
 		centos_install
-		exit $?
 		;;
 	*)
 		echo "Usage: cci-dev COMMAND
