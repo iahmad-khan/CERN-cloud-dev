@@ -1,6 +1,7 @@
 roger_server: puppet
 flume_agent_enable: false
 teigi_ssl_port: 8082
+tellme_enable: false
 
 # cloud_blockstorage
 cinder_api_port: '8776'
