@@ -18,7 +18,7 @@ fi
 export PATH=$PATH:$CLOUDDEV_KUB/_output/local/go/bin
 
 # PUPPET_MODULES holds the list of module dependencies that we need to run the build
-PUPPET_MODULES="abrt apache:upstream_150 cernlib cinder cloud_common cloud_monitoring concat firewall flume glance inifile kerberos keystone lemon limits logrotate motd mysql openstack_clients osrepos psacct puppet puppetdbquery stdlib teigi:tbag_teigiurl"
+PUPPET_MODULES="abrt apache:upstream_150 cernlib cinder cloud_common:hiera-tellme-enable cloud_monitoring concat firewall flume glance inifile kerberos keystone lemon limits logrotate motd mysql openstack_clients osrepos psacct puppet puppetdbquery stdlib teigi:tbag_teigiurl"
 
 # PUPPET_HOSTGROUPS holds the list of hostgroups we need to run the build(s)
 PUPPET_HOSTGROUPS="cloud_adm cloud_blockstorage cloud_identity cloud_image"
