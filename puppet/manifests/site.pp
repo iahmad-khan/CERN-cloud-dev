@@ -8,6 +8,10 @@ node default {
     ensure => present,
   }
   ->
+  package { 'policycoreutils':
+    ensure => present,
+  }
+  ->
   service { 'firewalld':
     enable => false,
     ensure => stopped,
@@ -34,10 +38,10 @@ node /.*keystone.*/ inherits default {
   package {'python-dateutil':
     ensure => 'present',
   }
-  -> 
+  ->
   package {'mariadb':
     ensure => 'present',
-  } 
+  }
   ~>
   exec {'create-keystone-db':
     command     => "/usr/bin/mysql -u root -h controller -p123456 -e \"create database keystone CHARACTER SET utf8 COLLATE utf8_general_ci; grant all privileges on keystone.* to 'keystone'@'%' identified by '123456';\" || true",
@@ -130,21 +134,21 @@ node /.*glance.*/ inherits default {
 
   package {'mariadb':
     ensure => 'present',
-  } 
+  }
   ~>
   exec {'create-glance-db':
     command     => "/usr/bin/mysql -u root -h controller -p123456 -e \"create database glance CHARACTER SET utf8 COLLATE utf8_general_ci; grant all privileges on glance.* to 'glance'@'%' identified by '123456';\" || true",
     environment => 'TERM=xterm',
     refreshonly => true,
   }
-  ~> 
+  ~>
   Package['openstack-glance']
   ~>
   file { '/var/log/glance/api.log':
     ensure => present,
     owner  => 'glance',
     group  => 'glance',
-    mode   => 0644,
+    mode   => '0644',
   }
   ->
   Glance_api_config <||>
@@ -177,14 +181,14 @@ node /.*cinder.*/ inherits default {
 
   package {'mariadb':
     ensure => 'present',
-  } 
+  }
   ~>
   exec {'create-cinder-db':
     command     => "/usr/bin/mysql -u root -h controller -p123456 -e \"create database cinder CHARACTER SET utf8 COLLATE utf8_general_ci; grant all privileges on cinder.* to 'cinder'@'%' identified by '123456';\" || true",
     environment => 'TERM=xterm',
     refreshonly => true,
   }
-  ~> 
+  ~>
   Package['openstack-cinder']
   ->
   Teigi::Secret<||>
@@ -219,6 +223,10 @@ node /.*client.*/ inherits default {
   class { 'hg_cloud_adm': }
   ->
   class { 'hg_cloud_adm::client::linux': }
+
+  Osrepos::Ai121yumrepo['cci7-utils']
+  ->
+  Package['cci-tools']
 
 }
 
