@@ -98,10 +98,10 @@ kubernetes_start() {
 
 # start the base cluster pods
 cluster_pod_base_start() {
-	echo "starting the base pods (skydns, puppet, controller, ceph)"
+	echo "starting the base pods (skydns, puppet, ceph)"
 	# launch the pods
 	cd $CLOUDDEV/kubernetes
-	for z in dns-hack.json skydns-rc.yaml skydns-svc.yaml puppet-pod.yaml puppet-svc.yaml controller-pod.yaml controller-svc.yaml ceph-pod.yaml; do
+	for z in dns-hack.json skydns-rc.yaml skydns-svc.yaml puppet-pod.yaml puppet-svc.yaml ceph-pod.yaml; do
 		kubectl create -f $z
 	done
 
@@ -141,15 +141,31 @@ cluster_restart() {
 	exit_on_err $?
 }
 
-# trigger a full rebuild of all OS pods
-cluster_pod_rebuild() {
-	cd $CLOUDDEV/kubernetes
-	for pod in $OS_PODS
+# launch the openstack and controller pods
+cluster_pod_launch() {
+	# need some regexp magic when launching a specific tag
+	if [ ! -z $1 ]; then
+		echo "launching pods using tag '$1'..."
+		sed "/image:.*mysql/ s/\$/:$1/" $CLOUDDEV/kubernetes/controller-pod.yaml > /tmp/controller-pod.yaml
+		for pod in $OS_PODS
+		do
+			sed -e "s/puppetagent:latest/${pod}:$1/g" $CLOUDDEV/kubernetes/${pod}-pod.yaml > /tmp/${pod}-pod.yaml
+		done
+	else
+		echo "lanching pods using a full puppet run...."
+		cp $CLOUDDEV/kubernetes/controller-pod.yaml /tmp
+		for pod in $OS_PODS
+		do
+			cp $CLOUDDEV/kubernetes/${pod}-pod.yaml /tmp
+		done
+	fi
+	# we can now launch the pods
+	for pod in controller $OS_PODS
 	do
 		echo "creating pod ${pod}..."
-		kubectl create -f ${pod}-pod.yaml
-		if [ -e ${pod}-svc.yaml ]; then
-			kubectl create -f ${pod}-svc.yaml
+		kubectl create -f /tmp/${pod}-pod.yaml
+		if [ -e $CLOUDDEV/kubernetes/${pod}-svc.yaml ]; then
+			kubectl create -f $CLOUDDEV/kubernetes/${pod}-svc.yaml
 		fi
 	done
 	echo "waiting for pods to be ready..."
@@ -157,6 +173,7 @@ cluster_pod_rebuild() {
 	do
 		sleep 2
 	done
+	# run puppet in the openstack pods, even if built from tag
 	for pod in $OS_PODS
 	do
 		# run puppet on pod
@@ -167,39 +184,38 @@ cluster_pod_rebuild() {
 	done
 }
 
-# Relaunch all OS pods using the 'latest' image
-cluster_pod_latest() {
-	cd $CLOUDDEV/kubernetes
-	for pod in $OS_PODS
+# commit the OS docker containers and tag them
+cluster_pod_tag() {
+	containers="mysql $OS_PODS"
+	for container in $containers
 	do
-		echo "creating pod ${pod}..."
-		sed -e "s/puppetagent:latest/${pod}/g" ${pod}-pod.yaml > /tmp/${pod}-pod.yaml
-		kubectl create -f /tmp/${pod}-pod.yaml
-		kubectl create -f ${pod}-svc.yaml
-	done
-	for pod in $OS_PODS
-	do
-		echo "waiting for ${pod} pod to be ready to run puppet..."
-		kubectl get pod ${pod} | grep Pending > /dev/null 2>&1
-		while [ $? -eq 0 ]
-		do
-			kubectl get pod ${pod} | grep Pending > /dev/null 2>&1
-		done
-		sudo docker exec $(sudo docker ps | grep $pod | grep init | awk '{print $1}') /usr/bin/puppet agent -t
+		cid=$(sudo docker ps | grep init | grep $container | awk '{print $1}')
+		if [ -z $cid ]; then
+			cid=$(sudo docker ps | grep $container | awk '{print $1}')
+		fi
+		dockerimg=$DOCKER_REGISTRY/$container
+		echo "committing new image for $container, $dockerimg:$1..."
+		sudo docker commit $cid $dockerimg:$1
 		exit_on_err $?
+		for tag in ${@:2}; do
+			echo "adding additional tag '$tag' for container $container"
+			sudo docker tag -f $dockerimg:$1 $dockerimg:$tag
+			exit_on_err $?
+		done
 	done
 }
 
-# commit the OS docker containers and push them to the registry
+# push the given tags to the registry
 cluster_pod_push() {
-	for pod in mysql $OS_PODS
+	containers="mysql $OS_PODS"
+	for container in $containers
 	do
-		id=$(sudo docker ps | grep init | grep keystone | awk '{print $1}')
-		docker_img=$DOCKER_REGISTRY/$pod:latest
-		sudo docker commit $id $docker_img
-		exit_on_err $?
-		sudo docker push $docker_img
-		exit_on_err $?
+		dockerimg=$DOCKER_REGISTRY/$container
+		for tag in ${@}; do
+			echo "pushing tag '$tag' for container $container, $dockerimg:$tag..."
+			sudo docker push $dockerimg:$tag
+			exit_on_err $?
+		done
 	done
 }
 
@@ -245,14 +261,17 @@ case "$1" in
 	'restart')
 		cluster_restart
 		;;
-	'rebuild')
-		cluster_pod_rebuild
+	'launch')
+		cluster_pod_launch $2
 		;;
-	'latest')
-		cluster_pod_latest
+	'last')
+		cluster_pod_launch last
+		;;
+	'tag')
+		cluster_pod_tag "${@:2}"
 		;;
 	'push')
-		cluster_pod_push
+		cluster_pod_push "${@:2}"
 		;;
 	'cleanup')
 		cluster_cleanup
@@ -269,14 +288,14 @@ case "$1" in
 Helper to handle a CERN openstack dev workspace.
 
 COMMAND can be one of:
-  prepare  Prepare the dev workspace (fetch kubernetes, puppet modules, ...)
-  restart  Cleanup any running containers and recreate the base containers (skydns, puppet, controller)
-  rebuild  Rebuild each of the openstack containers from scratch (full puppet run)
-  latest   Launch new openstack containers using the 'latest' image (and run puppet after for update)
-  push     (done by CI only) Push the current OS containers as the new 'latest' in the docker registry
-  cleanup  Cleanup any running containers so we get a clean set
-  centos   Install required dependencies for CentOS
-  tempest  Run tempest tests against the dev environment
+  prepare      Prepare the dev workspace (fetch kubernetes, puppet modules, ...)
+  base         Cleanup any running containers and recreate the base containers (skydns, puppet, ceph)
+  launch [tag] Launch the openstack containers, optionally from 'tag' (docker image tag) - otherwise full puppet run
+  last         Launch the 'last' built openstack containers - wrapper for 'launch last'
+  push [tags]  (done by CI only) Push the current OS containers as a new image, optionally tagging with the given list
+  cleanup      Cleanup any running containers so we get a clean set
+  centos       Install required dependencies for CentOS
+  tempest      Run tempest tests against the dev environment
 
 Required environment settings:
 export CLOUDDEV=~/ws/cloud-dev

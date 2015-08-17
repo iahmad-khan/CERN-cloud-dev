@@ -48,13 +48,14 @@ Usage: cci-dev COMMAND
 Helper to handle a CERN openstack dev workspace.
 
 COMMAND can be one of:
-  prepare  Prepare the dev workspace (fetch kubernetes, puppet modules, ...)
-  restart  Cleanup any running containers and recreate the base containers (skydns, puppet, controller)
-  rebuild  Rebuild each of the openstack containers from scratch (full puppet run)
-  latest   Launch new openstack containers using the 'latest' image (and run puppet after for update)
-  push     (done by CI only) Push the current OS containers as the new 'latest' in the docker registry
-  cleanup  Cleanup any running containers so we get a clean set
-  centos   Install required dependencies for CentOS
+  prepare      Prepare the dev workspace (fetch kubernetes, puppet modules, ...)
+  base         Cleanup any running containers and recreate the base containers (skydns, puppet, ceph)
+  launch [tag] Launch the openstack containers, optionally from 'tag' (docker image tag) - otherwise full puppet run
+  last         Launch the 'last' built openstack containers - wrapper for 'launch last'
+  push [tags]  (done by CI only) Push the current OS containers as a new image, optionally tagging with the given list
+  cleanup      Cleanup any running containers so we get a clean set
+  centos       Install required dependencies for CentOS
+  tempest      Run tempest tests against the dev environment
 
 Required environment settings:
 export CLOUDDEV=~/ws/cloud-dev
@@ -71,16 +72,24 @@ export CLOUDDEV_KUB=~/ws/kubernetes
 cd ~/ws
 git clone ssh://git@gitlab.cern.ch:7999/cloud-infrastructure/cloud-dev.git
 cd cloud-dev/scripts
-./cci-dev prepare
+./cci-dev.sh prepare
 ```
 
 After this you'll be relaunching the containers from scratch quite often:
 ```
-./cci-dev restart
-./cci-dev rebuild
+./cci-dev.sh restart
+./cci-dev.sh launch last
 ```
 
-Once you've done this you can *login* to a container, and run the usual commands:
+Note we launched from the 'last' tag, which launches containers from a pre-built image and runs puppet from there (much faster). These 'last' images are maintained by the CI system, updated when things get merged to master.
+
+If you really want to rebuild all the nodes from scratch (full puppet runs), trigger launch with no args.
+```
+./cci-dev.sh launch
+
+```
+
+With an environment set, you can *login* to a container and run the usual commands:
 ```
 kubectl exec -it -p keystone -c keystone -- /bin/bash
 [root@keystone /]# puppet agent -t
@@ -116,6 +125,18 @@ rbd_data.10155d46d745.0000000000000000
 rbd_header.10155d46d745
 ```
 
+## Common Use Cases
+
+### Relaunching a failing build/commit
+
+After each build the CI system adds an additional tag to each image with the commit ID. This allows you to launch an
+environment corresponding to the failing build (useful for debugging).
+```
+cd scripts
+./cci-dev.sh restart
+./cci-dev.sh launch <commit-id>
+```
+
 ## Tempest
 
 The client node gets a tempest checkout in /tempest. You can use cci-dev.sh to run the tests (uses config in cloud-dev/tempest):
@@ -128,7 +149,7 @@ cd scripts
 The list of tests enabled is in cloud-dev/tempest/tempest.list.
 
 
-## Common Operations
+## Maintenance
 
 ### Redeploy the jenkins master
 
@@ -150,3 +171,15 @@ http://jenkinsdocs.web.cern.ch/jenkinsdocs/chapters/demos/jenkinsdocs-build.html
 and:
 http://jenkinsdocs.web.cern.ch/jenkinsdocs/chapters/revision-control-systems/git/gitlab.html
 
+### Rebuilding the 'latest' mysql
+
+We use a clone of the mysql Dockerfile, as we need to have /var/lib/mysql/data committed with the container (upstream it's a volume).
+
+This might change when 'docker volume ...' gets released, but for now it's the only way to persist the db data.
+
+If we ever need to update that base mysql image, it's done as in:
+```
+cd docker/mysql
+sudo docker build -t docker-reg.cern.ch:5000/mysql:latest .
+sudo docker push docker-reg.cern.ch:5000/mysql:latest
+```
