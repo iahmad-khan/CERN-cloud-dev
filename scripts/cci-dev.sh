@@ -18,13 +18,13 @@ fi
 export PATH=$PATH:$CLOUDDEV_KUB/_output/local/go/bin
 
 # PUPPET_MODULES holds the list of module dependencies that we need to run the build
-PUPPET_MODULES="abrt apache:upstream_150 cernlib cinder cloud_common:hiera-tellme-enable cloud_monitoring concat firewall flume glance inifile kerberos keystone lemon limits logrotate motd mysql openstack_clients osrepos psacct puppet puppetdbquery stdlib teigi:tbag_teigiurl"
+PUPPET_MODULES="abrt apache:upstream_150 cernlib cinder cloud_common cloud_monitoring concat firewall flume glance inifile kerberos keystone lemon limits logrotate motd mysql neutron:1748-neutrondev openstack_clients:osclients-testingrepo osrepos psacct puppet puppetdbquery stdlib teigi:tbag_teigiurl"
 
 # PUPPET_HOSTGROUPS holds the list of hostgroups we need to run the build(s)
-PUPPET_HOSTGROUPS="cloud_adm cloud_blockstorage cloud_identity cloud_image"
+PUPPET_HOSTGROUPS="cloud_adm:1748-neutron cloud_blockstorage cloud_identity cloud_image cloud_networking:1718-neutronsetup"
 
 # OS_PODS holds the list of pods to be started on 'launch'
-OS_PODS=${OS_PODS:-keystone glance cinder client}
+OS_PODS=${OS_PODS:-keystone glance cinder neutron client}
 
 # docker registry to push container images to (see push)
 DOCKER_REGISTRY=${DOCKER_REGISTRY:-docker-reg.cern.ch:5000}
@@ -42,10 +42,13 @@ puppet_manifest_checkout() {
 		cd $CLOUDDEV_PUPPET
 		IFS=':' read -r module branch <<< "$mod"
 		git clone -q http://git.cern.ch/cernpub/it-puppet-module-$module
+		exit_on_err $?
 		ln -s it-puppet-module-$module/code $module
 		if [[ ! -z $branch ]]; then
 			cd it-puppet-module-$module
+			exit_on_err $?
 			git checkout $branch
+			exit_on_err $?
 			cd -
 		fi
 		branch=''
@@ -53,11 +56,15 @@ puppet_manifest_checkout() {
 	for hg in $PUPPET_HOSTGROUPS;
 	do
 		cd $CLOUDDEV_PUPPET
-		git clone -q http://git.cern.ch/cernpub/it-puppet-hostgroup-$hg
-		ln -s it-puppet-hostgroup-$hg/code hg_$hg
+		IFS=':' read -r module branch <<< "$hg"
+		git clone -q http://git.cern.ch/cernpub/it-puppet-hostgroup-$module
+		exit_on_err $?
+		ln -s it-puppet-hostgroup-$module/code hg_$module
 		if [[ ! -z $branch ]]; then
-			cd it-puppet-hostgroup-$hg
+			cd it-puppet-hostgroup-$module
+			exit_on_err $?
 			git checkout $branch
+			exit_on_err $?
 			cd -
 		fi
 	done
@@ -85,7 +92,7 @@ kubernetes_start() {
 	cluster_cleanup
 	# start the kube daemons
 	cd $CLOUDDEV_KUB
-	sudo PATH=$PATH GOROOT=$GOROOT ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
+	sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
 	echo 'waiting for kubernetes start (and build if not done before)...'
 	while ! kubectl get pod > /dev/null 2>&1
 	do

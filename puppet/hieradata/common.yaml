@@ -1,7 +1,86 @@
 roger_server: puppet
 flume_agent_enable: false
 teigi_ssl_port: 8082
-tellme_enable: false
+tellme_enabled: false
+iaas_release: 'juno'
+iaas_qa_repo_enable: 1
+iaas_testing_repo_enable: 1
+osrepos_ai_testing_enable: 1
+operator_access_enable: false
+iaas_include_pkgs:
+  - python-pyws
+  - openstack-keystone
+  - python-keystone
+  - python-keystoneclient
+  - python-pysaml2
+  - python-neutron
+  - python-neutronclient
+  - openstack-neutron
+  - openstack-neutron-ml2
+openstack_rdo_include_pkgs:
+  - python-oslo*
+  - python-sqlalchemy
+  - python-routes
+  - python-paste-deploy
+  - python-six
+  - python-pycadf
+  - python-webob
+  - python-migrate
+  - python-novaclient
+  - python-cinderclient
+  - python-glanceclient
+  - python-keystoneclient
+  - python-openstackclient
+  - python-neutronclient
+  - python-requests
+  - python-urllib3
+  - python-cliff
+  - python-cmd2
+  - pyparsing
+  - python-babel
+  - python-alembic
+  - python-keystonemiddleware
+  - python-ldappool
+  - openstack-utils
+  - python-stevedore
+  - python-netaddr
+
+# cloud_networking
+neutron_verbose: true
+neutron_debug: true
+neutron_api_port: '9696'
+neutron_database_idle_timeout: 3600
+neutron_rabbit_user: 'guest'
+neutron_rabbit_host: 'controller'
+neutron_rabbit_port: '5672'
+neutron_rabbit_hosts:
+     - 'controller'
+neutron_rabbit_virtual_host: '/'
+neutron_qpid_hostname: "%{neutron_rabbit_host}"
+neutron_qpid_port: "%{neutron_rabbit_port}"
+neutron_qpid_username: "%{neutron_rabbit_port}"
+neutron_use_ssl: false
+neutron_use_syslog: false
+neutron_log_facility: 'LOG_USER'
+neutron_auth_cafile: '/var/lib/puppet/ssl/certs/ca.pem'
+neutron_server_auth_user: 'neutron'
+neutron_server_auth_tenant: 'services'
+neutron_server_auth_uri: 'https://keystone.default.kubdomain.local:443/main'
+neutron_server_identity_uri: 'https://keystone.default.kubdomain.local:443/admin'
+neutron_server_landb_hostname: 'puppet'
+neutron_server_landb_port: '8043'
+neutron_server_landb_protocol: 'https'
+neutron_server_landb_username: 'neutron'
+neutron_service_plugins:
+        - 'router'
+        - 'cern'
+neutron_ml2_type_drivers:
+        - 'flat'
+neutron_ml2_tenant_network_types:
+        - 'flat'
+neutron_ml2_mechanism_drivers:
+        - 'linuxbridge'
+        - 'cern_landb'
 
 # cloud_blockstorage
 cinder_api_port: '8776'
@@ -221,6 +300,12 @@ keystone_default_catalog:
     - publicURL: 'http://cinder.default.kubdomain.local:8776/v1/%(tenant_id)s'
     - adminURL: 'http://cinder.default.kubdomain.local:8776/v1/%(tenant_id)s'
     - internalURL: 'http://cinder.default.kubdomain.local:8776/v1/%(tenant_id)s'
+  - network:
+    - name: 'neutron'
+    - description: 'Openstack Networking Service'
+    - publicURL: 'http://neutron.default.kubdomain.local:9696'
+    - adminURL: 'http://neutron.default.kubdomain.local:9696'
+    - internalURL: 'http://neutron.default.kubdomain.local:9696'
 
 keystone_domains:
   - /etc/keystone/domains/keystone.heat.conf
@@ -297,56 +382,34 @@ keystone_token_provider: 'keystone.token.providers.uuid.Provider'
 keystone_use_syslog: false
 keystone_verbose: false
 keystone_x509_enable: false
-iaas_release: 'juno'
-iaas_include_pkgs:
-  - python-pyws
-  - openstack-keystone
-  - python-keystone
-  - python-keystoneclient
-  - python-pysaml2
 log_regex_keystone: '(\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}.\\d{3})\\s*\\d*\\s*([A-Z]+)'
 nova_compute_api_port: 8774
-openstack_rdo_include_pkgs:
-  - python-oslo*
-  - python-sqlalchemy
-  - python-routes
-  - python-paste-deploy
-  - python-six
-  - python-pycadf
-  - python-webob
-  - python-migrate
-  - python-novaclient
-  - python-cinderclient
-  - python-glanceclient
-  - python-keystoneclient
-  - python-openstackclient
-  - python-neutronclient
-  - python-requests
-  - python-urllib3
-  - python-cliff
-  - python-cmd2
-  - pyparsing
-  - python-babel
-  - python-alembic
-  - python-keystonemiddleware
-  - python-ldappool
 
 # cloud_adm
+osclients_default_rc: true
+
 osclients_rdo_include_pkgs:
+  - python-cinderclient
   - python-glanceclient
   - python-heatclient
-  - python-cinderclient
+  - python-keystoneclient
   - python-novaclient
   - python-openstackclient
-  - python-oslo*
-  - python-keystoneclient
-  - python-ceilometerclient
-  - python-oslo-messaging
-  - python-paste-deploy
-  - python-sqlalchemy
-  - python-jinja2
-  - python-routes
-  - python-six
+  - pyparsing # overrides epel
+  - python-backports
+  - python-cliff # overrides epel
+  - python-cmd2 # overrides epel
+  - python-oslo-config
+  - python-oslo-i18n
+  - python-oslo-serialization
+  - python-oslo-utils
+  - python-six # overrides epel
+  - python-webob # overrides epel
+
+osclients_include_pkgs:
+  - python-keystoneclient-kerberos
+  - python-keystoneclient-x509
+  - python-neutronclient
 
 osclients_iaas_include_pkgs:
   - python-kombu

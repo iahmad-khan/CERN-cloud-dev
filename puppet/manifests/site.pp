@@ -28,6 +28,14 @@ node default {
   ->
   Firewall<||>
 
+  Osrepos::Ai121yumrepo<||>
+  ->
+  Package<||>
+
+  Yumrepo <||>
+  ->
+  Package <||>
+
 }
 
 node /.*keystone.*/ inherits default {
@@ -119,7 +127,7 @@ node /.*keystone.*/ inherits default {
   ->
   Service['keystone']
   ~>
-  exec { "/usr/bin/sleep 5 && /usr/bin/keystone tenant-create --name services && /usr/bin/keystone role-create --name admin && /usr/bin/keystone role-create --name Member && /usr/bin/keystone user-role-add --user admin --role admin --tenant services && /usr/bin/keystone user-role-add --user glance --role admin --tenant services && /usr/bin/keystone user-role-add --user cinder --role admin --tenant services && /usr/bin/keystone tenant-list":
+  exec { "/usr/bin/sleep 5 && /usr/bin/keystone tenant-create --name services && /usr/bin/keystone role-create --name admin && /usr/bin/keystone role-create --name Member && /usr/bin/keystone user-role-add --user admin --role admin --tenant services && /usr/bin/keystone user-role-add --user glance --role admin --tenant services && /usr/bin/keystone user-role-add --user cinder --role admin --tenant services && /usr/bin/keystone user-role-add --user neutron --role admin --tenant services && /usr/bin/keystone tenant-list":
     path        => "/usr/bin:/usr/sbin",
     environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_SERVICE_TOKEN=512c2b7c2d94b5bb731469955d4b7455','OS_SERVICE_ENDPOINT=https://keystone.default.kubdomain.local:443/admin/v2.0'],
     refreshonly => true,
@@ -160,10 +168,6 @@ node /.*glance.*/ inherits default {
   exec {'/usr/sbin/usermod -a -G puppet glance':
     refreshonly => true,
   }
-
-  Yumrepo <||>
-  ->
-  Package <||>
 
   glance_api_config { 'keystone_authtoken/cafile': value => '/var/lib/puppet/ssl/certs/ca.pem'; }
   ->
@@ -209,6 +213,39 @@ node /.*cinder.*/ inherits default {
 
 }
 
+node /.*neutron.*/ inherits default {
+
+  class { 'hg_cloud_networking': }
+  class { 'hg_cloud_networking::controller': }
+
+  package { 'mariadb':
+    ensure => 'present',
+  }
+  ~>
+  exec { 'create-neutron-db':
+    command     => "/usr/bin/mysql -u root -h controller -p123456 -e \"create database neutron CHARACTER SET utf8 COLLATE utf8_general_ci; grant all privileges on neutron.* to 'neutron'@'%' identified by '123456';\" || true",
+    environment => 'TERM=xterm',
+    refreshonly => true,
+  }
+  ->
+  Package['openstack-neutron']
+  ->
+  Neutron_config<||>
+  ->
+  Neutron_api_config<||>
+  ~>
+  exec { '/usr/bin/neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade juno':
+    refreshonly => true,
+  }
+  ~>
+  exec {'/usr/sbin/usermod -a -G puppet neutron':
+    refreshonly => true,
+  }
+  ->
+  Service['neutron-server']
+
+}
+
 node /.*client.*/ inherits default {
 
   class { 'osrepos::centos': }
@@ -233,6 +270,26 @@ node /.*client.*/ inherits default {
     path        => "/usr/bin:/usr/sbin",
     environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_SERVICE_TOKEN=512c2b7c2d94b5bb731469955d4b7455','OS_SERVICE_ENDPOINT=https://keystone.default.kubdomain.local:443/admin/v2.0'],
     unless      => "/usr/bin/keystone tenant-get tempest1",
+  }
+  ->
+  exec { '/usr/bin/neutron net-create KUB_NETWORK --router:external True --provider:physical_network external --provider:network_type flat':
+    unless      => "/usr/bin/neutron net-show KUB_NETWORK",
+    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=neutron','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.kubdomain.local:443/admin/v2.0'],
+  }
+  ->
+  exec { '/usr/bin/neutron subnet-create KUB_NETWORK 128.0.0.0/16 --name IPSRV1 --disable-dhcp --dns-nameserver 10.0.0.10':
+    unless      => "/usr/bin/neutron subnet-show IPSRV1",
+    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=neutron','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.kubdomain.local:443/admin/v2.0'],
+  }
+  ->
+  exec { '/usr/bin/neutron cluster-create CLUSTER1':
+    unless      => "/usr/bin/neutron cluster-show CLUSTER1",
+    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=neutron','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.kubdomain.local:443/admin/v2.0'],
+  }
+  ->
+  exec { '/usr/bin/neutron cluster-insert-subnet CLUSTER1 IPSRV1':
+    unless      => "/usr/bin/neutron cluster-list | /usr/bin/grep 128.0.0.0/16",
+    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=neutron','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.kubdomain.local:443/admin/v2.0'],
   }
 
   Osrepos::Ai121yumrepo['cci7-utils']

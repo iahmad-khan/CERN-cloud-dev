@@ -1,18 +1,21 @@
 {
+        "unit_test_secret_key": "unit_test_secret_value",
+        "ceph_client_images_keyring": "[client.images]\n\tkey = AQDFIqlVdr2VMRAAeZjXcV3DwpWxuJfaSAdUMg==\n\tcaps mon = allow r\n\tcaps osd = allow *",
+        "ceph_client_volumes_keyring": "[client.volumes]\n\tkey = AQArZa5VqkPjOhAAXxRwNIXXN9jxnzrC8zxnEA==\n\tcaps mon = allow r\n\tcaps osd = allow *",
+        "cinder_critical_iscsi01_netapp_password": "123456",
+        "cinder_critical_iscsi01_netapp_sa_password": "123456",
+        "cinder_database_connection": "mysql://cinder:123456@controller/cinder",
+        "cinder_keystone_password": "123456",
+        "cinder_rabbit_password": "guest",
+        "glance_database_connection": "mysql://glance:123456@controller/glance",
+        "glance_keystone_password": "123456",
 	"keystone_admin_token": "512c2b7c2d94b5bb731469955d4b7455",
-        "keystone_sql_connection_localdev": "mysql://keystone:123456@controller/keystone",
         "keystone_ldap_user": "cn=admin,dc=default,dc=kubdomain,dc=local",
         "keystone_ldap_password": "123456",
         "keystone_rabbit_password": "123456",
-        "unit_test_secret_key": "unit_test_secret_value",
-        "glance_database_connection": "mysql://glance:123456@controller/glance",
-        "glance_keystone_password": "123456",
-        "ceph_client_images_keyring": "[client.images]\n\tkey = AQDFIqlVdr2VMRAAeZjXcV3DwpWxuJfaSAdUMg==\n\tcaps mon = allow r\n\tcaps osd = allow *",
-        "ceph_client_volumes_keyring": "[client.volumes]\n\tkey = AQArZa5VqkPjOhAAXxRwNIXXN9jxnzrC8zxnEA==\n\tcaps mon = allow r\n\tcaps osd = allow *",
-        "cinder_keystone_password": "123456",
-        "cinder_rabbit_password": "guest",
-        "cinder_database_connection": "mysql://cinder:123456@controller/cinder",
-        "cinder_critical_iscsi01_netapp_password": "123456",
-        "cinder_critical_iscsi01_netapp_sa_password": "123456"
-
+        "keystone_sql_connection_localdev": "mysql://keystone:123456@controller/keystone",
+        "neutron_admin_password": "123456",
+        "neutron_landb_password": "123456",
+        "neutron_rabbit_password": "guest",
+        "neutron_sql_connection": "mysql://neutron:123456@controller/neutron"
 }

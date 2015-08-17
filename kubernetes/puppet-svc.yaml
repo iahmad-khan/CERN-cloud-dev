@@ -18,5 +18,8 @@ spec:
   - name: teigi
     port: 8082
     protocol: TCP
+  - name: landb
+    port: 8043
+    protocol: TCP
   selector:
     name: puppet

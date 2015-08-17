@@ -1,0 +1,5 @@
+{
+	"getAuthToken": "<?xml version='1.0' encoding='UTF-8'?><SOAP-ENV:Envelope SOAP-ENV:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/'><SOAP-ENV:Body><getAuthTokenResponse><token>landbtoken123456</token></getAuthTokenResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>",
+	"getBasicDeviceInfo": "",
+	"vmGetClusterMembership": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><SOAP-ENV:Envelope SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><SOAP-ENV:Body><vmGetClusterMembershipResponse><VMClusterList SOAP-ENC:arrayType=\"xsd:string[1]\" xsi:type=\"SOAP-ENC:Array\"><item xsi:type=\"xsd:string\">CLUSTER1</item></VMClusterList></vmGetClusterMembershipResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>"
+}
