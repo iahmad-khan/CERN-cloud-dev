@@ -1,0 +1,19 @@
+apiVersion: v1beta3
+kind: Service
+metadata:
+  labels:
+    name: nova
+  name: nova
+spec:
+  ports:
+  - name: novaec2
+    port: 8773
+    protocol: TCP
+  - name: novaapi
+    port: 8774
+    protocol: TCP
+  - name: novametadata
+    port: 8775
+    protocol: TCP
+  selector:
+    name: nova

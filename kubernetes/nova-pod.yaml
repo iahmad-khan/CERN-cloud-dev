@@ -1,12 +1,12 @@
 apiVersion: v1beta3
 kind: Pod
 metadata:
-  name: neutron
+  name: nova
   labels:
-    name: neutron
+    name: nova
 spec:
   containers:
-    - name: neutron
+    - name: nova
       image: docker-reg.cern.ch:5000/puppetagent:latest
       privileged: true
       volumeMounts:
@@ -19,7 +19,9 @@ spec:
       command:
         - /usr/sbin/init
       ports:
-        - containerPort: 9696
+        - containerPort: 8773
+        - containerPort: 8774
+        - containerPort: 8775
   volumes:
     - name: puppetcfg
       hostPath:

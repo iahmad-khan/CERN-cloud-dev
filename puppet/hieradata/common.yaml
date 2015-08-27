@@ -6,6 +6,7 @@ iaas_release: 'juno'
 iaas_qa_repo_enable: 1
 iaas_testing_repo_enable: 1
 osrepos_ai_testing_enable: 1
+osrepos_ai_qa_enable: 1
 operator_access_enable: false
 iaas_include_pkgs:
   - python-pyws
@@ -44,6 +45,45 @@ openstack_rdo_include_pkgs:
   - openstack-utils
   - python-stevedore
   - python-netaddr
+
+# cloud_compute
+
+# nova::base
+nova_debug: True
+nova_verbose: True
+nova_config_use_local: true
+nova_enabled_ssl_apis: []
+nova_glance_api_servers: 'glance.default.kubdomain.local:9292'
+nova_manage_selinux: False
+landb_username: 'neutron'
+rabbit_host: 'controller'
+
+# nova::conductor
+nova_conductor_monitoring: false
+
+# nova::api
+haproxy_enable: false
+haproxy_nova_api_enable: false
+firewall_nova_api_enable: false
+firewall_nova_metadata_enable: false
+
+nova_api_admin_port: 443
+nova_api_admin_user: 'nova'
+nova_api_admin_tenant_name: 'services'
+nova_api_admin_prefix: '/admin'
+nova_api_auth_strategy: keystone
+nova_api_auth_host: 'keystone.default.kubdomain.local'
+nova_api_auth_protocol: 'https'
+nova_api_auth_admin_prefix: '/admin'
+nova_api_auth_uri: 'https://keystone.default.kubdomain.local:443/'
+nova_api_ca_file: '/var/lib/puppet/ssl/certs/ca.pem'
+nova_api_enabled_apis: 'osapi_compute,metadata'
+nova_api_keystone_ec2_url: 'https://keystone.default.kubdomain.local:443/v2.0/ec2tokens'
+nova_api_metadata_workers: 0
+nova_api_sync_db: false
+overwrite_nova_policy: true
+nova_static_conf: "[DEFAULT]\nglance_api_servers=glance.default.kubdomain.local:9292\n"
+nova_conductor_workers: 1
 
 # cloud_networking
 neutron_verbose: true
@@ -306,6 +346,12 @@ keystone_default_catalog:
     - publicURL: 'http://neutron.default.kubdomain.local:9696'
     - adminURL: 'http://neutron.default.kubdomain.local:9696'
     - internalURL: 'http://neutron.default.kubdomain.local:9696'
+  - compute:
+    - name: 'nova'
+    - description: 'Openstack Nova Service'
+    - publicURL: 'http://nova.default.kubdomain.local:8774/v2/%(tenant_id)s'
+    - adminURL: 'http://nova.default.kubdomain.local:8774/v2/%(tenant_id)s'
+    - internalURL: 'http://nova.default.kubdomain.local:8774/v2/%(tenant_id)s'
 
 keystone_domains:
   - /etc/keystone/domains/keystone.heat.conf
@@ -395,6 +441,7 @@ osclients_rdo_include_pkgs:
   - python-keystoneclient
   - python-novaclient
   - python-openstackclient
+  - python-ceilometerclient
   - pyparsing # overrides epel
   - python-backports
   - python-cliff # overrides epel
@@ -409,9 +456,7 @@ osclients_rdo_include_pkgs:
 osclients_include_pkgs:
   - python-keystoneclient-kerberos
   - python-keystoneclient-x509
+  - python-cornerstoneclient
   - python-neutronclient
-
-osclients_iaas_include_pkgs:
   - python-kombu
   - python-urllib3
-  - python-cornerstoneclient

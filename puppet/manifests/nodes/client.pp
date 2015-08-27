@@ -4,7 +4,7 @@ node /.*client.*/ inherits default {
   class { 'osrepos::centos': }
   ->
   exec { '/etc/pki/rpm-gpg/RPM-GPG-KEY-cern':
-    command => '/usr/bin/wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-cern http://linuxsoft.cern.ch/cern/centos/7/os/x86_64/RPM-GPG-KEY-cern',
+    command => '/usr/bin/curl -o /etc/pki/rpm-gpg/RPM-GPG-KEY-cern http://linuxsoft.cern.ch/cern/centos/7/os/x86_64/RPM-GPG-KEY-cern',
     creates => '/etc/pki/rpm-gpg/RPM-GPG-KEY-cern',
   }
   ->
