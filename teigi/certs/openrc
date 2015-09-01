@@ -1,3 +1,7 @@
+unset OS_AUTH_TYPE
+unset OS_IDENTITY_API_VERSION
+unset OS_PROJECT_NAME
+unset OS_PROJECT_DOMAIN_ID
 export OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem
 export OS_CERT=/var/lib/puppet/ssl/certs/${HOSTNAME}.default.kubdomain.local.pem
 export OS_KEY=/var/lib/puppet/ssl/private_keys/${HOSTNAME}.default.kubdomain.local.pem
