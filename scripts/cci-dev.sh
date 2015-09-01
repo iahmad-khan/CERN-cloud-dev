@@ -233,12 +233,9 @@ centos_install() {
 	sudo yum install -y wget git vim docker etcd golang patch psmisc
 	exit_on_err $?
 	sed -i "s/^# INSECURE_REGISTRY.*/INSECURE_REGISTRY='--insecure-registry docker-reg.cern.ch:5000'/g" /etc/sysconfig/docker
-	# launch docker (for some reason the systemd init script is failing right now)
-	if ! sudo docker ps > /dev/null 2>&1; then
-		sudo docker -d --insecure-registry docker-reg.cern.ch:5000 > /tmp/docker.log 2>&1 &
-		exit_on_err $?
-	fi
-
+	sed -i "s/^OPTIONS.*/#OPTIONS=''/g" /etc/sysconfig/docker
+	# launch docker
+	systemctl start docker
 }
 
 exit_on_err() {
