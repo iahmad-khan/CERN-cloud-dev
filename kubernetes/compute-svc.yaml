@@ -1,0 +1,9 @@
+apiVersion: v1beta3
+kind: Service
+metadata:
+  labels:
+    name: compute
+  name: compute
+spec:
+  selector:
+    name: compute

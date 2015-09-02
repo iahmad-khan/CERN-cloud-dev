@@ -13,3 +13,4 @@
 0x000d 2015-08-06T12:53:01UTC 2020-08-05T12:53:01UTC /CN=client.default.kubdomain.local
 0x000e 2015-08-16T12:46:05UTC 2020-08-15T12:46:05UTC /CN=neutron.default.kubdomain.local
 0x000f 2015-08-26T14:18:45UTC 2020-08-25T14:18:45UTC /CN=nova.default.kubdomain.local
+0x0010 2015-08-31T12:51:10UTC 2020-08-30T12:51:10UTC /CN=compute.default.kubdomain.local

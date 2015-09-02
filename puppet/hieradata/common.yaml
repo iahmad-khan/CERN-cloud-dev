@@ -85,6 +85,19 @@ overwrite_nova_policy: true
 nova_static_conf: "[DEFAULT]\nglance_api_servers=glance.default.kubdomain.local:9292\n"
 nova_conductor_workers: 1
 
+# nova::compute
+libvirtd_logs: false
+nova_compute_libvirt_virt_type: 'qemu'
+nova_compute_monitoring: false
+nova_compute_ksm: false
+nova_compute_reserved_host_memory: 0
+nova_neutron_enabled: true
+nova_metadata_host: 'localhost' # FIXME
+nova_compute_disable_snoop: false
+nova_compute_bridgeconfig: false
+nova_compute_bridgetables: false
+nova_compute_netconntrack: false
+
 # cloud_networking
 neutron_verbose: true
 neutron_debug: true
