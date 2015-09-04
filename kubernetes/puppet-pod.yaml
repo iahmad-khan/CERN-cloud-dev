@@ -46,12 +46,7 @@ spec:
     - name: landb
       image: docker-reg.cern.ch:5000/landb
       ports:
-        - containerPort: 8043
-      volumeMounts:
-        - name: puppetssl
-          mountPath: /ssl
-        - name: landb-db
-          mountPath: /data
+        - containerPort: 8443
   volumes:
     - name: puppet
       hostPath:
@@ -71,6 +66,3 @@ spec:
     - name: teigidb
       hostPath:
         path: /opt/cloud-dev/teigi/data
-    - name: landb-db
-      hostPath:
-        path: /opt/cloud-dev/landb/data

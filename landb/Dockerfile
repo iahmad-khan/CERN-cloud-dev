@@ -1,10 +1,10 @@
-FROM centos:centos7
-MAINTAINER Ricardo Rocha <ricardo.rocha@cern.ch>
+FROM tomcat:7-jre7
+MAINTAINER "Ricardo Rocha <ricardo.rocha@cern.ch>"
 
-ADD landb /landb
+ADD server.xml /usr/local/tomcat/conf/server.xml
 
-VOLUME ["/data"]
+ADD axis/webapps/axis /usr/local/tomcat/webapps/axis
 
-ENTRYPOINT ["/landb"]
+RUN /usr/bin/keytool -genkey -alias tomcat -keyalg RSA -keypass 123456 -storepass 123456 -dname 'ou=cern'
 
-CMD ["-privcert", "/ssl/private_keys/puppet.default.kubdomain.local.pem", "-pubcert", "/ssl/certs/puppet.default.kubdomain.local.pem", "-cacert", "/ssl/certs/ca.pem", "-port", "8043", "-sleep", "5", "-db", "/data/landb-db.json"]
+CMD ["catalina.sh", "run"]

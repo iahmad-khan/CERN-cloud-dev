@@ -1,0 +1,835 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from SOAPNetworkService WSDL service -->
+
+  <service name="NetworkServicePort" provider="java:RPC" style="rpc" use="encoded">
+      <parameter name="wsdlTargetNamespace" value="urn:NetworkService"/>
+      <parameter name="wsdlServiceElement" value="SOAPNetworkService"/>
+      <parameter name="schemaQualified" value="urn:NetworkDataTypes"/>
+      <parameter name="wsdlServicePort" value="NetworkServicePort"/>
+      <parameter name="className" value="NetworkService.NetworkServiceBindingImpl"/>
+      <parameter name="wsdlPortType" value="NetworkServiceInterface"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation name="getAuthToken" qname="operNS:getAuthToken" xmlns:operNS="urn:NetworkService" returnQName="token" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="Login" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Password" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Type" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="searchDevice" qname="operNS:searchDevice" xmlns:operNS="urn:NetworkService" returnQName="DeviceList" returnType="rtns:ArrayOfString" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:string" xmlns:tns2="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceSearch" type="tns:DeviceSearch" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="getDeviceBasicInfo" qname="operNS:getDeviceBasicInfo" xmlns:operNS="urn:NetworkService" returnQName="Device" returnType="rtns:DeviceBasicInfo" xmlns:rtns="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getDeviceInfo" qname="operNS:getDeviceInfo" xmlns:operNS="urn:NetworkService" returnQName="Device" returnType="rtns:DeviceInfo" xmlns:rtns="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getDeviceInfoArray" qname="operNS:getDeviceInfoArray" xmlns:operNS="urn:NetworkService" returnQName="DeviceInfoList" returnType="rtns:ArrayOfDeviceInfo" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:DeviceInfo" xmlns:tns2="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceNameList" type="tns:ArrayOfString" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="getDeviceInfoFromNameMAC" qname="operNS:getDeviceInfoFromNameMAC" xmlns:operNS="urn:NetworkService" returnQName="Device" returnType="rtns:DeviceInfo" xmlns:rtns="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="MAC" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getMyDeviceInfo" qname="operNS:getMyDeviceInfo" xmlns:operNS="urn:NetworkService" returnQName="Device" returnType="rtns:DeviceInfo" xmlns:rtns="urn:NetworkDataTypes" soapAction="" >
+      </operation>
+      <operation name="getLastChangedDevices" qname="operNS:getLastChangedDevices" xmlns:operNS="urn:NetworkService" returnQName="DeviceList" returnType="rtns:ArrayOfString" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:string" xmlns:tns2="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Minutes" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="bulkInsert" qname="operNS:bulkInsert" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Device" type="tns:DeviceInput" xmlns:tns="urn:NetworkDataTypes"/>
+        <parameter qname="Cards" type="tns:ArrayOfInterfaceCards" xmlns:tns="urn:NetworkDataTypes"/>
+        <parameter qname="Interfaces" type="tns:ArrayOfBulkInterfaces" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="bulkInsertAuto" qname="operNS:bulkInsertAuto" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="Device" type="tns:DeviceInput" xmlns:tns="urn:NetworkDataTypes"/>
+        <parameter qname="Cards" type="tns:ArrayOfInterfaceCards" xmlns:tns="urn:NetworkDataTypes"/>
+        <parameter qname="Interfaces" type="tns:ArrayOfBulkInterfacesAuto" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="bulkRemove" qname="operNS:bulkRemove" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="deviceInsert" qname="operNS:deviceInsert" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Device" type="tns:DeviceInput" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="deviceAddCard" qname="operNS:deviceAddCard" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="InterfaceCard" type="tns:InterfaceCard" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="deviceAddBulkInterface" qname="operNS:deviceAddBulkInterface" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="BulkInterface" type="tns:BulkInterface" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="deviceRemove" qname="operNS:deviceRemove" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="deviceRemoveCard" qname="operNS:deviceRemoveCard" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="HardwareAddress" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="deviceRemoveBulkInterface" qname="operNS:deviceRemoveBulkInterface" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="InterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="deviceMoveBulkInterface" qname="operNS:deviceMoveBulkInterface" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="InterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="BulkInterface" type="tns:BulkInterface" xmlns:tns="urn:NetworkDataTypes"/>
+        <parameter qname="BulkMoveOptions" type="tns:BulkMoveOptions" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="deviceUpdate" qname="operNS:deviceUpdate" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="DeviceInput" type="tns:DeviceInput" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="deviceGlobalRename" qname="operNS:deviceGlobalRename" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="NewDeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="setHCPResponse" qname="operNS:setHCPResponse" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceList" type="tns:ArrayOfString" xmlns:tns="urn:NetworkDataTypes"/>
+        <parameter qname="HCPFlag" type="tns:boolean" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="deviceUpdateIPv6Ready" qname="operNS:deviceUpdateIPv6Ready" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="IPv6Ready" type="tns:boolean" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="deviceSetBOOTPInfo" qname="operNS:deviceSetBOOTPInfo" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Device" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Server" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="ImagePath" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="deviceRemoveBOOTPInfo" qname="operNS:deviceRemoveBOOTPInfo" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Device" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getBOOTPInfo" qname="operNS:getBOOTPInfo" xmlns:operNS="urn:NetworkService" returnQName="BOOTPInfo" returnType="rtns:BOOTPInfo" xmlns:rtns="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Device" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getBulkInterfaceInfo" qname="operNS:getBulkInterfaceInfo" xmlns:operNS="urn:NetworkService" returnQName="BulkInterface" returnType="rtns:BulkInterface" xmlns:rtns="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="InterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="setInsertAddress" qname="operNS:setInsertAddress" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Set" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Address" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="setInsertService" qname="operNS:setInsertService" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Set" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Service" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="setDeleteAddress" qname="operNS:setDeleteAddress" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Set" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Address" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="setDeleteService" qname="operNS:setDeleteService" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Set" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Service" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getSetInfo" qname="operNS:getSetInfo" xmlns:operNS="urn:NetworkService" returnQName="SetInfo" returnType="rtns:SetInfo" xmlns:rtns="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="SetName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getSetNameFromID" qname="operNS:getSetNameFromID" xmlns:operNS="urn:NetworkService" returnQName="SetName" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="SetID" type="tns:long" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getSetAllInterfaces" qname="operNS:getSetAllInterfaces" xmlns:operNS="urn:NetworkService" returnQName="Interfaces" returnType="rtns:ArrayOfString" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:string" xmlns:tns2="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="SetName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getSetInterfacesTrusting" qname="operNS:getSetInterfacesTrusting" xmlns:operNS="urn:NetworkService" returnQName="Interfaces" returnType="rtns:ArrayOfString" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:string" xmlns:tns2="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="SetName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getHCPInfoArray" qname="operNS:getHCPInfoArray" xmlns:operNS="urn:NetworkService" returnQName="HostsInfo" returnType="rtns:ArrayOfInetInfo" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:InetInfo" xmlns:tns2="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Hosts" type="tns:ArrayOfString" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="getDevicesFromService" qname="operNS:getDevicesFromService" xmlns:operNS="urn:NetworkService" returnQName="Hosts" returnType="rtns:ArrayOfString" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:string" xmlns:tns2="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Service" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getSwitchesFromService" qname="operNS:getSwitchesFromService" xmlns:operNS="urn:NetworkService" returnQName="Hosts" returnType="rtns:ArrayOfString" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:string" xmlns:tns2="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Service" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getSwitchInfo" qname="operNS:getSwitchInfo" xmlns:operNS="urn:NetworkService" returnQName="SwitchInfo" returnType="rtns:ArrayOfSwitchPort" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:SwitchPort" xmlns:tns2="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="SwitchName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getConnectionsFromDevice" qname="operNS:getConnectionsFromDevice" xmlns:operNS="urn:NetworkService" returnQName="ConnectionInfo" returnType="rtns:ArrayOfConnection" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:Connection" xmlns:tns2="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getOutletLocationFromSwitchPort" qname="operNS:getOutletLocationFromSwitchPort" xmlns:operNS="urn:NetworkService" returnQName="OutletLocation" returnType="rtns:OutletLocation" xmlns:rtns="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="SwitchName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="PortName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getCurrentConnection" qname="operNS:getCurrentConnection" xmlns:operNS="urn:NetworkService" returnQName="ObservedConnections" returnType="rtns:ArrayOfObservedSwitchConnection" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:ObservedSwitchConnection" xmlns:tns2="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="ip" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="HardwareAddressList" type="tns:ArrayOfString" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="getMyCurrentConnection" qname="operNS:getMyCurrentConnection" xmlns:operNS="urn:NetworkService" returnQName="ObservedConnections" returnType="rtns:ArrayOfObservedSwitchConnection" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:ObservedSwitchConnection" xmlns:tns2="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="HardwareAddressList" type="tns:ArrayOfString" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="enableFanOutFromSwitchPort" qname="operNS:enableFanOutFromSwitchPort" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="SwitchName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="PortName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="setUnsetBindedInterface" qname="operNS:setUnsetBindedInterface" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="InterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="HardwareAddress" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="interfaceAddAlias" qname="operNS:interfaceAddAlias" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="InterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Alias" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="interfaceRemoveAlias" qname="operNS:interfaceRemoveAlias" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="InterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Alias" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="interfaceMoveAlias" qname="operNS:interfaceMoveAlias" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="InterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Alias" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="NewInterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="interfaceRename" qname="operNS:interfaceRename" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="InterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="NewInterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="interfaceMove" qname="operNS:interfaceMove" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="InterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="NewDeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="searchSet" qname="operNS:searchSet" xmlns:operNS="urn:NetworkService" returnQName="Sets" returnType="rtns:ArrayOfString" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:string" xmlns:tns2="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="SetPattern" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="setInsert" qname="operNS:setInsert" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Set" type="tns:SetInput" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="setRemove" qname="operNS:setRemove" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="SetName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="setSwitchPortTypeStatus" qname="operNS:setSwitchPortTypeStatus" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="SwitchName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="PortName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="SwitchPortTypeStatus" type="tns:SwitchPortTypeStatus" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="setSwitchPortService" qname="operNS:setSwitchPortService" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="SwitchName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="PortName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Service" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getSwitchPortTypeStatus" qname="operNS:getSwitchPortTypeStatus" xmlns:operNS="urn:NetworkService" returnQName="SwitchPortTypeStatus" returnType="rtns:SwitchPortTypeStatus" xmlns:rtns="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="SwitchName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="PortName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="searchNetNameTable" qname="operNS:searchNetNameTable" xmlns:operNS="urn:NetworkService" returnQName="NetNameTable" returnType="rtns:ArrayOfNetNameTuple" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:NetNameTuple" xmlns:tns2="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="NetName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="deviceAddSecondaryInterface" qname="operNS:deviceAddSecondaryInterface" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="BaseInterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="LogicalInterface" type="tns:LogicalInterfaceInput" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="deviceAddIPMIInterface" qname="operNS:deviceAddIPMIInterface" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="BaseInterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="InterfaceCard" type="tns:InterfaceCard" xmlns:tns="urn:NetworkDataTypes"/>
+        <parameter qname="IPMIOptions" type="tns:IPMIOptions" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="deviceAddLogicalInterface" qname="operNS:deviceAddLogicalInterface" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="LogicalInterface" type="tns:LogicalInterfaceInput" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="deviceRemoveLogicalInterface" qname="operNS:deviceRemoveLogicalInterface" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="InterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="interfaceUpdateDescription" qname="operNS:interfaceUpdateDescription" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="InterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Description" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="serviceUpdateDescription" qname="operNS:serviceUpdateDescription" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="ServiceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Description" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="deviceSyncIPMIInterface" qname="operNS:deviceSyncIPMIInterface" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="InterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="IPMIInterfaceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="IPMIOptions" type="tns:IPMIOptions" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="getServiceInfo" qname="operNS:getServiceInfo" xmlns:operNS="urn:NetworkService" returnQName="ServiceInfo" returnType="rtns:ServiceInfo" xmlns:rtns="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="ServiceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="vmCreate" qname="operNS:vmCreate" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="VMDevice" type="tns:DeviceInput" xmlns:tns="urn:NetworkDataTypes"/>
+        <parameter qname="InterfaceCard" type="tns:InterfaceCard" xmlns:tns="urn:NetworkDataTypes"/>
+        <parameter qname="VMClusterName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="VMParent" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="VMOptions" type="tns:VMOptions" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="vmMigrate" qname="operNS:vmMigrate" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="VMName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="NewParent" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="vmMove" qname="operNS:vmMove" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="VMName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="VMClusterName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="VMParent" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="VMOptions" type="tns:VMOptions" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="vmUpdate" qname="operNS:vmUpdate" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="DeviceInput" type="tns:DeviceInput" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="vmDestroy" qname="operNS:vmDestroy" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="VMName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="vmClusterGetInfo" qname="operNS:vmClusterGetInfo" xmlns:operNS="urn:NetworkService" returnQName="VMClusterInfo" returnType="rtns:VMClusterInfo" xmlns:rtns="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="VMClusterName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="vmClusterGetDevices" qname="operNS:vmClusterGetDevices" xmlns:operNS="urn:NetworkService" returnQName="Hosts" returnType="rtns:ArrayOfString" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:string" xmlns:tns2="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="VMClusterName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="vmGetInfo" qname="operNS:vmGetInfo" xmlns:operNS="urn:NetworkService" returnQName="VMInfo" returnType="rtns:VMInfo" xmlns:rtns="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="VMName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="vmGetClusterMembership" qname="operNS:vmGetClusterMembership" xmlns:operNS="urn:NetworkService" returnQName="VMClusterList" returnType="rtns:ArrayOfString" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:string" xmlns:tns2="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="vmSearchCluster" qname="operNS:vmSearchCluster" xmlns:operNS="urn:NetworkService" returnQName="VMClusterList" returnType="rtns:ArrayOfString" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:string" xmlns:tns2="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="VMClusterSearch" type="tns:VMClusterSearch" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="vmSetUnsetManagedFlag" qname="operNS:vmSetUnsetManagedFlag" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Flag" type="tns:boolean" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="vmNetReset" qname="operNS:vmNetReset" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="VMName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="dnsZoneUpdate" qname="operNS:dnsZoneUpdate" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Zone" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="DnsZoneOptions" type="tns:DnsZoneOptions" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="svcPrincipalAdd" qname="operNS:svcPrincipalAdd" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="ServiceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Person" type="tns:PersonInput" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="svcPrincipalRemove" qname="operNS:svcPrincipalRemove" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DeviceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="ServiceName" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="dnsDelegatedSearch" qname="operNS:dnsDelegatedSearch" xmlns:operNS="urn:NetworkService" returnQName="DNSDelegatedEntries" returnType="rtns:ArrayOfDNSDelegatedEntry" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:DNSDelegatedEntry" xmlns:tns2="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Search" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="dnsDelegatedGetByNameView" qname="operNS:dnsDelegatedGetByNameView" xmlns:operNS="urn:NetworkService" returnQName="DNSDelegatedEntry" returnType="rtns:DNSDelegatedEntry" xmlns:rtns="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Domain" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="View" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="dnsDelegatedAdd" qname="operNS:dnsDelegatedAdd" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="DNSDelegatedInput" type="tns:DNSDelegatedInput" xmlns:tns="urn:NetworkDataTypes"/>
+      </operation>
+      <operation name="dnsDelegatedListKeys" qname="operNS:dnsDelegatedListKeys" xmlns:operNS="urn:NetworkService" returnQName="DNSDelegatedKeys" returnType="rtns:ArrayOfDNSDelegatedKey" xmlns:rtns="urn:NetworkDataTypes" returnItemType="tns2:DNSDelegatedKey" xmlns:tns2="urn:NetworkDataTypes" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+      </operation>
+      <operation name="dnsDelegatedRemove" qname="operNS:dnsDelegatedRemove" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Domain" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="View" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="dnsDelegatedAliasAdd" qname="operNS:dnsDelegatedAliasAdd" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Domain" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="View" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Alias" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="dnsDelegatedAliasRemove" qname="operNS:dnsDelegatedAliasRemove" xmlns:operNS="urn:NetworkService" returnQName="Result" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:Auth" xmlns:pns="urn:NetworkService" type="tns:Auth" xmlns:tns="urn:NetworkDataTypes" inHeader="true"/>
+        <parameter qname="Domain" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="View" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="Alias" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <parameter name="allowedMethods" value="dnsDelegatedAdd getSetAllInterfaces serviceUpdateDescription dnsDelegatedListKeys getBOOTPInfo searchNetNameTable deviceSyncIPMIInterface getSwitchesFromService interfaceRename dnsDelegatedAliasAdd searchSet deviceGlobalRename dnsDelegatedSearch getBulkInterfaceInfo deviceRemove deviceUpdate getDeviceInfoFromNameMAC setDeleteAddress getDevicesFromService bulkInsertAuto deviceRemoveBOOTPInfo getSetInterfacesTrusting vmGetInfo vmUpdate vmSearchCluster vmCreate deviceAddLogicalInterface getSetNameFromID deviceAddBulkInterface interfaceAddAlias getAuthToken deviceSetBOOTPInfo dnsZoneUpdate deviceRemoveBulkInterface setRemove deviceAddSecondaryInterface bulkRemove setInsert getMyCurrentConnection vmGetClusterMembership svcPrincipalAdd getServiceInfo interfaceMoveAlias deviceRemoveLogicalInterface getDeviceInfo bulkInsert enableFanOutFromSwitchPort getConnectionsFromDevice setSwitchPortService setHCPResponse getOutletLocationFromSwitchPort interfaceUpdateDescription deviceRemoveCard getSwitchInfo deviceInsert vmMove vmDestroy setSwitchPortTypeStatus getDeviceBasicInfo dnsDelegatedAliasRemove vmMigrate interfaceMove getMyDeviceInfo setInsertService searchDevice deviceUpdateIPv6Ready setDeleteService dnsDelegatedRemove dnsDelegatedGetByNameView vmSetUnsetManagedFlag deviceMoveBulkInterface interfaceRemoveAlias getSetInfo getHCPInfoArray getCurrentConnection setInsertAddress getLastChangedDevices vmNetReset vmClusterGetInfo vmClusterGetDevices svcPrincipalRemove deviceAddCard getDeviceInfoArray setUnsetBindedInterface getSwitchPortTypeStatus deviceAddIPMIInterface"/>
+
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:SwitchPort"
+        type="java:NetworkDataTypes.SwitchPort"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:ReverseTelnet"
+        type="java:NetworkDataTypes.ReverseTelnet"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:DNSDelegatedInput"
+        type="java:NetworkDataTypes.DNSDelegatedInput"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:NetNameTuple"
+        type="java:NetworkDataTypes.NetNameTuple"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:ArrayOfConnection"
+        type="java:NetworkDataTypes.Connection[]"
+        innerType="cmp-ns:Connection" xmlns:cmp-ns="urn:NetworkDataTypes"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:InterfaceInformation"
+        type="java:NetworkDataTypes.InterfaceInformation"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:DNSDelegatedEntry"
+        type="java:NetworkDataTypes.DNSDelegatedEntry"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:DeviceBasicInfo"
+        type="java:NetworkDataTypes.DeviceBasicInfo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:ArrayOfDNSDelegatedEntry"
+        type="java:NetworkDataTypes.DNSDelegatedEntry[]"
+        innerType="cmp-ns:DNSDelegatedEntry" xmlns:cmp-ns="urn:NetworkDataTypes"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:ArrayOfString"
+        type="java:java.lang.String[]"
+        innerType="cmp-ns:string" xmlns:cmp-ns="http://www.w3.org/2001/XMLSchema"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:ArrayOfBulkInterfacesAuto"
+        type="java:NetworkDataTypes.BulkInterfaceAuto[]"
+        innerType="cmp-ns:BulkInterfaceAuto" xmlns:cmp-ns="urn:NetworkDataTypes"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:SetInfo"
+        type="java:NetworkDataTypes.SetInfo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:Auth"
+        type="java:NetworkDataTypes.Auth"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:OutletLocation"
+        type="java:NetworkDataTypes.OutletLocation"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:InterfaceCard"
+        type="java:NetworkDataTypes.InterfaceCard"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:OperatingSystem"
+        type="java:NetworkDataTypes.OperatingSystem"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:BulkInterface"
+        type="java:NetworkDataTypes.BulkInterface"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:ArrayOfInterfaceCards"
+        type="java:NetworkDataTypes.InterfaceCard[]"
+        innerType="cmp-ns:InterfaceCard" xmlns:cmp-ns="urn:NetworkDataTypes"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:BulkInterfaceAuto"
+        type="java:NetworkDataTypes.BulkInterfaceAuto"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:ArrayOfInterfaces"
+        type="java:NetworkDataTypes.InterfaceInformation[]"
+        innerType="cmp-ns:InterfaceInformation" xmlns:cmp-ns="urn:NetworkDataTypes"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:ArrayOfNetNameTuple"
+        type="java:NetworkDataTypes.NetNameTuple[]"
+        innerType="cmp-ns:NetNameTuple" xmlns:cmp-ns="urn:NetworkDataTypes"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:Blocking"
+        type="java:NetworkDataTypes.Blocking"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:VMClusterSearch"
+        type="java:NetworkDataTypes.VMClusterSearch"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:ArrayOfObservedSwitchConnection"
+        type="java:NetworkDataTypes.ObservedSwitchConnection[]"
+        innerType="cmp-ns:ObservedSwitchConnection" xmlns:cmp-ns="urn:NetworkDataTypes"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:LogicalInterfaceInput"
+        type="java:NetworkDataTypes.LogicalInterfaceInput"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:Person"
+        type="java:NetworkDataTypes.Person"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:ArrayOfInetInfo"
+        type="java:NetworkDataTypes.InetInfo[]"
+        innerType="cmp-ns:InetInfo" xmlns:cmp-ns="urn:NetworkDataTypes"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:ArrayOfSwitchPort"
+        type="java:NetworkDataTypes.SwitchPort[]"
+        innerType="cmp-ns:SwitchPort" xmlns:cmp-ns="urn:NetworkDataTypes"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:BulkMoveOptions"
+        type="java:NetworkDataTypes.BulkMoveOptions"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:BOOTPInfo"
+        type="java:NetworkDataTypes.BOOTPInfo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:PersonInput"
+        type="java:NetworkDataTypes.PersonInput"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:Location"
+        type="java:NetworkDataTypes.Location"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:DeviceInfo"
+        type="java:NetworkDataTypes.DeviceInfo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:ArrayOfDNSDelegatedKey"
+        type="java:NetworkDataTypes.DNSDelegatedKey[]"
+        innerType="cmp-ns:DNSDelegatedKey" xmlns:cmp-ns="urn:NetworkDataTypes"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:IPMIOptions"
+        type="java:NetworkDataTypes.IPMIOptions"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:DeviceSearch"
+        type="java:NetworkDataTypes.DeviceSearch"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:ObservedSwitchConnection"
+        type="java:NetworkDataTypes.ObservedSwitchConnection"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:VMInfo"
+        type="java:NetworkDataTypes.VMInfo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:DnsZoneOptions"
+        type="java:NetworkDataTypes.DnsZoneOptions"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:Time"
+        type="java:NetworkDataTypes.Time"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:SwitchPortTypeStatus"
+        type="java:NetworkDataTypes.SwitchPortTypeStatus"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:DNSDelegatedKey"
+        type="java:NetworkDataTypes.DNSDelegatedKey"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:ArrayOfDeviceInfo"
+        type="java:NetworkDataTypes.DeviceInfo[]"
+        innerType="cmp-ns:DeviceInfo" xmlns:cmp-ns="urn:NetworkDataTypes"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:ServiceInfo"
+        type="java:NetworkDataTypes.ServiceInfo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:Connection"
+        type="java:NetworkDataTypes.Connection"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:ArrayOfBulkInterfaces"
+        type="java:NetworkDataTypes.BulkInterface[]"
+        innerType="cmp-ns:BulkInterface" xmlns:cmp-ns="urn:NetworkDataTypes"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:DeviceInput"
+        type="java:NetworkDataTypes.DeviceInput"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:InetInfo"
+        type="java:NetworkDataTypes.InetInfo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:Outlet"
+        type="java:NetworkDataTypes.Outlet"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:VMOptions"
+        type="java:NetworkDataTypes.VMOptions"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:VMClusterInfo"
+        type="java:NetworkDataTypes.VMClusterInfo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:NetworkDataTypes"
+        qname="ns:SetInput"
+        type="java:NetworkDataTypes.SetInput"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+  </service>
+</deployment>
