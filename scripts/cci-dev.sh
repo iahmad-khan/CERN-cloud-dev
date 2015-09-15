@@ -108,11 +108,11 @@ cluster_pod_base_start() {
 	echo "starting the base pods (skydns, puppet, ceph)"
 	# launch the pods
 	cd $CLOUDDEV/kubernetes
-	for z in dns-hack.json skydns-rc.yaml skydns-svc.yaml puppet-pod.yaml puppet-svc.yaml ceph-pod.yaml; do
+	for z in dns-hack.json skydns-rc.yaml skydns-svc.yaml puppet-pod.yaml puppet-svc.yaml ceph-pod.yaml wigner-pod.yaml; do
 		kubectl create -f $z
 	done
 
-	kubectl get pod ceph | grep Pending > /dev/null 2>&1
+	kubectl get pod | grep Pending > /dev/null 2>&1
 	echo "waiting for pods to be ready..."
 	while [ $? -eq 0 ]
 	do
@@ -120,10 +120,12 @@ cluster_pod_base_start() {
 		kubectl get pod | grep Pending > /dev/null 2>&1
 	done
 
-	kubectl exec -it -p ceph -c cephall -- HOME=/ /usr/bin/ceph --connect-timeout 10 auth add client.images -i /etc/ceph/ceph.client.images.keyring
-	kubectl exec -it -p ceph -c cephall -- HOME=/ /usr/bin/ceph --connect-timeout 10 auth add client.volumes -i /etc/ceph/ceph.client.volumes.keyring
-	kubectl exec -it -p ceph -c cephall -- HOME=/ /usr/bin/ceph --connect-timeout 10 osd pool create images 64
-	kubectl exec -it -p ceph -c cephall -- HOME=/ /usr/bin/ceph --connect-timeout 10 osd pool create volumes 64
+	for cluster in ceph wigner; do
+		kubectl exec -it -p ${cluster} -c cephall -- HOME=/ /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 auth add client.images -i /etc/ceph/${cluster}.client.images.keyring
+		kubectl exec -it -p ${cluster} -c cephall -- HOME=/ /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 auth add client.volumes -i /etc/ceph/${cluster}.client.volumes.keyring
+		kubectl exec -it -p ${cluster} -c cephall -- HOME=/ /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 osd pool create images 64
+		kubectl exec -it -p ${cluster} -c cephall -- HOME=/ /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 osd pool create volumes 64
+	done
 
 	echo "waiting for puppetdb to start..."
 	while ! kubectl exec -p puppet -c puppetdb -- /usr/bin/curl -s http://localhost:8080/v3/facts > /dev/null 2>&1

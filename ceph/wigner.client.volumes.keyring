@@ -1,0 +1,4 @@
+[client.volumes]
+	key = AQBHyfZVhhW/FRAATU/5fYNmSzdzWkoYwCIcKg==
+	caps mon = "allow r"
+	caps osd = "allow *"
