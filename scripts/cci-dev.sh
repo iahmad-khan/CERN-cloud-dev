@@ -125,8 +125,9 @@ cluster_pod_base_start() {
 	for cluster in ceph wigner; do
 		kubectl exec -it -p ${cluster} -c cephall -- HOME=/ /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 auth add client.images -i /etc/ceph/${cluster}.client.images.keyring
 		kubectl exec -it -p ${cluster} -c cephall -- HOME=/ /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 auth add client.volumes -i /etc/ceph/${cluster}.client.volumes.keyring
-		kubectl exec -it -p ${cluster} -c cephall -- HOME=/ /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 osd pool create images 64
-		kubectl exec -it -p ${cluster} -c cephall -- HOME=/ /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 osd pool create volumes 64
+		kubectl exec -it -p ${cluster} -c cephall -- HOME=/ /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 osd pool create images 32
+		kubectl exec -it -p ${cluster} -c cephall -- HOME=/ /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 osd pool create volumes 32
+		kubectl exec -it -p ${cluster} -c cephall -- HOME=/ /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 osd pool create volumes-critical 32
 	done
 
 	echo "waiting for puppetdb to start..."

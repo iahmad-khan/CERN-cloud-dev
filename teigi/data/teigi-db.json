@@ -2,6 +2,7 @@
         "unit_test_secret_key": "unit_test_secret_value",
         "ceph_client_images_keyring": "[client.images]\n\tkey = AQDFIqlVdr2VMRAAeZjXcV3DwpWxuJfaSAdUMg==\n\tcaps mon = allow r\n\tcaps osd = allow *",
         "ceph_client_volumes_keyring": "[client.volumes]\n\tkey = AQArZa5VqkPjOhAAXxRwNIXXN9jxnzrC8zxnEA==\n\tcaps mon = allow r\n\tcaps osd = allow *",
+        "wigner_client_volumes_keyring": "[client.volumes]\n\tkey = AQBHyfZVhhW/FRAATU/5fYNmSzdzWkoYwCIcKg==\n\tcaps mon = allow r\n\tcaps osd = allow *",
         "cinder_critical_iscsi01_netapp_password": "123456",
         "cinder_critical_iscsi01_netapp_sa_password": "123456",
         "cinder_database_connection": "mysql://cinder:123456@controller/cinder",

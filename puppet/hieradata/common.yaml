@@ -1,4 +1,13 @@
 ceph_repo_release: 'hammer'
+ceph_cluster:
+  ceph:
+    mon_host: '172.17.42.1'
+    user: 'volumes'
+    secret_uuid: '00000000-1111-1111-1111-000000000001'
+  wigner:
+    mon_host: '172.17.42.1:9789'
+    user: 'volumes'
+    secret_uuid: '00000000-1111-1111-1111-000000000011'
 roger_server: puppet
 flume_agent_enable: false
 teigi_ssl_port: 8082
@@ -145,6 +154,7 @@ neutron_ml2_mechanism_drivers:
 cinder_api_port: '8776'
 cinder_ceph_user: 'volumes'
 cinder_ceph_mon_host: '172.17.42.1'
+cinder_wigner_mon_host: '172.17.42.1:9789'
 cinder_database_idle_timeout: 3600
 cinder_rpc_backend: 'cinder.openstack.common.rpc.impl_kombu'
 cinder_glance_host: 'glance.default.kubdomain.local'
@@ -220,7 +230,11 @@ cinder_rbd_secret_uuid: '00000000-1111-1111-1111-000000000001'
 cinder_scheduler_driver: 'cinder.scheduler.filter_scheduler.FilterScheduler'
 cinder_scheduler_default_filters: 'CapabilitiesFilter'
 cinder_scheduler_default_weighers: 'CapacityWeigher'
-cinder_enabled_backends: 'standard,critical'
+cinder_enabled_backends:
+        standard: {}
+        critical: {}
+        wig-standard: {}
+        wig-critical: {}
 cinder_volume_usage_audit: true
 cinder_volume_usage_audit_period: 'hour'
 cinder_notification_driver: 'cinder.openstack.common.notifier.rpc_notifier'
@@ -228,18 +242,41 @@ cinder_notification_driver: 'cinder.openstack.common.notifier.rpc_notifier'
 cinder_standard_volume_driver: 'cinder.volume.drivers.rbd.RBDDriver'
 cinder_standard_volume_group: 'standard'
 cinder_standard_volume_backend_name: 'standard'
+cinder_standard_rbd_ceph_conf: '/etc/ceph/ceph.conf'
 cinder_standard_rbd_pool: 'volumes'
 cinder_standard_rbd_user: 'volumes'
 cinder_standard_rbd_secret_uuid: '00000000-1111-1111-1111-000000000001'
 
 cinder_critical_volume_driver: 'cinder.volume.drivers.rbd.RBDDriver'
-cinder_critical_volume_backend_name: 'CEPH_CRITICAL'
-cinder_critical_rbd_pool: 'cinder-critical'
+cinder_critical_volume_backend_name: 'critical'
+cinder_critical_rbd_ceph_conf: '/etc/ceph/ceph.conf'
+cinder_critical_rbd_pool: 'volumes-critical'
 cinder_critical_rbd_user: 'volumes'
 cinder_critical_rbd_secret_uuid: '00000000-1111-1111-1111-000000000001'
 
+cinder_wig-standard_volume_driver: 'cinder.volume.drivers.rbd.RBDDriver'
+cinder_wig-standard_volume_backend_name: 'wig-standard'
+cinder_wig-standard_rbd_ceph_conf: '/etc/ceph/wigner.conf'
+cinder_wig-standard_rbd_pool: 'volumes'
+cinder_wig-standard_rbd_user: 'volumes'
+cinder_wig-standard_rbd_secret_uuid: '00000000-1111-1111-1111-000000000001'
+
+cinder_wig-critical_volume_driver: 'cinder.volume.drivers.rbd.RBDDriver'
+cinder_wig-critical_volume_backend_name: 'wig-critical'
+cinder_wig-critical_rbd_ceph_conf: '/etc/ceph/wigner.conf'
+cinder_wig-critical_rbd_pool: 'volumes-critical'
+cinder_wig-critical_rbd_user: 'volumes'
+cinder_wig-critical_rbd_secret_uuid: '00000000-1111-1111-1111-000000000001'
+
 overwrite_cinder_policy: true
 
+iaas7_kilo_include_pkgs:
+    - openstack-cinder
+    - python-cinder
+    - python-cinderclient
+openstack_kilo_exclude_pkgs:
+    - puppet
+    - facter
 iaas7_juno_include_pkgs:
     - openstack-cinder
     - python-cinder
