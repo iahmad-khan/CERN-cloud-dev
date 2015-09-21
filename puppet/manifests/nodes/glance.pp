@@ -13,7 +13,7 @@ node /.*glance.*/ inherits default {
     environment => 'TERM=xterm',
     refreshonly => true,
   }
-  ~>
+  ->
   Package['openstack-glance']
   ~>
   file { '/var/log/glance/api.log':
@@ -23,12 +23,10 @@ node /.*glance.*/ inherits default {
     mode   => '0644',
   }
   ->
+  Teigi::Secret <||>
+  ->
   Glance_api_config <||>
   ->
-  package {'ceph':
-    ensure => 'present',
-  }
-  ~>
   exec { '/usr/bin/glance-manage db_sync':
     refreshonly => true,
   }
