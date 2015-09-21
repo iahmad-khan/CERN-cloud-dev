@@ -24,6 +24,10 @@ node /.*glance.*/ inherits default {
   }
   ->
   Glance_api_config <||>
+  ->
+  package {'ceph':
+    ensure => 'present',
+  }
   ~>
   exec { '/usr/bin/glance-manage db_sync':
     refreshonly => true,

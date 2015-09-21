@@ -304,7 +304,7 @@ glance_registry_sql_idle_timeout: '3600'
 glance_registry_use_syslog: false
 glance_registry_verbose: true
 glance_rbd_ceph_conf_file: "[global]\n    mon host = 172.17.42.1\n"
-glance_rbd_keyring: false
+glance_rbd_keyring: true
 glance_rbd_store_ceph_conf: '/etc/ceph/ceph.conf'
 glance_rbd_store_chunk_size: '8'
 glance_rbd_store_user: 'images'
