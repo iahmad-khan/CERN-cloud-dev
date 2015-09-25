@@ -34,18 +34,25 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
     private static HashMap<String,String> parents = new HashMap<String,String>();
 
     public NetworkServiceBindingImpl() {
-        if (!devices.containsKey("PARENT")) {
-            devices.put("PARENT",
-                        new DeviceInfo("PARENT", defaultLocation, "defzone", "defstatus", "defmanufacturer",
+	logger.info("initializing new networkservicebindingimpl");
+        if (!devices.containsKey("compute")) {
+            devices.put("compute",
+                        new DeviceInfo("compute", defaultLocation, "defzone", "defstatus", "defmanufacturer",
                                        "defmodel", "deftype", "defdesc", "deftag", "defserial", defaultOS, "definv", null, null,
-                                       defaultPerson, defaultPerson, null, null, false, null, null, false));
+                                       defaultPerson, defaultPerson,
+				       new InterfaceCard[]{new InterfaceCard("02-16-3e", "ETHERNET")},
+				       new InterfaceInformation[]{
+					       new InterfaceInformation(false, "eth0", ".CERN.CH", "10.0.0.1", "CLUSTER1", "SC1",
+							       true, "255.255.255.0", "10.0.0.1",
+							       new String[]{"137.138.16.5", "137.138.17.5"},
+							       null, new String[]{"137.138.16.69", "137.138.17.69"},
+							       "2001:1458:301:33::100:67", 64,
+								new String[]{"2001:1458:201:1000::5", "2001:1458:201:1100::5"},
+								new String[]{"2001:1458:201:1040::69", "2001:1458:201:1140::69"},
+								"::1", null, null, null, "RACK1", "DESC1", ".CERN.CH", "MEDIUM", null)},
+					       false, null, null, false));
+             add2Cluster("CLUSTER1", "compute");
         }
-
-        if (!clusters.containsKey("CLUSTER1")) {
-            createCluster("CLUSTER1");
-            add2Cluster("CLUSTER1", "PARENT");
-        }
-
     }
 
     private String dumpDevices() {
@@ -102,6 +109,10 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
 
     private void add2Cluster(String cluster, String device) {
 
+        // create cluster if it does not exist
+        if (!clusters.containsKey(cluster)) {
+            createCluster(cluster);
+        }
         logger.info("adding " + device + " to cluster " + cluster);
         String[] oldList = clusters.get(cluster).getServices();
         String[] newList = new String[oldList.length+1];
@@ -114,19 +125,14 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
     }
 
     public java.lang.String getAuthToken(java.lang.String login, java.lang.String password, java.lang.String type) throws java.rmi.RemoteException {
-        for (String c : clusters.keySet()) {
-
-            logger.info("cluster " + c);
-            for (String s : clusters.get(c).getServices())
-                logger.info("cluster " + c + " vm " + s);
-
-        }
+	logger.info("getting new authtoken :: " + login + " :: " + password + " :: " + type);
         return "123456";
     }
 
     public java.lang.String[] searchDevice(NetworkDataTypes.Auth auth, NetworkDataTypes.DeviceSearch deviceSearch) throws java.rmi.RemoteException {
         Vector<String> result = new Vector<String>();
         String ip = deviceSearch.getIPAddress();
+	logger.info("searching for device :: " + ip);
         for (DeviceInfo d : devices.values()) {
             for (InterfaceInformation iface : d.getInterfaces()) {
                 if (iface.getIPAddress().equals(ip))
@@ -137,6 +143,7 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
     }
 
     public NetworkDataTypes.DeviceBasicInfo getDeviceBasicInfo(java.lang.String deviceName) throws java.rmi.RemoteException {
+	logger.info("getting device basic info " + deviceName);
         DeviceInfo d = devices.get(deviceName);
         if (d != null)
             return deviceInfo2BasicInfo(d);
@@ -144,7 +151,7 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
     }
 
     public NetworkDataTypes.DeviceInfo getDeviceInfo(NetworkDataTypes.Auth auth, java.lang.String deviceName) throws java.rmi.RemoteException {
-        logger.info("getDeviceInfo :: looking for " + deviceName + " in " + dumpDevices());
+        logger.info("getting device info :: " + deviceName);
         DeviceInfo result = devices.get(deviceName);
         logger.info("result " + result);
         return result;
@@ -219,10 +226,10 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
     }
 
     public boolean deviceUpdateIPv6Ready(NetworkDataTypes.Auth auth, java.lang.String deviceName, boolean IPv6Ready) throws java.rmi.RemoteException {
+	logger.info("setting device ipv6ready :: " + deviceName + " :: " + IPv6Ready);
         DeviceInfo d = devices.get(deviceName);
         if (d != null) {
             d.setIPv6Ready(IPv6Ready);
-            logger.info(dumpDevices());
             return true;
         }
         return false;
@@ -281,8 +288,8 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
     }
 
     public java.lang.String[] getDevicesFromService(NetworkDataTypes.Auth auth, java.lang.String service) throws java.rmi.RemoteException {
-        //TODO: implement
-        return null;
+	logger.info("getting devices from service :: " + service);
+        return clusters.get(service).getServices();
     }
 
     public java.lang.String[] getSwitchesFromService(NetworkDataTypes.Auth auth, java.lang.String service) throws java.rmi.RemoteException {
@@ -318,11 +325,13 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
     }
 
     public boolean interfaceAddAlias(NetworkDataTypes.Auth auth, java.lang.String interfaceName, java.lang.String alias) throws java.rmi.RemoteException {
+	logger.info("adding interface alias :: " + interfaceName + " :: " + alias);
         // TODO: implement
         return false;
     }
 
     public boolean interfaceRemoveAlias(NetworkDataTypes.Auth auth, java.lang.String interfaceName, java.lang.String alias) throws java.rmi.RemoteException {
+	logger.info("removing interface alias :: " + interfaceName + " :: " + alias);
         //TODO: implement
         return false;
     }
@@ -396,39 +405,56 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
     }
 
     public NetworkDataTypes.ServiceInfo getServiceInfo(NetworkDataTypes.Auth auth, java.lang.String serviceName) throws java.rmi.RemoteException {
-        // TODO: implement
-        return null;
+	logger.info("fetching service info for '" + serviceName + "'");
+	ServiceInfo srvInfo = new ServiceInfo("SRV1", "CLUSTER1", "10.0.0.2", "10.0.0.255", 100, "255.255.0.0", "10.0.0.1",
+			new String[]{"137.138.16.5", "137.138.17.5"},
+			new String[]{"137.138.16.69", "137.138.17.69"},
+			null, ".CERN.CH", null,
+			100, 100, "2001:1458:301:33::100:67", 64, "2001:1458:301:33::1",
+			new String[]{"2001:1458:201:1000::5", "2001:1458:201:1100::5"},
+			new String[]{"2001:1458:201:1040::69", "2001:1458:201:1140::69"});
+	return srvInfo;
     }
 
     public boolean vmCreate(NetworkDataTypes.Auth auth, NetworkDataTypes.DeviceInput VMDevice, NetworkDataTypes.InterfaceCard interfaceCard, java.lang.String VMClusterName, java.lang.String VMParent, NetworkDataTypes.VMOptions VMOptions) throws java.rmi.RemoteException {
-        // create cluster if it does not exist
-        if (!clusters.containsKey(VMClusterName)) {
-            createCluster(VMClusterName);
-        }
+	logger.info("creating vm :: " + VMDevice.getDeviceName() + " :: cluster: " + VMClusterName + " :: parent: " + VMParent);
 
         add2Cluster(VMClusterName, VMDevice.getDeviceName());
 
         parents.put(VMDevice.getDeviceName(), VMParent);
 
-        devices.put(VMDevice.getDeviceName(), deviceInput2Info(VMDevice));
+	DeviceInfo newDevice = deviceInput2Info(VMDevice);
+	newDevice.setNetworkInterfaceCards(new InterfaceCard[]{interfaceCard});
+	newDevice.setInterfaces(new InterfaceInformation[]{
+					       new InterfaceInformation(false, "eth0", ".CERN.CH", "10.0.0." + devices.size()+1, "CLUSTER1", "SC1",
+							       true, "255.255.255.0", "10.0.0.1",
+							       new String[]{"137.138.16.5", "137.138.17.5"},
+							       null, new String[]{"137.138.16.69", "137.138.17.69"},
+							       "2001:1458:301:33::100:67", 64,
+								new String[]{"2001:1458:201:1000::5", "2001:1458:201:1100::5"},
+								new String[]{"2001:1458:201:1040::69", "2001:1458:201:1140::69"},
+								"::1", null, null, null, "RACK1", "DESC1", ".CERN.CH", "MEDIUM", null)});
+        devices.put(VMDevice.getDeviceName(), newDevice);
 
-        logger.info("created " + VMDevice.getDeviceName() + " :: " + dumpDevices());
+        logger.info("created " + VMDevice.getDeviceName());
         return true;
     }
 
     public boolean vmMigrate(NetworkDataTypes.Auth auth, java.lang.String VMName, java.lang.String newParent) throws java.rmi.RemoteException {
-
+	logger.info("migrating vm :: " + VMName + " :: newparent: " + newParent);
         return false;
     }
 
     public boolean vmMove(NetworkDataTypes.Auth auth, java.lang.String VMName, java.lang.String VMClusterName, java.lang.String VMParent, NetworkDataTypes.VMOptions VMOptions) throws java.rmi.RemoteException {
+	logger.info("moving vm :: " + VMName + " :: cluster: " + VMClusterName + " :: parent: " + VMParent);
         return false;
     }
 
     public boolean vmUpdate(NetworkDataTypes.Auth auth, java.lang.String deviceName, NetworkDataTypes.DeviceInput deviceInput) throws java.rmi.RemoteException {
+	logger.info("updating vm :: " + deviceName );
         devices.remove(deviceName);
         devices.put(deviceInput.getDeviceName(), deviceInput2Info(deviceInput));
-        logger.info("Updated " + deviceName + " :: " + dumpDevices());
+        logger.info("Updated " + deviceName);
         return true;
     }
 
@@ -449,6 +475,7 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
     }
 
     public java.lang.String[] vmGetClusterMembership(NetworkDataTypes.Auth auth, java.lang.String deviceName) throws java.rmi.RemoteException {
+	logger.info("getting vm cluster membership :: " + deviceName);
         //TODO:implement
         return null;
     }
@@ -458,11 +485,11 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
     }
 
     public boolean vmSetUnsetManagedFlag(NetworkDataTypes.Auth auth, java.lang.String deviceName, boolean flag) throws java.rmi.RemoteException {
-        //TODO: implement
-        return false;
+        return true;
     }
 
     public boolean vmNetReset(NetworkDataTypes.Auth auth, java.lang.String VMName) throws java.rmi.RemoteException {
+	logger.info("resetting vm network :: " + VMName);
         DeviceInfo d = devices.get(VMName);
         if (d != null) {
             d.setNetworkInterfaceCards(new InterfaceCard[] {});
