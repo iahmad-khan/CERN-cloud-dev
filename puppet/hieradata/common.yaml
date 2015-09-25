@@ -1,3 +1,4 @@
+ceph_repo_release: 'hammer'
 roger_server: puppet
 flume_agent_enable: false
 teigi_ssl_port: 8082
@@ -64,9 +65,10 @@ nova_conductor_monitoring: false
 # nova::api
 haproxy_enable: false
 haproxy_nova_api_enable: false
-firewall_nova_api_enable: false
-firewall_nova_metadata_enable: false
+firewall_nova_api_enable: true
+firewall_nova_metadata_enable: true
 
+nova_api_port: 8774
 nova_api_admin_port: 443
 nova_api_admin_user: 'nova'
 nova_api_admin_tenant_name: 'services'
@@ -91,12 +93,15 @@ nova_compute_libvirt_virt_type: 'qemu'
 nova_compute_monitoring: false
 nova_compute_ksm: false
 nova_compute_reserved_host_memory: 0
-nova_neutron_enabled: true
+nova_neutron_enabled: false
 nova_metadata_host: 'localhost' # FIXME
 nova_compute_disable_snoop: false
 nova_compute_bridgeconfig: false
 nova_compute_bridgetables: false
 nova_compute_netconntrack: false
+
+# nova_network
+nova_network_network_manager: 'nova.network.manager.CernManager'
 
 # cloud_networking
 neutron_verbose: true
@@ -445,6 +450,7 @@ log_regex_keystone: '(\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}.\\d{3})\\s*\\
 nova_compute_api_port: 8774
 
 # cloud_adm
+osclients_acron: false
 osclients_default_rc: true
 
 osclients_rdo_include_pkgs:
