@@ -30,10 +30,14 @@ node /.*glance.*/ inherits default {
   exec { '/usr/bin/glance-manage db_sync':
     refreshonly => true,
   }
-  ~>
+  ->
   exec {'/usr/sbin/usermod -a -G puppet glance':
-    refreshonly => true,
+    unless => "/bin/grep -e 'puppet.*glance' /etc/group",
   }
+  ~>
+  Service['openstack-glance-api']
+  ~>
+  Service['openstack-glance-registry']
 
   glance_api_config { 'keystone_authtoken/cafile': value => '/var/lib/puppet/ssl/certs/ca.pem'; }
   ->
