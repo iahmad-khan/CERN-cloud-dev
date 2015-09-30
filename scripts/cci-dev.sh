@@ -238,6 +238,7 @@ centos_install() {
 	sed -i "s/^OPTIONS.*/#OPTIONS=''/g" /etc/sysconfig/docker
 	# launch docker
 	systemctl start docker
+	iptables -F
 }
 
 exit_on_err() {
