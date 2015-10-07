@@ -55,7 +55,7 @@ nova_verbose: True
 nova_config_use_local: true
 nova_enabled_ssl_apis: []
 nova_glance_api_servers: 'glance.default.kubdomain.local:9292'
-nova_manage_selinux: False
+nova_manage_selinux: false
 landb_username: 'neutron'
 rabbit_host: 'controller'
 
@@ -102,6 +102,7 @@ nova_compute_netconntrack: false
 
 # nova_network
 nova_network_network_manager: 'nova.network.manager.CernManager'
+nova_network_create_networks: false
 
 # cloud_networking
 neutron_verbose: true
