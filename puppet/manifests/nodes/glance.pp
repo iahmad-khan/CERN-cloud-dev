@@ -34,6 +34,8 @@ node /.*glance.*/ inherits default {
   exec {'/usr/sbin/usermod -a -G puppet glance':
     unless => "/bin/grep -e 'puppet.*glance' /etc/group",
   }
+  ->
+  Cloud_monitoring::Flume::Agent['glance']
   ~>
   Service['openstack-glance-api']
   ~>
