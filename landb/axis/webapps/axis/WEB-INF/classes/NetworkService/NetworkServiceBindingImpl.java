@@ -12,6 +12,7 @@ import java.util.Vector;
 import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Random;
 import org.apache.log4j.Logger;
 
 import NetworkDataTypes.*;
@@ -40,7 +41,7 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
                         new DeviceInfo("compute", defaultLocation, "defzone", "defstatus", "defmanufacturer",
                                        "defmodel", "deftype", "defdesc", "deftag", "defserial", defaultOS, "definv", null, null,
                                        defaultPerson, defaultPerson,
-				       new InterfaceCard[]{new InterfaceCard("02-16-3e", "ETHERNET")},
+				       new InterfaceCard[]{new InterfaceCard(randomMACAddress(), "ETHERNET")},
 				       new InterfaceInformation[]{
 					       new InterfaceInformation(false, "eth0", "", "10.0.0.1", "CLUSTER1", "SC1",
 							       true, "255.255.255.0", "10.0.0.1",
@@ -55,18 +56,45 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
         }
     }
 
+    // COMMON UTIL METHODS
+    private String randomMACAddress(){
+        Random rand = new Random();
+        byte[] macAddr = new byte[6];
+        rand.nextBytes(macAddr);
+
+        macAddr[0] = (byte)(macAddr[0] & (byte)254);  //zeroing last 2 bytes to make it unicast and locally adminstrated
+
+        StringBuilder sb = new StringBuilder(18);
+        for(byte b : macAddr){
+
+            if(sb.length() > 0)
+                sb.append(":");
+
+            sb.append(String.format("%02x", b));
+        }
+
+
+        return sb.toString();
+    }
+
     private String dumpDevices() {
         String str = "";
         for (String s : devices.keySet()) {
             DeviceInfo d = devices.get(s);
-            str += "\n" + d.getDeviceName() + " Location:" + d.getLocation().getFloor() + d.getLocation().getRoom() + d.getLocation().getBuilding()
-                   + " Zone:" + d.getZone() + " Status:" + d.getStatus()
-                   + " Manufacturer:" + d.getManufacturer() + " Model:" + d.getModel() + " Type:" + d.getGenericType()
-                   + " Description:" + d.getDescription() + " Tag:" + d.getTag() + " SN:" + d.getSerialNumber()
-                   + " OS:" + d.getOperatingSystem() + " Inv: " + d.getInventoryNumber()
-                   + " Responsible:" + d.getResponsiblePerson().getName() + " User:" + d.getUserPerson().getName()
-                   + " IPv6:" + d.getIPv6Ready();
+	    str += dumpDevice(d);
         }
+        return str;
+    }
+
+    private String dumpDevice(DeviceInfo d) {
+        String str = "";
+        str += "\n" + d.getDeviceName() + " Location:" + d.getLocation().getFloor() + d.getLocation().getRoom() + d.getLocation().getBuilding()
+               + " Zone:" + d.getZone() + " Status:" + d.getStatus()
+               + " Manufacturer:" + d.getManufacturer() + " Model:" + d.getModel() + " Type:" + d.getGenericType()
+               + " Description:" + d.getDescription() + " Tag:" + d.getTag() + " SN:" + d.getSerialNumber()
+               + " OS:" + d.getOperatingSystem() + " Inv: " + d.getInventoryNumber()
+               + " Responsible:" + d.getResponsiblePerson().getName() + " User:" + d.getUserPerson().getName()
+               + " IPv6:" + d.getIPv6Ready();
         return str;
     }
 
@@ -130,6 +158,7 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
 
 	int ip = devices.size()+1;
 	DeviceInfo newDevice = deviceInput2Info(VMDevice);
+	interfaceCard.setHardwareAddress(randomMACAddress());
 	newDevice.setNetworkInterfaceCards(new InterfaceCard[]{interfaceCard});
 	newDevice.setInterfaces(new InterfaceInformation[]{
 					       new InterfaceInformation(false, "eth0", "", "10.0.0." + ip, "CLUSTER1", "SC1",
@@ -151,6 +180,8 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
 	logger.info("getting new authtoken :: " + login + " :: " + password + " :: " + type);
         return "123456";
     }
+
+    // SOAP METHODS
 
     public java.lang.String[] searchDevice(NetworkDataTypes.Auth auth, NetworkDataTypes.DeviceSearch deviceSearch) throws java.rmi.RemoteException {
         Vector<String> result = new Vector<String>();
@@ -178,6 +209,156 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
         DeviceInfo result = devices.get(deviceName);
         logger.info("result " + result);
         return result;
+    }
+
+    public boolean deviceUpdateIPv6Ready(NetworkDataTypes.Auth auth, java.lang.String deviceName, boolean IPv6Ready) throws java.rmi.RemoteException {
+	logger.info("setting device ipv6ready :: " + deviceName + " :: " + IPv6Ready);
+        DeviceInfo d = devices.get(deviceName);
+        if (d != null) {
+            d.setIPv6Ready(IPv6Ready);
+            return true;
+        }
+        return false;
+    }
+
+    public java.lang.String[] getDevicesFromService(NetworkDataTypes.Auth auth, java.lang.String service) throws java.rmi.RemoteException {
+	logger.info("getting devices from service :: " + service);
+        return clusters.get(service).getServices();
+    }
+
+    public boolean vmNetReset(NetworkDataTypes.Auth auth, java.lang.String VMName) throws java.rmi.RemoteException {
+	logger.info("resetting vm network :: " + VMName);
+        DeviceInfo d = devices.get(VMName);
+        if (d != null) {
+            d.setNetworkInterfaceCards(new InterfaceCard[] {});
+            d.setInterfaces(new InterfaceInformation[] {});
+            return true;
+        }
+        return false;
+    }
+
+    public NetworkDataTypes.ServiceInfo getServiceInfo(NetworkDataTypes.Auth auth, java.lang.String serviceName) throws java.rmi.RemoteException {
+	logger.info("fetching service info for '" + serviceName + "'");
+	ServiceInfo srvInfo = new ServiceInfo("SRV1", "CLUSTER1", "10.0.0.2", "10.0.0.255", 100, "255.255.0.0", "10.0.0.1",
+			new String[]{"137.138.16.5", "137.138.17.5"},
+			new String[]{"137.138.16.69", "137.138.17.69"},
+			null, "", null,
+			100, 100, "2001:1458:301:33::100:67", 64, "2001:1458:301:33::1",
+			new String[]{"2001:1458:201:1000::5", "2001:1458:201:1100::5"},
+			new String[]{"2001:1458:201:1040::69", "2001:1458:201:1140::69"});
+	return srvInfo;
+    }
+
+    public boolean vmCreate(NetworkDataTypes.Auth auth, NetworkDataTypes.DeviceInput VMDevice, NetworkDataTypes.InterfaceCard interfaceCard, java.lang.String VMClusterName, java.lang.String VMParent, NetworkDataTypes.VMOptions VMOptions) throws java.rmi.RemoteException {
+	logger.info("creating vm :: " + VMDevice.getDeviceName() + " :: cluster: " + VMClusterName + " :: parent: " + VMParent);
+
+
+        addDevice(VMClusterName, VMDevice, interfaceCard, VMParent);
+
+        return true;
+    }
+
+    public boolean vmMigrate(NetworkDataTypes.Auth auth, java.lang.String VMName, java.lang.String newParent) throws java.rmi.RemoteException {
+	logger.info("migrating vm :: " + VMName + " :: newparent: " + newParent);
+	//TODO
+        return false;
+    }
+
+    public boolean vmMove(NetworkDataTypes.Auth auth, java.lang.String VMName, java.lang.String VMClusterName, java.lang.String VMParent, NetworkDataTypes.VMOptions VMOptions) throws java.rmi.RemoteException {
+	logger.info("moving vm :: " + VMName + " :: cluster: " + VMClusterName + " :: parent: " + VMParent);
+        return false;
+    }
+
+    public boolean vmUpdate(NetworkDataTypes.Auth auth, java.lang.String deviceName, NetworkDataTypes.DeviceInput deviceInput) throws java.rmi.RemoteException {
+	logger.info("updating vm :: " + deviceName + " to " + deviceInput.getDeviceName());
+	DeviceInfo device = devices.get(deviceName);
+	devices.remove(deviceName);
+	device.setDeviceName(deviceInput.getDeviceName());
+        devices.put(deviceInput.getDeviceName(), device);
+        logger.info("updated " + deviceName + " to " + deviceInput.getDeviceName());
+        return true;
+    }
+
+    public java.lang.String[] vmGetClusterMembership(NetworkDataTypes.Auth auth, java.lang.String deviceName) throws java.rmi.RemoteException {
+	logger.info("getting vm cluster membership :: " + deviceName);
+        //TODO:implement
+        return null;
+    }
+
+    public NetworkDataTypes.VMClusterInfo vmClusterGetInfo(NetworkDataTypes.Auth auth, java.lang.String VMClusterName) throws java.rmi.RemoteException {
+        return clusters.get(VMClusterName);
+    }
+
+    public boolean vmDestroy(NetworkDataTypes.Auth auth, java.lang.String VMName) throws java.rmi.RemoteException {
+        return false;
+    }
+
+    public java.lang.String[] vmClusterGetDevices(NetworkDataTypes.Auth auth, java.lang.String VMClusterName) throws java.rmi.RemoteException {
+        return clusters.get(VMClusterName).getServices();
+    }
+
+    public boolean interfaceAddAlias(NetworkDataTypes.Auth auth, java.lang.String interfaceName, java.lang.String alias) throws java.rmi.RemoteException {
+	logger.info("adding interface alias :: " + interfaceName + " :: " + alias);
+        // TODO: implement
+        return false;
+    }
+
+    public boolean interfaceRemoveAlias(NetworkDataTypes.Auth auth, java.lang.String interfaceName, java.lang.String alias) throws java.rmi.RemoteException {
+	logger.info("removing interface alias :: " + interfaceName + " :: " + alias);
+        //TODO: implement
+        return false;
+    }
+
+    public NetworkDataTypes.VMInfo vmGetInfo(NetworkDataTypes.Auth auth, java.lang.String VMName) throws java.rmi.RemoteException {
+        return null;
+    }
+
+    public java.lang.String[] vmSearchCluster(NetworkDataTypes.Auth auth, NetworkDataTypes.VMClusterSearch VMClusterSearch) throws java.rmi.RemoteException {
+        return null;
+    }
+
+    public boolean vmSetUnsetManagedFlag(NetworkDataTypes.Auth auth, java.lang.String deviceName, boolean flag) throws java.rmi.RemoteException {
+        return true;
+    }
+
+    public boolean dnsZoneUpdate(NetworkDataTypes.Auth auth, java.lang.String zone, NetworkDataTypes.DnsZoneOptions dnsZoneOptions) throws java.rmi.RemoteException {
+        return false;
+    }
+
+    public boolean svcPrincipalAdd(NetworkDataTypes.Auth auth, java.lang.String deviceName, java.lang.String serviceName, NetworkDataTypes.PersonInput person) throws java.rmi.RemoteException {
+        return false;
+    }
+
+    public boolean svcPrincipalRemove(NetworkDataTypes.Auth auth, java.lang.String deviceName, java.lang.String serviceName) throws java.rmi.RemoteException {
+        return false;
+    }
+
+    public NetworkDataTypes.DNSDelegatedEntry[] dnsDelegatedSearch(NetworkDataTypes.Auth auth, java.lang.String search) throws java.rmi.RemoteException {
+        return null;
+    }
+
+    public NetworkDataTypes.DNSDelegatedEntry dnsDelegatedGetByNameView(NetworkDataTypes.Auth auth, java.lang.String domain, java.lang.String view) throws java.rmi.RemoteException {
+        return null;
+    }
+
+    public boolean dnsDelegatedAdd(NetworkDataTypes.Auth auth, NetworkDataTypes.DNSDelegatedInput DNSDelegatedInput) throws java.rmi.RemoteException {
+        return false;
+    }
+
+    public NetworkDataTypes.DNSDelegatedKey[] dnsDelegatedListKeys(NetworkDataTypes.Auth auth) throws java.rmi.RemoteException {
+        return null;
+    }
+
+    public boolean dnsDelegatedRemove(NetworkDataTypes.Auth auth, java.lang.String domain, java.lang.String view) throws java.rmi.RemoteException {
+        return false;
+    }
+
+    public boolean dnsDelegatedAliasAdd(NetworkDataTypes.Auth auth, java.lang.String domain, java.lang.String view, java.lang.String alias) throws java.rmi.RemoteException {
+        return false;
+    }
+
+    public boolean dnsDelegatedAliasRemove(NetworkDataTypes.Auth auth, java.lang.String domain, java.lang.String view, java.lang.String alias) throws java.rmi.RemoteException {
+        return false;
     }
 
     public NetworkDataTypes.DeviceInfo[] getDeviceInfoArray(NetworkDataTypes.Auth auth, java.lang.String[] deviceNameList) throws java.rmi.RemoteException {
@@ -248,16 +429,6 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
         return false;
     }
 
-    public boolean deviceUpdateIPv6Ready(NetworkDataTypes.Auth auth, java.lang.String deviceName, boolean IPv6Ready) throws java.rmi.RemoteException {
-	logger.info("setting device ipv6ready :: " + deviceName + " :: " + IPv6Ready);
-        DeviceInfo d = devices.get(deviceName);
-        if (d != null) {
-            d.setIPv6Ready(IPv6Ready);
-            return true;
-        }
-        return false;
-    }
-
     public boolean deviceSetBOOTPInfo(NetworkDataTypes.Auth auth, java.lang.String device, java.lang.String server, java.lang.String imagePath) throws java.rmi.RemoteException {
         return false;
     }
@@ -310,11 +481,6 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
         return null;
     }
 
-    public java.lang.String[] getDevicesFromService(NetworkDataTypes.Auth auth, java.lang.String service) throws java.rmi.RemoteException {
-	logger.info("getting devices from service :: " + service);
-        return clusters.get(service).getServices();
-    }
-
     public java.lang.String[] getSwitchesFromService(NetworkDataTypes.Auth auth, java.lang.String service) throws java.rmi.RemoteException {
         return null;
     }
@@ -344,18 +510,6 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
     }
 
     public boolean setUnsetBindedInterface(NetworkDataTypes.Auth auth, java.lang.String interfaceName, java.lang.String hardwareAddress) throws java.rmi.RemoteException {
-        return false;
-    }
-
-    public boolean interfaceAddAlias(NetworkDataTypes.Auth auth, java.lang.String interfaceName, java.lang.String alias) throws java.rmi.RemoteException {
-	logger.info("adding interface alias :: " + interfaceName + " :: " + alias);
-        // TODO: implement
-        return false;
-    }
-
-    public boolean interfaceRemoveAlias(NetworkDataTypes.Auth auth, java.lang.String interfaceName, java.lang.String alias) throws java.rmi.RemoteException {
-	logger.info("removing interface alias :: " + interfaceName + " :: " + alias);
-        //TODO: implement
         return false;
     }
 
@@ -424,126 +578,6 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
     }
 
     public boolean deviceSyncIPMIInterface(NetworkDataTypes.Auth auth, java.lang.String deviceName, java.lang.String interfaceName, java.lang.String IPMIInterfaceName, NetworkDataTypes.IPMIOptions IPMIOptions) throws java.rmi.RemoteException {
-        return false;
-    }
-
-    public NetworkDataTypes.ServiceInfo getServiceInfo(NetworkDataTypes.Auth auth, java.lang.String serviceName) throws java.rmi.RemoteException {
-	logger.info("fetching service info for '" + serviceName + "'");
-	ServiceInfo srvInfo = new ServiceInfo("SRV1", "CLUSTER1", "10.0.0.2", "10.0.0.255", 100, "255.255.0.0", "10.0.0.1",
-			new String[]{"137.138.16.5", "137.138.17.5"},
-			new String[]{"137.138.16.69", "137.138.17.69"},
-			null, "", null,
-			100, 100, "2001:1458:301:33::100:67", 64, "2001:1458:301:33::1",
-			new String[]{"2001:1458:201:1000::5", "2001:1458:201:1100::5"},
-			new String[]{"2001:1458:201:1040::69", "2001:1458:201:1140::69"});
-	return srvInfo;
-    }
-
-    public boolean vmCreate(NetworkDataTypes.Auth auth, NetworkDataTypes.DeviceInput VMDevice, NetworkDataTypes.InterfaceCard interfaceCard, java.lang.String VMClusterName, java.lang.String VMParent, NetworkDataTypes.VMOptions VMOptions) throws java.rmi.RemoteException {
-	logger.info("creating vm :: " + VMDevice.getDeviceName() + " :: cluster: " + VMClusterName + " :: parent: " + VMParent);
-
-
-        addDevice(VMClusterName, VMDevice, interfaceCard, VMParent);
-
-        return true;
-    }
-
-    public boolean vmMigrate(NetworkDataTypes.Auth auth, java.lang.String VMName, java.lang.String newParent) throws java.rmi.RemoteException {
-	logger.info("migrating vm :: " + VMName + " :: newparent: " + newParent);
-        return false;
-    }
-
-    public boolean vmMove(NetworkDataTypes.Auth auth, java.lang.String VMName, java.lang.String VMClusterName, java.lang.String VMParent, NetworkDataTypes.VMOptions VMOptions) throws java.rmi.RemoteException {
-	logger.info("moving vm :: " + VMName + " :: cluster: " + VMClusterName + " :: parent: " + VMParent);
-        return false;
-    }
-
-    public boolean vmUpdate(NetworkDataTypes.Auth auth, java.lang.String deviceName, NetworkDataTypes.DeviceInput deviceInput) throws java.rmi.RemoteException {
-	logger.info("updating vm :: " + deviceName );
-        devices.remove(deviceName);
-        devices.put(deviceInput.getDeviceName(), deviceInput2Info(deviceInput));
-        logger.info("Updated " + deviceName);
-        return true;
-    }
-
-    public boolean vmDestroy(NetworkDataTypes.Auth auth, java.lang.String VMName) throws java.rmi.RemoteException {
-        return false;
-    }
-
-    public NetworkDataTypes.VMClusterInfo vmClusterGetInfo(NetworkDataTypes.Auth auth, java.lang.String VMClusterName) throws java.rmi.RemoteException {
-        return clusters.get(VMClusterName);
-    }
-
-    public java.lang.String[] vmClusterGetDevices(NetworkDataTypes.Auth auth, java.lang.String VMClusterName) throws java.rmi.RemoteException {
-        return clusters.get(VMClusterName).getServices();
-    }
-
-    public NetworkDataTypes.VMInfo vmGetInfo(NetworkDataTypes.Auth auth, java.lang.String VMName) throws java.rmi.RemoteException {
-        return null;
-    }
-
-    public java.lang.String[] vmGetClusterMembership(NetworkDataTypes.Auth auth, java.lang.String deviceName) throws java.rmi.RemoteException {
-	logger.info("getting vm cluster membership :: " + deviceName);
-        //TODO:implement
-        return null;
-    }
-
-    public java.lang.String[] vmSearchCluster(NetworkDataTypes.Auth auth, NetworkDataTypes.VMClusterSearch VMClusterSearch) throws java.rmi.RemoteException {
-        return null;
-    }
-
-    public boolean vmSetUnsetManagedFlag(NetworkDataTypes.Auth auth, java.lang.String deviceName, boolean flag) throws java.rmi.RemoteException {
-        return true;
-    }
-
-    public boolean vmNetReset(NetworkDataTypes.Auth auth, java.lang.String VMName) throws java.rmi.RemoteException {
-	logger.info("resetting vm network :: " + VMName);
-        DeviceInfo d = devices.get(VMName);
-        if (d != null) {
-            d.setNetworkInterfaceCards(new InterfaceCard[] {});
-            d.setInterfaces(new InterfaceInformation[] {});
-            return true;
-        }
-        return false;
-    }
-
-    public boolean dnsZoneUpdate(NetworkDataTypes.Auth auth, java.lang.String zone, NetworkDataTypes.DnsZoneOptions dnsZoneOptions) throws java.rmi.RemoteException {
-        return false;
-    }
-
-    public boolean svcPrincipalAdd(NetworkDataTypes.Auth auth, java.lang.String deviceName, java.lang.String serviceName, NetworkDataTypes.PersonInput person) throws java.rmi.RemoteException {
-        return false;
-    }
-
-    public boolean svcPrincipalRemove(NetworkDataTypes.Auth auth, java.lang.String deviceName, java.lang.String serviceName) throws java.rmi.RemoteException {
-        return false;
-    }
-
-    public NetworkDataTypes.DNSDelegatedEntry[] dnsDelegatedSearch(NetworkDataTypes.Auth auth, java.lang.String search) throws java.rmi.RemoteException {
-        return null;
-    }
-
-    public NetworkDataTypes.DNSDelegatedEntry dnsDelegatedGetByNameView(NetworkDataTypes.Auth auth, java.lang.String domain, java.lang.String view) throws java.rmi.RemoteException {
-        return null;
-    }
-
-    public boolean dnsDelegatedAdd(NetworkDataTypes.Auth auth, NetworkDataTypes.DNSDelegatedInput DNSDelegatedInput) throws java.rmi.RemoteException {
-        return false;
-    }
-
-    public NetworkDataTypes.DNSDelegatedKey[] dnsDelegatedListKeys(NetworkDataTypes.Auth auth) throws java.rmi.RemoteException {
-        return null;
-    }
-
-    public boolean dnsDelegatedRemove(NetworkDataTypes.Auth auth, java.lang.String domain, java.lang.String view) throws java.rmi.RemoteException {
-        return false;
-    }
-
-    public boolean dnsDelegatedAliasAdd(NetworkDataTypes.Auth auth, java.lang.String domain, java.lang.String view, java.lang.String alias) throws java.rmi.RemoteException {
-        return false;
-    }
-
-    public boolean dnsDelegatedAliasRemove(NetworkDataTypes.Auth auth, java.lang.String domain, java.lang.String view, java.lang.String alias) throws java.rmi.RemoteException {
         return false;
     }
 
