@@ -42,14 +42,14 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
                                        defaultPerson, defaultPerson,
 				       new InterfaceCard[]{new InterfaceCard("02-16-3e", "ETHERNET")},
 				       new InterfaceInformation[]{
-					       new InterfaceInformation(false, "eth0", ".CERN.CH", "10.0.0.1", "CLUSTER1", "SC1",
+					       new InterfaceInformation(false, "eth0", "", "10.0.0.1", "CLUSTER1", "SC1",
 							       true, "255.255.255.0", "10.0.0.1",
 							       new String[]{"137.138.16.5", "137.138.17.5"},
 							       null, new String[]{"137.138.16.69", "137.138.17.69"},
 							       "2001:1458:301:33::100:67", 64,
 								new String[]{"2001:1458:201:1000::5", "2001:1458:201:1100::5"},
 								new String[]{"2001:1458:201:1040::69", "2001:1458:201:1140::69"},
-								"::1", null, null, null, "RACK1", "DESC1", ".CERN.CH", "MEDIUM", null)},
+								"::1", null, null, null, "RACK1", "DESC1", "", "MEDIUM", null)},
 					       false, null, null, false));
              add2Cluster("CLUSTER1", "compute");
         }
@@ -122,6 +122,29 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
 
         clusters.get(cluster).setServices(newList);
 
+    }
+
+    private void addDevice(String cluster, NetworkDataTypes.DeviceInput VMDevice, NetworkDataTypes.InterfaceCard interfaceCard, String parent) {
+
+        parents.put(VMDevice.getDeviceName(), parent);
+
+	int ip = devices.size()+1;
+	DeviceInfo newDevice = deviceInput2Info(VMDevice);
+	newDevice.setNetworkInterfaceCards(new InterfaceCard[]{interfaceCard});
+	newDevice.setInterfaces(new InterfaceInformation[]{
+					       new InterfaceInformation(false, "eth0", "", "10.0.0." + ip, "CLUSTER1", "SC1",
+							       true, "255.255.255.0", "10.0.0.1",
+							       new String[]{"137.138.16.5", "137.138.17.5"},
+							       null, new String[]{"137.138.16.69", "137.138.17.69"},
+							       "2001:1458:301:33::100:67", 64,
+								new String[]{"2001:1458:201:1000::5", "2001:1458:201:1100::5"},
+								new String[]{"2001:1458:201:1040::69", "2001:1458:201:1140::69"},
+								"::1", null, null, null, "RACK1", "DESC1", "", "MEDIUM", null)});
+        devices.put(VMDevice.getDeviceName(), newDevice);
+
+        add2Cluster(cluster, VMDevice.getDeviceName());
+
+        logger.info("created " + VMDevice.getDeviceName() + " with ip " + ip + " :: totals are now: cluster (" + clusters.get(cluster).getServices().length + ") .. global (" + devices.size() + ")");
     }
 
     public java.lang.String getAuthToken(java.lang.String login, java.lang.String password, java.lang.String type) throws java.rmi.RemoteException {
@@ -409,7 +432,7 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
 	ServiceInfo srvInfo = new ServiceInfo("SRV1", "CLUSTER1", "10.0.0.2", "10.0.0.255", 100, "255.255.0.0", "10.0.0.1",
 			new String[]{"137.138.16.5", "137.138.17.5"},
 			new String[]{"137.138.16.69", "137.138.17.69"},
-			null, ".CERN.CH", null,
+			null, "", null,
 			100, 100, "2001:1458:301:33::100:67", 64, "2001:1458:301:33::1",
 			new String[]{"2001:1458:201:1000::5", "2001:1458:201:1100::5"},
 			new String[]{"2001:1458:201:1040::69", "2001:1458:201:1140::69"});
@@ -419,24 +442,9 @@ public class NetworkServiceBindingImpl implements NetworkService.NetworkServiceI
     public boolean vmCreate(NetworkDataTypes.Auth auth, NetworkDataTypes.DeviceInput VMDevice, NetworkDataTypes.InterfaceCard interfaceCard, java.lang.String VMClusterName, java.lang.String VMParent, NetworkDataTypes.VMOptions VMOptions) throws java.rmi.RemoteException {
 	logger.info("creating vm :: " + VMDevice.getDeviceName() + " :: cluster: " + VMClusterName + " :: parent: " + VMParent);
 
-        add2Cluster(VMClusterName, VMDevice.getDeviceName());
 
-        parents.put(VMDevice.getDeviceName(), VMParent);
+        addDevice(VMClusterName, VMDevice, interfaceCard, VMParent);
 
-	DeviceInfo newDevice = deviceInput2Info(VMDevice);
-	newDevice.setNetworkInterfaceCards(new InterfaceCard[]{interfaceCard});
-	newDevice.setInterfaces(new InterfaceInformation[]{
-					       new InterfaceInformation(false, "eth0", ".CERN.CH", "10.0.0." + devices.size()+1, "CLUSTER1", "SC1",
-							       true, "255.255.255.0", "10.0.0.1",
-							       new String[]{"137.138.16.5", "137.138.17.5"},
-							       null, new String[]{"137.138.16.69", "137.138.17.69"},
-							       "2001:1458:301:33::100:67", 64,
-								new String[]{"2001:1458:201:1000::5", "2001:1458:201:1100::5"},
-								new String[]{"2001:1458:201:1040::69", "2001:1458:201:1140::69"},
-								"::1", null, null, null, "RACK1", "DESC1", ".CERN.CH", "MEDIUM", null)});
-        devices.put(VMDevice.getDeviceName(), newDevice);
-
-        logger.info("created " + VMDevice.getDeviceName());
         return true;
     }
 

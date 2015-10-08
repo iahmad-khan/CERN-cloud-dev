@@ -84,7 +84,7 @@
          OpenSSL style configuration is required as described in the APR/native
          documentation -->
     <Connector port="8443" protocol="org.apache.coyote.http11.Http11Protocol"
-               maxThreads="150" SSLEnabled="true" scheme="https" secure="true"
+               maxThreads="1" SSLEnabled="true" scheme="https" secure="true"
 	       keystoneFile="${user.home}/.keystore" keystorePass="123456"
                clientAuth="false" sslProtocol="TLS" />
 
