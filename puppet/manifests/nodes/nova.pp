@@ -45,4 +45,44 @@ node /.*nova.*/ inherits default {
   ->
   Service['openstack-nova-api']
 
+  Package['python-nova']
+  ->
+  file { '/tmp/patch':
+    ensure  => present,
+    content => "
+--- /usr/lib/python2.7/site-packages/nova/cern.py	2015-07-27 08:55:08.000000000 +0000
++++ /root/cern.py	2015-10-07 14:31:30.628621278 +0000
+@@ -58,7 +58,7 @@
+ 
+     def __auth(self, username=None, password=None):
+         \"\"\"Authenticates in landb\"\"\"
+-        url = 'https://network.cern.ch/sc/soap/soap.fcgi?v=5&WSDL'
++        url = 'https://puppet:8443/axis/services/NetworkServicePort?wsdl'
+         imp = Import('http://schemas.xmlsoap.org/soap/encoding/')
+         d = ImportDoctor(imp)
+         client = Client(url, doctor=d)
+@@ -168,7 +168,9 @@
+     def device_exists(self, device):
+         \"\"\"Check if a device is registered in landb\"\"\"
+         try:
+-            self.client.service.getDeviceInfo(device)
++            res = self.client.service.getDeviceInfo(device)
++            if res is None:
++                return False
+         except:
+             return False
+         return device
+",
+  }
+  -> 
+  exec { '/usr/bin/patch -p0 /usr/lib/python2.7/site-packages/nova/cern.py < /tmp/patch':
+    unless      => "/usr/bin/grep puppet /usr/lib/python2.7/site-packages/nova/cern.py",
+  }
+  ~>
+  Service['openstack-nova-scheduler']
+  ~>
+  Service['openstack-nova-conductor']
+  ~>
+  Service['openstack-nova-api']
+
 }
