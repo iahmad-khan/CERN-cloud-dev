@@ -21,5 +21,9 @@
         "nova_api_admin_password": "123456",
         "rabbit_password": "guest",
         "nova_database_connection": "mysql://nova:123456@controller/nova",
-        "landb_password": "123456"
+        "landb_password": "123456",
+	"libvirt_ceph_client_volumes_key_xml": "<secret ephemeral='no' private='no'><uuid>00000000-1111-1111-1111-000000000001</uuid><usage type='ceph'><name>client.volumes secret</name></usage></secret>",
+	"libvirt_ceph_client_volumes_key_base64": "AQArZa5VqkPjOhAAXxRwNIXXN9jxnzrC8zxnEA==",
+	"libvirt_wigner_client_volumes_key_xml": "<secret ephemeral='no' private='no'><uuid>00000000-1111-1111-1111-000000000011</uuid><usage type='ceph'><name>client.volumes secret</name></usage></secret>",
+	"libvirt_wigner_client_volumes_key_base64": "AQBHyfZVhhW/FRAATU/5fYNmSzdzWkoYwCIcKg=="
 }
