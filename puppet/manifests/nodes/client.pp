@@ -44,6 +44,14 @@ node /.*client.*/ inherits default {
     unless      => "/usr/bin/neutron cluster-list | /usr/bin/grep 128.0.0.0/16",
     environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=neutron','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.kubdomain.local:443/admin/v2.0'],
   }
+  ->
+  exec { '/usr/bin/wget http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img':
+    unless => '/bin/ls cirros-0.3.4-x86_64-disk.img',
+  }
+  ->
+  exec { '/usr/bin/glance image-create --file cirros-0.3.4-x86_64-disk.img --disk-format qcow2 --container-format bare --name cirros':
+    unless => '/usr/bin/glance image-show cirros',
+  }
 
   Osrepos::Ai121yumrepo['cci7-utils']
   ->
