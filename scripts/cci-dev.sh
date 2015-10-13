@@ -90,6 +90,8 @@ kubernetes_install() {
 # start the kubernetes cluster
 kubernetes_start() {
 	cluster_cleanup
+	# make sure the ebtables module is loaded
+	sudo modprobe ebtables
 	# start the kube daemons
 	cd $CLOUDDEV_KUB
 	sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
