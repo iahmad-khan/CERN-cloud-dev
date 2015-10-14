@@ -79,6 +79,20 @@ node /.*nova.*/ inherits default {
     unless      => "/usr/bin/grep puppet /usr/lib/python2.7/site-packages/nova/cern.py",
   }
   ->
+  # need the latest python-landbclient to run landb ipsrv-register
+  file { "/etc/yum-puppet.repos.d/cci${::operatingsystemmajrelease}-utils.repo":
+    ensure  => present,
+    content => "
+[cci${::operatingsystemmajrelease}-utils]
+name=Cloud Utils repository
+baseurl=http://linuxsoft.cern.ch/internal/repos/cci${::operatingsystemmajrelease}-utils-stable/x86_64/os/
+enabled=1
+gpgcheck=0
+includepkgs=python-landbclient
+priority=4
+",
+  }
+  ->
   package { 'python-landbclient':
     ensure => present,
   }
