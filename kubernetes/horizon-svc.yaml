@@ -1,0 +1,13 @@
+apiVersion: v1beta3
+kind: Service
+metadata:
+  labels:
+    name: horizon
+  name: horizon
+spec:
+  ports:
+  - name: https
+    port: 443
+    protocol: TCP
+  selector:
+    name: horizon

@@ -183,3 +183,15 @@ cd docker/mysql
 sudo docker build -t docker-reg.cern.ch:5000/mysql:latest .
 sudo docker push docker-reg.cern.ch:5000/mysql:latest
 ```
+
+## Troubleshooting
+
+### dns lookup failing (after configuring kube-dns in resolv.conf)
+
+This seems to be due to multicast dns queries. Solution in ubuntu:
+```
+apt-get remove libnss-mdns
+```
+
+which also updates /etc/nsswitch.conf appropriately.
+

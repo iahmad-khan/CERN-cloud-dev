@@ -26,6 +26,12 @@ iaas_include_pkgs:
   - python-pysaml2
   - python-neutron
   - python-neutronclient
+  - openstack-dashboard
+  - openstack-dashboard-theme
+  - python-django-horizon
+  - python-django-openstack-auth
+  - python-django-maintenancemode
+  - python-django-piwik
   - openstack-neutron
   - openstack-neutron-ml2
 openstack_rdo_include_pkgs:
@@ -42,6 +48,11 @@ openstack_rdo_include_pkgs:
   - python-glanceclient
   - python-keystoneclient
   - python-openstackclient
+  - python-saharaclient
+  - python-heatclient
+  - python-troveclient
+  - python-ceilometerclient
+  - python-swiftclient
   - python-neutronclient
   - python-requests
   - python-urllib3
@@ -528,3 +539,44 @@ osclients_include_pkgs:
   - python-neutronclient
   - python-kombu
   - python-urllib3
+
+# cloud_dashboard
+horizon_http_port: 80
+horizon_https_port: 443
+dashboard_loadbalancer_https_listening_service: 443
+dashboard_loadbalancer_http_listening_service: 80
+horizon_cache_server_ip: false
+horizon_cache_server_port: '11211'
+horizon_ca: '/etc/openstack-dashboard/ssl/certs/ca.pem'
+horizon_cert: '/etc/openstack-dashboard/ssl/certs/hostcert.pem'
+horizon_key: '/etc/openstack-dashboard/ssl/keys/hostkey.pem'
+horizon_app_links: false
+horizon_keystone_url: 'https://keystone.default.kubdomain.local:443/admin/v3'
+horizon_keystone_default_role: 'Member'
+horizon_django_debug: false
+horizon_api_result_limit: 1000
+horizon_log_handler: 'file'
+horizon_log_level: 'INFO'
+horizon_local_settings_template: 'horizon/local_settings.py.erb'
+horizon_help_url: 'https://clouddocs.web.cern.ch/clouddocs'
+horizon_bind_address: '0.0.0.0'
+horizon_server_name: 'horizon.default.kubdomain.local'
+horizon_allowed_hosts:
+  - 'horizon.default.kubdomain.local'
+horizon_listen_ssl: true
+horizon_compress_offline: 'False'
+horizon_can_set_mount_point: 'True'
+horizon_file_upload_temp_dir: '/tmp'
+horizon_session_timeout: 28800
+horizon_site_branding: 'CERN Cloud Infrastructure'
+horizon_piwik_site_id: 843
+horizon_piwik_url: 'https://piwik.web.cern.ch/'
+horizon_maintenance_mode: 'False'
+horizon_subscribe_url: 'https://resources.web.cern.ch/resources/Manage/CloudInfrastructure/Default.aspx'
+horizon_ticket_url: 'https://cern.service-now.com/service-portal/function.do?name=cloud-infrastructure'
+horizon_ssb_url: 'https://cern.service-now.com/service-portal/ssb.do?area=IT'
+horizon_monitoring_url: 'https://openstack-monitoring.cern.ch/#/dashboard/elasticsearch/'
+horizon_websso_enable: 'False'
+horizon_websso_default_redirect: 'False'
+horizon_ssl_noverify: 'True'
+horizon_manage_selinux: false
