@@ -105,6 +105,12 @@ priority=4
     onlyif => "/usr/bin/grep 'CERN.CH' /usr/lib/python2.7/site-packages/nova/network/manager.py",
   }
   ->
+  Service['openstack-nova-scheduler']
+  ->
+  Service['openstack-nova-conductor']
+  ->
+  Service['openstack-nova-api']
+  ->
   exec { "/usr/bin/mysql -u nova -D nova -p123456 -h controller -e \"insert into networks (injected, cidr, bridge, gateway, dns1, cidr_v6, gateway_v6, label, multi_host, dns2, uuid, deleted, enable_dhcp, share_address) values (0, '0.0.0.0/0', 'br100', '0.0.0.0', '0.0.0.0', '::/0', '::', 'KUB_NETWORK', 0, '0.0.0.0', '81b1390e-6d0e-11e5-87fb-68f728b18b2d', 0, 1, 0);\"":
     unless => "/usr/bin/mysql -u nova -D nova -p123456 -h controller -e \"select * from networks where label = 'KUB_NETWORK';\" | grep KUB",
   }
@@ -112,11 +118,5 @@ priority=4
   exec { '/usr/bin/nova-manage cern network_update --cluster-name CLUSTER1':
     unless => "/usr/bin/mysql -u nova -D nova -p123456 -h controller -e \"select * from fixed_ips where address = '10.0.0.200';\" | grep 200",
   }
-  ->
-  Service['openstack-nova-scheduler']
-  ->
-  Service['openstack-nova-conductor']
-  ->
-  Service['openstack-nova-api']
 
 }
