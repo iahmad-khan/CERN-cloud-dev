@@ -27,7 +27,7 @@ node /.*client.*/ inherits default {
   ->
   exec { "/usr/bin/openstack volume type create --property volume_backend_name=standard standard; /usr/bin/openstack volume type create --property volume_backend_name=critical critical;/usr/bin/openstack volume type create --property volume_backend_name=wig-standard wig-standard; /usr/bin/openstack volume type create --property volume_backend_name=wig-critical wig-critical;":
     path        => "/usr/bin:/usr/sbin",
-    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=neutron','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.kubdomain.local:443/admin/v2.0'],
+    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=cinder','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.kubdomain.local:443/admin/v2.0'],
     unless      => "/usr/bin/openstack volume type list | grep critical",
   }
   ->
@@ -57,6 +57,7 @@ node /.*client.*/ inherits default {
   ->
   exec { '/usr/bin/glance image-create --file cirros-0.3.4-x86_64-disk.img --disk-format qcow2 --container-format bare --name cirros':
     unless => '/usr/bin/glance image-show cirros',
+    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=glance','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.kubdomain.local:443/admin/v2.0'],
   }
 
   Osrepos::Ai121yumrepo['cci7-utils']
