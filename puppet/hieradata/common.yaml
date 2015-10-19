@@ -396,6 +396,12 @@ keystone_default_catalog:
     - publicURL: 'http://cinder.default.kubdomain.local:8776/v1/%(tenant_id)s'
     - adminURL: 'http://cinder.default.kubdomain.local:8776/v1/%(tenant_id)s'
     - internalURL: 'http://cinder.default.kubdomain.local:8776/v1/%(tenant_id)s'
+  - volumev2:
+    - name: 'cinder'
+    - description: 'Openstack Volume Service'
+    - publicURL: 'http://cinder.default.kubdomain.local:8776/v2/%(tenant_id)s'
+    - adminURL: 'http://cinder.default.kubdomain.local:8776/v2/%(tenant_id)s'
+    - internalURL: 'http://cinder.default.kubdomain.local:8776/v2/%(tenant_id)s'
   - network:
     - name: 'neutron'
     - description: 'Openstack Networking Service'
