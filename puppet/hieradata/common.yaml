@@ -12,7 +12,7 @@ roger_server: puppet
 flume_agent_enable: false
 teigi_ssl_port: 8082
 tellme_enabled: false
-iaas_release: 'juno'
+iaas_release: 'kilo'
 iaas_qa_repo_enable: 1
 iaas_testing_repo_enable: 1
 osrepos_ai_testing_enable: 1
@@ -55,6 +55,11 @@ openstack_rdo_include_pkgs:
   - openstack-utils
   - python-stevedore
   - python-netaddr
+  - python-django-compressor
+  - python-XStatic-Font-Awesome
+  - python-XStatic-Angular
+  - python-netifaces
+  - python-cryptography
 
 # cloud_compute
 
