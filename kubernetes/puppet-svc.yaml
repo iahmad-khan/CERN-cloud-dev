@@ -24,5 +24,11 @@ spec:
   - name: landbssl
     port: 8443
     protocol: TCP
+  - name: landb-dhcp1
+    port: 67
+    protocol: UDP
+  - name: landb-dhcp2
+    port: 68
+    protocol: UDP
   selector:
     name: puppet

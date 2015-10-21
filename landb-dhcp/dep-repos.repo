@@ -1,0 +1,24 @@
+[cci7-utils]
+name=Cloud Utils repository
+baseurl=http://linuxsoft.cern.ch/internal/repos/cci7-utils-stable/x86_64/os/
+enabled=1
+gpgcheck=0
+priority=10
+
+[cci7-rdo-openstack]
+name=Openstack RDO
+baseurl=http://linuxsoft.cern.ch/rdo/rdo-x86_64-stable/RPMS.openstack-rdo-juno-epel-7/
+enabled=1
+gpgcheck=0
+includepkgs=python-cinderclient,python-glanceclient,python-heatclient,python-keystoneclient,python-novaclient,python-openstackclient,python-ceilometerclient,pyparsing,python-backports,python-cliff,python-cmd2,python-oslo-config,python-oslo-i18n,python-oslo-serialization,python-oslo-utils,python-six,python-webob
+priority=5
+
+[epel]
+name=Extra Packages for Enterprise Linux [HEAD]
+#baseurl=http://download.fedoraproject.org/pub/epel/7/$basearch
+mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch
+failovermethod=priority
+enabled=1
+gpgcheck=1
+gpgkey=http://linuxsoft.cern.ch/epel/RPM-GPG-KEY-EPEL-7
+

@@ -47,6 +47,11 @@ spec:
       image: docker-reg.cern.ch:5000/landb
       ports:
         - containerPort: 8443
+    - name: landb-dhcp
+      image: docker-reg.cern.ch:5000/landb-dhcp
+      ports:
+        - containerPort: 67
+        - containerPort: 68
   volumes:
     - name: puppet
       hostPath:
