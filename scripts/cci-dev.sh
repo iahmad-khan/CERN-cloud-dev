@@ -18,7 +18,7 @@ fi
 export PATH=$PATH:$CLOUDDEV_KUB/_output/local/go/bin
 
 # PUPPET_MODULES holds the list of module dependencies that we need to run the build
-PUPPET_MODULES="abrt afs apache:upstream_150 bridged cernlib cinder cloud_common cloud_monitoring concat filemapper firewall flume glance haproxy horizon inifile kerberos keystone lemon limits logrotate motd mysql neutron:1748-neutrondev network nova openstack_clients:osclients-testingrepo osrepos psacct puppet puppetdbquery stdlib sudo sysctl teigi:tbag_teigiurl xinetd"
+PUPPET_MODULES="abrt afs apache:upstream_150 bridged cernlib cinder cloud_common cloud_monitoring concat filemapper firewall flume glance haproxy horizon inifile kerberos keystone lemon limits logrotate memcached motd mysql neutron:1748-neutrondev network nova openstack_clients:osclients-testingrepo osrepos psacct puppet puppetdbquery stdlib sudo sysctl teigi:tbag_teigiurl xinetd"
 
 # PUPPET_HOSTGROUPS holds the list of hostgroups we need to run the build(s)
 PUPPET_HOSTGROUPS="cloud_adm:qa cloud_blockstorage cloud_compute:selinux cloud_dashboard cloud_identity cloud_image cloud_networking:1718-neutronsetup"

@@ -92,6 +92,7 @@ haproxy_enable: false
 haproxy_nova_api_enable: false
 firewall_nova_api_enable: true
 firewall_nova_metadata_enable: true
+firewall_nova_novnc_enable: true
 
 nova_api_port: 8774
 nova_api_admin_port: 443
@@ -111,6 +112,7 @@ nova_api_sync_db: false
 overwrite_nova_policy: true
 nova_static_conf: "[DEFAULT]\nglance_api_servers=glance.default.kubdomain.local:9292\n"
 nova_conductor_workers: 1
+nova_vncproxy_host: "0.0.0.0"
 
 # nova::compute
 libvirtd_logs: false
@@ -124,6 +126,9 @@ nova_compute_disable_snoop: false
 nova_compute_bridgeconfig: false
 nova_compute_bridgetables: false
 nova_compute_netconntrack: false
+nova_config_use_ipv6: false
+nova_compute_vncproxy_host: 'nova'
+nova_compute_vncserver_proxyclient_address: "%{::ipaddress}"
 
 # nova_network
 nova_network_network_manager: 'nova.network.manager.CernManager'

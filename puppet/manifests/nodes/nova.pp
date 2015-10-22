@@ -8,6 +8,7 @@ node /.*nova.*/ inherits default {
   class { 'hg_cloud_compute::nova::network': }
   class { 'hg_cloud_compute::nova::scheduler': }
   class { 'hg_cloud_compute::nova::cert': }
+  class { 'hg_cloud_compute::nova::novnc': }
 
   nova_config {
     'keystone_authtoken/cafile':     value => hiera('nova_api_ca_file');
