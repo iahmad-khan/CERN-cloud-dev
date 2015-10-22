@@ -95,31 +95,6 @@ GATEWAYDEV=br100
     unless      => "/usr/bin/grep puppet /usr/lib/python2.7/site-packages/nova/cern.py",
   }
   ->
-  file { '/tmp/patch2':
-    ensure  => present,
-    content => "
---- /root/linux_net.py	2015-10-13 08:39:53.859227141 +0000
-+++ /usr/lib/python2.7/site-packages/nova/network/linux_net.py	2015-10-13 08:40:05.983340045 +0000
-@@ -471,9 +471,9 @@ class IptablesManager(object):
-                 all_lines[start:end] = self._modify_rules(
-                         all_lines[start:end], table, table_name)
-                 table.dirty = False
--            self.execute('%s-restore' % (cmd,), '-c', run_as_root=True,
--                         process_input='\\n'.join(all_lines),
--                         attempts=5)
-+            #self.execute('%s-restore' % (cmd,), '-c', run_as_root=True,
-+            #             process_input='\\n'.join(all_lines),
-+            #             attempts=5)
-         LOG.debug(\"IPTablesManager.apply completed with success\")
- 
-     def _find_table(self, lines, table_name):
-",
-  }
-  ->
-  exec { '/usr/bin/patch -p0 /usr/lib/python2.7/site-packages/nova/network/linux_net.py < /tmp/patch2':
-    unless      => "/usr/bin/grep '#self' /usr/lib/python2.7/site-packages/nova/network/linux_net.py",
-  }
-  ~>
   Service['openstack-nova-compute']
 
 }
