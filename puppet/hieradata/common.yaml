@@ -14,7 +14,7 @@ teigi_ssl_port: 8082
 tellme_enabled: false
 iaas_release: 'kilo'
 iaas_qa_repo_enable: 1
-iaas_testing_repo_enable: 1
+iaas_testing_repo_enable: 0
 osrepos_ai_testing_enable: 1
 osrepos_ai_qa_enable: 1
 operator_access_enable: false
@@ -71,6 +71,7 @@ openstack_rdo_include_pkgs:
   - python-XStatic-Angular
   - python-netifaces
   - python-cryptography
+  - openstack-selinux
 
 # cloud_compute
 
@@ -107,7 +108,7 @@ nova_api_auth_uri: 'https://keystone.default.kubdomain.local:443/'
 nova_api_ca_file: '/var/lib/puppet/ssl/certs/ca.pem'
 nova_api_enabled_apis: 'osapi_compute,metadata'
 nova_api_keystone_ec2_url: 'https://keystone.default.kubdomain.local:443/v2.0/ec2tokens'
-nova_api_metadata_workers: 0
+nova_api_metadata_workers: 2
 nova_api_sync_db: false
 overwrite_nova_policy: true
 nova_static_conf: "[DEFAULT]\nglance_api_servers=glance.default.kubdomain.local:9292\n"
@@ -121,7 +122,7 @@ nova_compute_monitoring: false
 nova_compute_ksm: false
 nova_compute_reserved_host_memory: 0
 nova_neutron_enabled: false
-nova_metadata_host: 'localhost' # FIXME
+nova_metadata_host: 'nova'
 nova_compute_disable_snoop: false
 nova_compute_bridgeconfig: false
 nova_compute_bridgetables: false
@@ -435,6 +436,12 @@ keystone_default_catalog:
     - publicURL: 'http://nova.default.kubdomain.local:8774/v2/%(tenant_id)s'
     - adminURL: 'http://nova.default.kubdomain.local:8774/v2/%(tenant_id)s'
     - internalURL: 'http://nova.default.kubdomain.local:8774/v2/%(tenant_id)s'
+  - container:
+    - name: 'magnum'
+    - description: 'Openstack Container Service'
+    - publicURL: 'http://magnum.default.kubdomain.local:9511/v1'
+    - adminURL: 'http://magnum.default.kubdomain.local:9511/v1'
+    - internalURL: 'http://magnum.default.kubdomain.local:9511/v1'
 
 keystone_domains:
   - /etc/keystone/domains/keystone.heat.conf
@@ -483,8 +490,8 @@ keystone_notification_driver: 'rabbit'
 keystone_notification_topics: false
 keystone_package_ensure: present
 keystone_public_endpoint: "https://%{::hostname}/main"
-keystone_rabbit_host: '127.0.0.1'
-keystone_rabbit_hosts: false
+keystone_rabbit_level: "hostgroup=\"cloud_identity/cache/main\""
+keystone_rabbit_port: '5672'
 keystone_rabbit_userid: 'keystone'
 keystone_revoke_driver: 'keystone.contrib.revoke.backends.sql.Revoke'
 keystone_seltype_etc: 'etc_t'
@@ -508,6 +515,7 @@ keystone_token_driver: 'keystone.token.persistence.backends.sql.Token'
 keystone_token_expiration: '86400'
 keystone_token_format: false
 keystone_token_provider: 'keystone.token.providers.uuid.Provider'
+keystone_trusted_dashboard: 'https://horizon.default.kubdomain.local/auth/websso'
 keystone_use_syslog: false
 keystone_verbose: false
 keystone_x509_enable: false
@@ -515,8 +523,8 @@ log_regex_keystone: '(\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}.\\d{3})\\s*\\
 nova_compute_api_port: 8774
 
 # cloud_adm
+osclients_default_rc: false
 osclients_acron: false
-osclients_default_rc: true
 
 osclients_rdo_include_pkgs:
   - python-cinderclient
@@ -585,3 +593,32 @@ horizon_websso_enable: 'False'
 horizon_websso_default_redirect: 'False'
 horizon_ssl_noverify: 'True'
 horizon_manage_selinux: false
+
+# Magnum
+magnum7_include_pkgs:
+  - openstack-magnum*
+  - python-magnumclient
+magnum_api_port: '9511'
+magnum_control_exchange: 'magnum'
+magnum_rabbit_host: ''
+magnum_rabbit_port: '5672'
+magnum_rabbit_hosts:
+  - 'controller'
+magnum_rabbit_virtual_host: '/'
+magnum_rabbit_userid: 'guest'
+magnum_package_ensure: 'present'
+magnum_use_syslog: false
+magnum_log_facility: 'LOG_USER'
+magnum_log_dir: '/var/log/magnum'
+magnum_verbose: true
+magnum_debug: true
+
+magnum_api_keystone_enabled: true
+magnum_api_keystone_tenant: 'services'
+magnum_api_keystone_user: 'admin' #FIXME: should be magnum
+magnum_api_keystone_auth_uri: 'https://keystone.default.kubdomain.local:443/admin'
+magnum_api_keystone_identity_uri: 'https://keystone.default.kubdomain.local:443/admin'
+magnum_api_service_port: '443'
+magnum_api_package_ensure: 'present'
+magnum_api_bind_host: '0.0.0.0'
+magnum_api_enabled: true 

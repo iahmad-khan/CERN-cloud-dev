@@ -1,0 +1,13 @@
+apiVersion: v1beta3
+kind: Service
+metadata:
+  labels:
+    name: magnum
+  name: magnum
+spec:
+  ports:
+  - name: magnumapi
+    port: 9511
+    protocol: TCP
+  selector:
+    name: magnum

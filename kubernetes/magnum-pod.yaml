@@ -1,0 +1,32 @@
+apiVersion: v1beta3
+kind: Pod
+metadata:
+  name: magnum
+  labels:
+    name: magnum
+spec:
+  containers:
+    - name: magnum
+      image: docker-reg.cern.ch:5000/puppetagent:latest
+      privileged: true
+      volumeMounts:
+        - name: puppetcfg
+          mountPath: /etc/puppet
+        - name: puppetssl
+          mountPath: /var/lib/puppet/ssl
+        - name: factercfg
+          mountPath: /etc/facter
+      command:
+        - /usr/sbin/init
+      ports:
+        - containerPort: 9511
+  volumes:
+    - name: puppetcfg
+      hostPath:
+        path: /opt/cloud-dev/puppet
+    - name: puppetssl
+      hostPath:
+        path: /opt/cloud-dev/puppetssl
+    - name: factercfg
+      hostPath:
+        path: /opt/cloud-dev/facter
