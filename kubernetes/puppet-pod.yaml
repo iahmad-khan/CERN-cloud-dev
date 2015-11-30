@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
     - name: puppetmaster
-      image: docker-reg.cern.ch:5000/puppetmaster:latest
+      image: docker.cern.ch/cloud-infrastructure/puppetmaster
       env:
         - name: LANG
           value: en_US.UTF-8
@@ -23,7 +23,7 @@ spec:
         - name: puppetmodules
           mountPath: /usr/share/puppet/modules
     - name: puppetdb
-      image: docker-reg.cern.ch:5000/puppetdb
+      image: docker.cern.ch/cloud-infrastructure/puppetdb
       ports:
         - containerPort: 8080
         - containerPort: 8081
@@ -33,7 +33,7 @@ spec:
         - name: puppetssl
           mountPath: /var/lib/puppet/ssl
     - name: teigi
-      image: docker-reg.cern.ch:5000/teigi
+      image: docker.cern.ch/cloud-infrastructure/teigi
       ports:
         - containerPort: 8082
       volumeMounts:
@@ -44,11 +44,11 @@ spec:
         - name: teigidb
           mountPath: /data
     - name: landb
-      image: docker-reg.cern.ch:5000/landb
+      image: docker.cern.ch/cloud-infrastructure/landb
       ports:
         - containerPort: 8443
     - name: landb-dhcp
-      image: docker-reg.cern.ch:5000/landb-dhcp
+      image: docker.cern.ch/cloud-infrastructure/landb-dhcp
       ports:
         - containerPort: 67
         - containerPort: 68

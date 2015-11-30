@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
     - name: mysql
-      image: docker-reg.cern.ch:5000/mysql
+      image: docker.cern.ch/cloud-infrastructure/mysql
       env:
         - name: 'MYSQL_ROOT_PASSWORD'
           value: '123456'
@@ -16,7 +16,7 @@ spec:
     - name: rabbitmq
       image: rabbitmq
     - name: ldap
-      image: docker-reg.cern.ch:5000/ldap
+      image: docker.cern.ch/cloud-infrastructure/ldap
       env:
         - name: LDAP_ROOT_PASSWORD
           value: '123456'
