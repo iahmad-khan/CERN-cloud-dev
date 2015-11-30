@@ -30,7 +30,7 @@ TYPE=Bridge
 HOTPLUG=false
 IPADDR=${::ipaddress}
 NETMASK=255.255.0.0
-GATEWAY=172.17.42.1
+GATEWAY=172.17.0.1
 GATEWAYDEV=br100
     ",
     owner   => root,
@@ -56,7 +56,7 @@ GATEWAYDEV=br100
 
   Service['openstack-nova-compute']
   ->
-  exec { "bash -c 'for service in nova-scheduler nova-conductor nova-network nova-cert; do nova-manage service enable --host nova --service \${service}; done; nova-manage service enable --host compute --service nova-compute'":
+  exec { "bash -c 'for service in nova-scheduler nova-conductor nova-network nova-cert nova-consoleauth; do nova-manage service enable --host nova --service \${service}; done; nova-manage service enable --host compute --service nova-compute'":
     path   => "/usr/sbin:/usr/bin",
     unless => "nova-manage service list | grep enabled",
   }
