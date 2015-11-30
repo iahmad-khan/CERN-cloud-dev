@@ -8,14 +8,14 @@ spec:
   hostNetwork: true
   containers:
     - name: cephall
-      image: docker-reg.cern.ch:5000/cephdemo
+      image: docker.cern.ch/cloud-infrastructure/cephdemo
       env:
         - name: MON_NAME
           value: a
         - name: MON_IP
-          value: 172.17.42.1
+          value: 172.17.0.1
         - name: CEPH_NETWORK
-          value: 172.17.42.1/24
+          value: 172.17.0.1/24
       ports:
         - containerPort: 6789
       volumeMounts:

@@ -1,11 +1,11 @@
 ceph_repo_release: 'hammer'
 ceph_cluster:
   ceph:
-    mon_host: '172.17.42.1'
+    mon_host: '172.17.0.1'
     user: 'volumes'
     secret_uuid: '00000000-1111-1111-1111-000000000001'
   wigner:
-    mon_host: '172.17.42.1:9789'
+    mon_host: '172.17.0.1:9789'
     user: 'volumes'
     secret_uuid: '00000000-1111-1111-1111-000000000011'
 roger_server: puppet
@@ -175,7 +175,7 @@ neutron_ml2_mechanism_drivers:
 # cloud_blockstorage
 cinder_api_port: '8776'
 cinder_ceph_user: 'volumes'
-cinder_ceph_mon_host: '172.17.42.1'
+cinder_ceph_mon_host: '172.17.0.1'
 cinder_database_idle_timeout: 3600
 cinder_rpc_backend: 'cinder.openstack.common.rpc.impl_kombu'
 cinder_glance_host: 'glance.default.kubdomain.local'
@@ -309,6 +309,7 @@ rabbitmq7_include_pkgs:
 
 # cloud_image
 haproxy_enable: false
+glance_swap: false
 glance_api_auth_admin_prefix: '/admin'
 glance_api_auth_host: 'keystone.default.kubdomain.local'
 glance_api_auth_protocol: 'https'
@@ -368,7 +369,7 @@ glance_registry_sql_connection: false
 glance_registry_sql_idle_timeout: '3600'
 glance_registry_use_syslog: false
 glance_registry_verbose: true
-glance_rbd_ceph_conf_file: "[global]\n    mon host = 172.17.42.1\n"
+glance_rbd_ceph_conf_file: "[global]\n    mon host = 172.17.0.1\n"
 glance_rbd_keyring: true
 glance_rbd_store_ceph_conf: '/etc/ceph/ceph.conf'
 glance_rbd_store_chunk_size: '8'
