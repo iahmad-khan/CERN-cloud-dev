@@ -38,6 +38,10 @@ node default {
   ->
   Package <||>
 
+  exec { "/usr/bin/echo 'export TERM=xterm' >> /root/.bashrc":
+    unless => '/usr/bin/grep TERM /root/.bashrc',
+  }
+
 }
 
 # workaround to ignore lemon for now
