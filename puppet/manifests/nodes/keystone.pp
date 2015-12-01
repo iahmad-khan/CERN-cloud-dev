@@ -92,7 +92,7 @@ node /.*keystone.*/ inherits default {
   ->
   exec { "/usr/bin/sleep 5 && /usr/bin/keystone tenant-create --name services && /usr/bin/keystone role-create --name admin && /usr/bin/keystone role-create --name Member && /usr/bin/keystone user-role-add --user admin --role admin --tenant services && /usr/bin/keystone user-role-add --user glance --role admin --tenant services && /usr/bin/keystone user-role-add --user cinder --role admin --tenant services && /usr/bin/keystone user-role-add --user neutron --role admin --tenant services && /usr/bin/keystone user-role-add --user nova --role admin --tenant services && /usr/bin/keystone tenant-list":
     path        => "/usr/bin:/usr/sbin",
-    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_SERVICE_TOKEN=512c2b7c2d94b5bb731469955d4b7455','OS_SERVICE_ENDPOINT=https://keystone.default.kubdomain.local:443/admin/v2.0'],
+    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_SERVICE_TOKEN=512c2b7c2d94b5bb731469955d4b7455','OS_SERVICE_ENDPOINT=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
     unless      => "/usr/bin/keystone tenant-list | /usr/bin/grep services",
   }
 

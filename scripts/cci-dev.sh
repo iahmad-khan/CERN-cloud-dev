@@ -94,7 +94,7 @@ kubernetes_start() {
 	sudo modprobe ebtables
 	# start the kube daemons
 	cd $CLOUDDEV_KUB
-	sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
+	sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBELET_ARGS="--cluster-dns 10.0.0.10 --cluster-domain cluster.local" ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
 	echo 'waiting for kubernetes start (and build if not done before)...'
 	while ! kubectl get pod > /dev/null 2>&1
 	do
@@ -110,7 +110,7 @@ cluster_pod_base_start() {
 	echo "starting the base pods (skydns, puppet, ceph)"
 	# launch the pods
 	cd $CLOUDDEV/kubernetes
-	for z in dns-hack.json skydns-rc.yaml skydns-svc.yaml puppet-pod.yaml puppet-svc.yaml ceph-pod.yaml wigner-pod.yaml; do
+	for z in skydns-rc.yaml skydns-svc.yaml puppet-pod.yaml puppet-svc.yaml ceph-pod.yaml wigner-pod.yaml; do
 		kubectl create -f $z
 	done
 
@@ -123,11 +123,11 @@ cluster_pod_base_start() {
 	done
 
 	for cluster in ceph wigner; do
-		kubectl exec -it -p ${cluster} -c cephall -- HOME=/ /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 auth add client.images -i /etc/ceph/${cluster}.client.images.keyring
-		kubectl exec -it -p ${cluster} -c cephall -- HOME=/ /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 auth add client.volumes -i /etc/ceph/${cluster}.client.volumes.keyring
-		kubectl exec -it -p ${cluster} -c cephall -- HOME=/ /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 osd pool create images 32
-		kubectl exec -it -p ${cluster} -c cephall -- HOME=/ /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 osd pool create volumes 32
-		kubectl exec -it -p ${cluster} -c cephall -- HOME=/ /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 osd pool create volumes-critical 32
+		kubectl exec -it ${cluster} -c cephall -- /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 auth add client.images -i /etc/ceph/${cluster}.client.images.keyring
+		kubectl exec -it ${cluster} -c cephall -- /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 auth add client.volumes -i /etc/ceph/${cluster}.client.volumes.keyring
+		kubectl exec -it ${cluster} -c cephall -- /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 osd pool create images 32
+		kubectl exec -it ${cluster} -c cephall -- /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 osd pool create volumes 32
+		kubectl exec -it ${cluster} -c cephall -- /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 osd pool create volumes-critical 32
 	done
 
 	echo "waiting for puppetdb to start..."
@@ -141,7 +141,7 @@ cluster_pod_base_start() {
 # start with a clean runtime
 cluster_cleanup() {
 	echo "cleaning up any kubernetes or docker leftovers..."
-	sudo killall -9 kube-apiserver kube-controller-manager kube-proxy kube-scheduler kubelet etcd > /dev/null 2>&1
+	for k in $(ps aux | grep kube | awk '{print $2}'); do sudo kill -9 $k; done > /dev/null 2>&1
 	sudo docker ps --all | awk '{print $1}' | xargs sudo docker rm -f > /dev/null 2>&1
 }
 

@@ -24,7 +24,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     ldapmodify -Y EXTERNAL -H ldapi:/// -f /root/domain.ldif
 
     for f in $(ls /ldif/*ldif); do
-        ldapadd -x -D cn=admin,dc=default,dc=kubdomain,dc=local -w $LDAP_MANAGER_PASSWORD -f $f
+        ldapadd -x -D cn=admin,dc=default,dc=cluster,dc=local -w $LDAP_MANAGER_PASSWORD -f $f
     done
 
     service slapd stop

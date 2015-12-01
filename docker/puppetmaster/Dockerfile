@@ -7,7 +7,7 @@ RUN yum install -y \
     ruby-ldap \
     && yum clean all
 
-RUN echo '*.kubdomain.local' > /etc/puppet/autosign.conf
+RUN echo '*.cluster.local' > /etc/puppet/autosign.conf
 
 EXPOSE 8140
 

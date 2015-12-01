@@ -3,9 +3,9 @@ unset OS_IDENTITY_API_VERSION
 unset OS_PROJECT_NAME
 unset OS_PROJECT_DOMAIN_ID
 export OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem
-export OS_CERT=/var/lib/puppet/ssl/certs/${HOSTNAME}.default.kubdomain.local.pem
-export OS_KEY=/var/lib/puppet/ssl/private_keys/${HOSTNAME}.default.kubdomain.local.pem
+export OS_CERT=/var/lib/puppet/ssl/certs/${HOSTNAME}.default.svc.cluster.local.pem
+export OS_KEY=/var/lib/puppet/ssl/private_keys/${HOSTNAME}.default.svc.cluster.local.pem
 export OS_USERNAME=admin
 export OS_PASSWORD=123456
 export OS_TENANT_NAME=services
-export OS_AUTH_URL=https://keystone.default.kubdomain.local:443/admin/v2.0
+export OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v2.0

@@ -11,7 +11,7 @@
         "glance_database_connection": "mysql://glance:123456@controller/glance",
         "glance_keystone_password": "123456",
 	"keystone_admin_token": "512c2b7c2d94b5bb731469955d4b7455",
-        "keystone_ldap_user": "cn=admin,dc=default,dc=kubdomain,dc=local",
+        "keystone_ldap_user": "cn=admin,dc=default,dc=cluster,dc=local",
         "keystone_ldap_password": "123456",
         "keystone_rabbit_password": "123456",
         "keystone_sql_connection_localdev": "mysql://keystone:123456@controller/keystone",
