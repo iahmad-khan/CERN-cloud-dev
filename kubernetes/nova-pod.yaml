@@ -23,6 +23,7 @@ spec:
         - containerPort: 8773
         - containerPort: 8774
         - containerPort: 8775
+        - containerPort: 6080
   volumes:
     - name: puppetcfg
       hostPath:

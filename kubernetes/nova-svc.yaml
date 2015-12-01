@@ -15,5 +15,8 @@ spec:
   - name: novametadata
     port: 8775
     protocol: TCP
+  - name: consoleauth
+    port: 6080
+    protocol: TCP
   selector:
     name: nova
