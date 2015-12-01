@@ -18,10 +18,10 @@ fi
 export PATH=$PATH:$CLOUDDEV_KUB/_output/local/go/bin
 
 # PUPPET_MODULES holds the list of module dependencies that we need to run the build
-PUPPET_MODULES="abrt afs apache:upstream_150 bridged cernlib cinder cloud_common cloud_monitoring concat filemapper firewall flume glance haproxy horizon inifile kerberos keystone lemon limits logrotate memcached motd mysql neutron:1748-neutrondev network nova openstack_clients:osclients-testingrepo osrepos psacct puppet puppetdbquery stdlib sudo sysctl swap_file teigi:tbag_teigiurl xinetd"
+PUPPET_MODULES="abrt afs apache:upstream_150 bridged cernlib cinder cloud_common cloud_monitoring concat filemapper firewall flume glance haproxy horizon inifile kerberos keystone lemon limits logrotate magnum memcached motd mysql network neutron:1748-neutrondev nova openstack_clients:osclients-testingrepo openstacklib osrepos psacct puppet puppetdbquery sssd stdlib sudo swap_file sysctl teigi:tbag_teigiurl xinetd"
 
 # PUPPET_HOSTGROUPS holds the list of hostgroups we need to run the build(s)
-PUPPET_HOSTGROUPS="cloud_adm:qa cloud_blockstorage cloud_compute:selinux cloud_dashboard cloud_identity cloud_image cloud_networking:1718-neutronsetup"
+PUPPET_HOSTGROUPS="cloud_adm:qa cloud_blockstorage cloud_compute:selinux cloud_container cloud_dashboard cloud_identity cloud_image cloud_networking:1718-neutronsetup"
 
 # OS_PODS holds the list of pods to be started on 'launch'
 OS_PODS=${OS_PODS:-keystone glance cinder neutron nova compute client horizon}
@@ -94,7 +94,7 @@ kubernetes_start() {
 	sudo modprobe ebtables
 	# start the kube daemons
 	cd $CLOUDDEV_KUB
-	make
+	make > /tmp/kubernetes-build.log 2>&1
 	sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBELET_ARGS="--cluster-dns 10.0.0.10 --cluster-domain cluster.local" ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
 	echo 'waiting for kubernetes start (and build if not done before)...'
 	while ! kubectl get pod > /dev/null 2>&1
@@ -142,7 +142,7 @@ cluster_pod_base_start() {
 # start with a clean runtime
 cluster_cleanup() {
 	echo "cleaning up any kubernetes, etcd and docker leftovers..."
-	sudo killall etcd
+	sudo killall etcd > /dev/null 2>&1
 	for k in $(ps aux | grep kube | awk '{print $2}'); do sudo kill -9 $k; done > /dev/null 2>&1
 	sudo docker ps --all | awk '{print $1}' | xargs sudo docker rm -f > /dev/null 2>&1
 }
@@ -163,7 +163,7 @@ cluster_pod_launch() {
 		sed "/image:.*mysql/ s/\$/:$1/" $CLOUDDEV/kubernetes/controller-pod.yaml > /tmp/controller-pod.yaml
 		for pod in $OS_PODS
 		do
-			sed -e "s/puppetagent:latest/${pod}:$1/g" $CLOUDDEV/kubernetes/${pod}-pod.yaml > /tmp/${pod}-pod.yaml
+			sed -e "s/puppetagent/${pod}:$1/g" $CLOUDDEV/kubernetes/${pod}-pod.yaml > /tmp/${pod}-pod.yaml
 		done
 	else
 		echo "lanching pods using a full puppet run...."
