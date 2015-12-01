@@ -79,11 +79,11 @@ kubernetes_install() {
 	echo "installing kubernetes at ${CLOUDDEV_KUB}..."
 	mkdir -p $CLOUDDEV_KUB
 	cd $CLOUDDEV_KUB
-	wget --quiet https://github.com/GoogleCloudPlatform/kubernetes/archive/v0.17.1.tar.gz
-	tar zxf v0.17.1.tar.gz
-	mv kubernetes-0.17.1/* .
-	rm -rf kubernetes-0.17.1
-	patch -s -p0 $CLOUDDEV_KUB/hack/local-up-cluster.sh < $CLOUDDEV/kubernetes/local-cluster.patch
+	wget --quiet https://github.com/kubernetes/kubernetes/archive/v1.1.2.tar.gz
+	tar zxf v1.1.2.tar.gz
+	mv kubernetes-1.1.2/* .
+	rm -rf kubernetes-1.1.2 v1.1.2.tar.gz
+	#patch -s -p0 $CLOUDDEV_KUB/hack/local-up-cluster.sh < $CLOUDDEV/kubernetes/local-cluster.patch
 	exit_on_err $?
 }
 
@@ -94,6 +94,7 @@ kubernetes_start() {
 	sudo modprobe ebtables
 	# start the kube daemons
 	cd $CLOUDDEV_KUB
+	make
 	sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBELET_ARGS="--cluster-dns 10.0.0.10 --cluster-domain cluster.local" ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
 	echo 'waiting for kubernetes start (and build if not done before)...'
 	while ! kubectl get pod > /dev/null 2>&1
@@ -140,7 +141,8 @@ cluster_pod_base_start() {
 
 # start with a clean runtime
 cluster_cleanup() {
-	echo "cleaning up any kubernetes or docker leftovers..."
+	echo "cleaning up any kubernetes, etcd and docker leftovers..."
+	sudo killall etcd
 	for k in $(ps aux | grep kube | awk '{print $2}'); do sudo kill -9 $k; done > /dev/null 2>&1
 	sudo docker ps --all | awk '{print $1}' | xargs sudo docker rm -f > /dev/null 2>&1
 }
@@ -234,14 +236,15 @@ cluster_pod_push() {
 # install required centos dependencies
 centos_install() {
 	echo "installing dependencies for centos..."
+	printf "[docker-main-repo]\nname=Docker main Repository\nbaseurl=https://yum.dockerproject.org/repo/main/centos/7\nenabled=1\ngpgcheck=1\ngpgkey=https://yum.dockerproject.org/gpg" > /etc/yum.repos.d/docker.repo
 	sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
-	sudo yum install -y wget git vim docker etcd golang patch psmisc
+	sudo yum install -y wget git vim docker-engine etcd golang patch psmisc
 	exit_on_err $?
-	sed -i "s/^# INSECURE_REGISTRY.*/INSECURE_REGISTRY='--insecure-registry docker-reg.cern.ch:5000'/g" /etc/sysconfig/docker
-	sed -i "s/^OPTIONS.*/#OPTIONS=''/g" /etc/sysconfig/docker
-	# launch docker
-	systemctl start docker
+	sed -i "s#^ExecStart.*#ExecStart=/usr/bin/docker daemon --dns 137.138.17.5 --insecure-registry docker.cern.ch --bip 172.17.0.1/16 -H fd://#g" /lib/systemd/system/docker.service
 	iptables -F
+	# launch docker
+	systemctl daemon-reload
+	systemctl start docker
 }
 
 exit_on_err() {
@@ -267,6 +270,7 @@ case "$1" in
 		sudo ln -s $CLOUDDEV_PUPPET /opt/puppet-modules
 		kubernetes_install
 		kubernetes_start
+		sudo docker login -u docker -p docker -e 'foo@bar' docker.cern.ch
 		;;
 	'restart')
 		cluster_restart
@@ -299,9 +303,10 @@ Helper to handle a CERN openstack dev workspace.
 
 COMMAND can be one of:
   prepare      Prepare the dev workspace (fetch kubernetes, puppet modules, ...)
-  base         Cleanup any running containers and recreate the base containers (skydns, puppet, ceph)
+  restart      Cleanup any running containers and recreate the base containers (skydns, puppet, ceph)
   launch [tag] Launch the openstack containers, optionally from 'tag' (docker image tag) - otherwise full puppet run
   last         Launch the 'last' built openstack containers - wrapper for 'launch last'
+  tag [tag]    Tag all running containers with the give tag (commit first, then tag)
   push [tags]  (done by CI only) Push the current OS containers as a new image, optionally tagging with the given list
   cleanup      Cleanup any running containers so we get a clean set
   centos       Install required dependencies for CentOS
