@@ -4,9 +4,9 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title>CERN OpenStack Dev - Containers For The Win</title>
+		<title>CCI Development and CI</title>
 
-		<meta name="description" content="Proposal for a CERN OpenStack development environment">
+		<meta name="description" content="Description of the CERN Cloud development environment and continuous integration">
 		<meta name="author" content="Ricardo Rocha">
 
 		<meta name="apple-mobile-web-app-capable" content="yes" />
@@ -15,7 +15,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
 
 		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/league.css" id="theme">
+		<link rel="stylesheet" href="css/theme/night.css" id="theme">
 
 		<!-- Code syntax highlighting -->
 		<link rel="stylesheet" href="lib/css/zenburn.css">
@@ -41,56 +41,52 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h1>CERN OpenStack Dev</h1>
-					<h3>Containers For The Win</h3>
+					<h2>CERN Cloud Infrastructure</h2>
+					<h3>Development & CI</h3>
 				</section>
 
 				<section>
 					<h2>Goals</h2>
 					<p>Speed up our own dev (manifests, pkgs, scripts)</p>
 					<p>Improve testing, integration, validation</p>
-					<p>Quick scratch and deploy</p>
+					<p>Reproducible, quick scratch and deploy</p>
 				</section>
 
 				<section>
 					<h2>How</h2>
-					<p>Simplified setup (machine containers, think init)</p>
-					<p>Relying on local workspace (manifests, hiera, ...)</p>
-					<p>Build node from scratch or from latest</p>
-					<p>Self contained (no deps on other setups)</p>
+					<p>Simulate nodes using local 'machine' containers (think init)<p>
+					<p>Self contained, include all openstack nodes and dependencies</p>
+					<p>Allow node rebuild and update (from a given snapshot/tag)</p>
 				</section>
 
 				<section>
-					<h2>Non Goals</h2>
-					<p>Upstream code testing</p>
-					<p>Container orchestration solution</p>
-					<p>End user solution</p>
+					<h2>Kubernetes Concepts</h2>
+					<p>Cluster, Node, Service, Pod, Container, Label</p>
+					<i>Replication Controller</i>
 				</section>
 
 				<section>
-					<h2>Containers</h2>
-					<img src="docker-vm-container.png" />
+					<h2>Kubernetes Architecture</h2>
+					<img src="k8s_architecture.png" />
 				</section>
 
 				<section>
-					<h2>Kubernetes</h2>
-					<p><b>Cluster</b> is a set of physical or virtual nodes</p>
-					<b>Node</b> is a physical or virtual machine where pods run</p>
-					<b>Pod</b> is a colocated group of containers (shared IP, ...)</p>
-					<b>Replication controller</b> manage lifecycles of pods</p>
-					<b>Service</b> is a stable name and address for a set of pods (LB)</p>
-					<b>Label</b> is a key/value pair to organize and select objects</p>
+					<h1>Environment</h1>
 				</section>
 
 				<section>
-					<h2>Kubernetes</h2>
-					<img src="architecture.png" />
+					<h2>Overview</h2>
+					<img src="cci-dev-pods.png"/>
 				</section>
 
 				<section>
-					<h2>Dev Environment</h2>
-					<p>All kubernetes pods + services</p>
-					<img src="poddiagram.png"/>
+					<h2>Interesting Details</h2>
+					<p>Pods <i>Puppet, KubeDNS, CEPH</i> are launched first<p>
+					<p>Each OpenStack service lives in its own pod/container</p>
+					<p>Mocks for Teigi (golang) and LanDB (Java)</p>
+					<p>Puppet master <i>mounts</i> workspace data (modules, manifests, ...)</p>
+					<p>Same is true for Teigi data</p>
+				        <p>Live changes :-)</p>
 				</section>
 
 				<section>
@@ -99,33 +95,50 @@
 
 				<section>
 					<h2>Continuous Integration</h2>
-					<ol>
-						<li>Submit new pull request (gitlab)</li>
-						<li>Jenkins picks it up as a new job</li>
-						<li>Job runs contained on single slave (docker latest + puppet + rally)</li>
-						<li>Jenkins comments on PR with result (+ or -1 and logs)</li>
-						<li>PR gets updated or merged accordingly after another +1 (human review)</li>
-					</ol>
-					<p>On merge, rebuild/retag docker latest</p>
-					<p>Additional daily job rebuilding from scratch?</p>
-					<p>Tag with build number, debug later?</p>
+					<img src="cci-dev-ci.png"/>
 				</section>
 
 				<section>
-					<h2>Next</h2>
-					<p>Add rally node and tests</p>
-					<p>Add missing components<br>
-					(horizon, neutron, nova, ceilometer, kibana/ES)</p>
-					<p>Kubernetes namespaces (job isolation)</p>
+					<h2>CI Workflow</h2>
+					<p>Push branch + merge request (MR)</p>
+					<p>Launch job (rebuild or update)</p>
+					<p>Tag result with build number and push to docker.cern.ch</p>
+					<p>Feedback in MR (+ or -1 and build pointer)</p>
+					<p>Human review (+ or -1)</p>
 				</section>
 
 				<section>
-					<h2>Magnum</h2>
-					<h3>The icecream on top...</h3>
-					<p>Not for this use case, but looking forward</p>
-					<p>No vendor lock</p>
-					<p>Integration with the rest of OpenStack</p>
-					<p>Networking? Neutron L3? LanDB? Secrets?</p>
+					<h2>CI Workflow (2)</h2>
+					<p>MR jobs start from the <i>last</i> containers tag</p>
+					<p>Tempest tests are run at the end of each successful build</p>
+					<p>Tag <i>last</i> is updated on each merge to master</p>
+				</section>
+
+				<section>
+					<h2>CI Workflow (3)</h2>
+					<p><a href="http://cci-build.cern.ch:8080">cci-build.cern.ch:8080</a></p>
+				</section>
+
+				<section>
+					<h2>Open Issues</h2>
+					<p>Poor I/O on build nodes (even with io1)</p>
+					<p>Unstable jenkins agents (unregistered, poor i/o issue?)</p>
+					<p><i>Machine</i> container images are large and poorly layered</p>
+					<p>docker.cern.ch credentials</p>
+				</section>
+
+				<section>
+					<h2>Next Steps</h2>
+					<p>Add Heat, Cells, finish Magnum</p>
+					<p>Configure nova-network and neutron cells (test migration)</p>
+					<p>Migrate to gitlab CI</p>
+				</section>
+
+				<section>
+					<h2>Looking forward</h2>
+					<p>CI on an existing kubernetes cluster in OpenStack (namespaces?)</p>
+					<p>Reuse similar mechanism for infrastructure containers?</p>
+					<p>Some kind of SDN would be really awesome...</p>
 				</section>
 
 				<section>
