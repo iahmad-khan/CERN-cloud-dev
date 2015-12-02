@@ -425,12 +425,12 @@ keystone_default_catalog:
     - publicURL: 'http://cinder.default.svc.cluster.local:8776/v2/%(tenant_id)s'
     - adminURL: 'http://cinder.default.svc.cluster.local:8776/v2/%(tenant_id)s'
     - internalURL: 'http://cinder.default.svc.cluster.local:8776/v2/%(tenant_id)s'
-  - network:
-    - name: 'neutron'
-    - description: 'Openstack Networking Service'
-    - publicURL: 'http://neutron.default.svc.cluster.local:9696'
-    - adminURL: 'http://neutron.default.svc.cluster.local:9696'
-    - internalURL: 'http://neutron.default.svc.cluster.local:9696'
+  #- network:
+  #  - name: 'neutron'
+  #  - description: 'Openstack Networking Service'
+  #  - publicURL: 'http://neutron.default.svc.cluster.local:9696'
+  #  - adminURL: 'http://neutron.default.svc.cluster.local:9696'
+  #  - internalURL: 'http://neutron.default.svc.cluster.local:9696'
   - compute:
     - name: 'nova'
     - description: 'Openstack Nova Service'
@@ -594,11 +594,14 @@ horizon_websso_enable: 'False'
 horizon_websso_default_redirect: 'False'
 horizon_ssl_noverify: 'True'
 horizon_manage_selinux: false
+horizon_websso_default_redirect_protocol: 'saml2'
+horizon_websso_default_redirect_region: 'https://keystone/main/v3'
+horizon_websso_default_redirect_logout: 'https://login/'
 
 # Magnum
 magnum7_include_pkgs:
   - openstack-magnum*
-  - python-magnumclient
+  - python2-magnumclient
 magnum_api_port: '9511'
 magnum_control_exchange: 'magnum'
 magnum_rabbit_host: ''
