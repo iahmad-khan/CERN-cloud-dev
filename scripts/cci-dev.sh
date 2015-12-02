@@ -18,7 +18,7 @@ fi
 export PATH=$PATH:$CLOUDDEV_KUB/_output/local/go/bin
 
 # PUPPET_MODULES holds the list of module dependencies that we need to run the build
-PUPPET_MODULES="abrt afs apache:upstream_150 bridged cernlib cinder cloud_common cloud_monitoring concat filemapper firewall flume glance haproxy horizon inifile kerberos keystone lemon limits logrotate magnum memcached motd mysql network neutron:1748-neutrondev nova openstack_clients:osclients-testingrepo openstacklib osrepos psacct puppet puppetdbquery sssd stdlib sudo swap_file sysctl teigi:tbag_teigiurl xinetd"
+PUPPET_MODULES="abrt afs apache bridged cernlib cinder cloud_common cloud_monitoring concat filemapper firewall flume glance haproxy horizon inifile kerberos keystone lemon limits logrotate magnum memcached motd mysql network neutron:1748-neutrondev nova openstack_clients openstacklib:kilo osrepos psacct puppet puppetdbquery sssd stdlib sudo swap_file sysctl teigi:tbag_teigiurl xinetd"
 
 # PUPPET_HOSTGROUPS holds the list of hostgroups we need to run the build(s)
 PUPPET_HOSTGROUPS="cloud_adm:qa cloud_blockstorage cloud_compute:selinux cloud_container cloud_dashboard cloud_identity cloud_image:swap cloud_networking:1718-neutronsetup"
@@ -94,7 +94,10 @@ kubernetes_start() {
 	sudo modprobe ebtables
 	# start the kube daemons
 	cd $CLOUDDEV_KUB
-	make > /tmp/kubernetes-build.log 2>&1
+	kubectl version > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		make > /tmp/kubernetes-build.log 2>&1
+	fi
 	sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBELET_ARGS="--cluster-dns 10.0.0.10 --cluster-domain cluster.local" ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
 	echo 'waiting for kubernetes start (and build if not done before)...'
 	while ! kubectl get pod > /dev/null 2>&1
