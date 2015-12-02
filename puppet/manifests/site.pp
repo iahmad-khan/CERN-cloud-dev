@@ -44,6 +44,23 @@ node default {
 
 }
 
+define cloud_monitoring::flume::agent(
+    # Service flag
+    $enabled              = true,
+
+    # Configurations
+    $conf_template        = undef,
+    $conf_template_params = {},
+
+    # Morphlines
+    $morphlines_template  = undef,
+
+    # Log owner groups
+    $log_owner_groups     = [],
+) {
+
+}
+
 # workaround to ignore lemon for now
 define lemon::metric(
   $timing = undef,
