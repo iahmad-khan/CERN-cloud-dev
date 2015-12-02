@@ -68,6 +68,8 @@ puppet_manifest_checkout() {
 			cd -
 		fi
 	done
+	#TODO: remove once we figure out gitlab checkouts
+	sed -i "/.*class { 'afs': }.*/d" ${CLOUDDEV_PUPPET}/it-puppet-hostgroup-cloud_adm/code/manifests/client/linux.pp
 }
 
 # install kubernetes from a fixed release
@@ -259,7 +261,7 @@ exit_on_err() {
 # run tempest tests against the dev setup
 tempest_run() {
 	echo "running tempest tests..."
-	sudo docker exec $(sudo docker ps | grep client | grep init | awk '{print $1}') /etc/tempest/run.sh
+	sudo docker exec -it $(sudo docker ps | grep client | grep init | awk '{print $1}') /etc/tempest/run.sh
 	exit_on_err $?
 
 }
