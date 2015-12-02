@@ -74,7 +74,7 @@ node /.*client.*/ inherits default {
       includepkgs => join(hiera_array('magnum7_include_pkgs'), ','),
   }
   ->
-  package { 'python-magnumclient':
+  package { 'python2-magnumclient':
     ensure => present,
   }
 
