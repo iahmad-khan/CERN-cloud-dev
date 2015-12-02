@@ -14,6 +14,8 @@ parameters:
     type: string
   jenkins_pubkey:
     type: string
+  num_executors:
+    type: string
   metadata:
     type: json
 
@@ -24,6 +26,7 @@ resources:
     properties:
       image: { get_param: image }
       size: 40
+      volume_type: io1
 
   slave:
     type: OS::Nova::Server
@@ -44,7 +47,8 @@ resources:
             echo 'pubkey' >> /root/.ssh/authorized_keys
             yum install -y java-openjdk git
             curl -O http://maven.jenkins-ci.org/content/repositories/releases/org/jenkins-ci/plugins/swarm-client/1.26/swarm-client-1.26-jar-with-dependencies.jar
-            java -jar swarm-client-1.26-jar-with-dependencies.jar -master http://master_ip:8080/ &
+            java -jar swarm-client-1.26-jar-with-dependencies.jar -master http://master_ip:8080/ -executors num_executors &
           params:
             master_ip: { get_param: master_name }
             jenkins_key: { get_param: jenkins_pubkey }
+            num_executors: { get_param: num_executors }
