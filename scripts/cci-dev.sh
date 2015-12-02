@@ -21,7 +21,7 @@ export PATH=$PATH:$CLOUDDEV_KUB/_output/local/go/bin
 PUPPET_MODULES="abrt afs apache:upstream_150 bridged cernlib cinder cloud_common cloud_monitoring concat filemapper firewall flume glance haproxy horizon inifile kerberos keystone lemon limits logrotate magnum memcached motd mysql network neutron:1748-neutrondev nova openstack_clients:osclients-testingrepo openstacklib osrepos psacct puppet puppetdbquery sssd stdlib sudo swap_file sysctl teigi:tbag_teigiurl xinetd"
 
 # PUPPET_HOSTGROUPS holds the list of hostgroups we need to run the build(s)
-PUPPET_HOSTGROUPS="cloud_adm:qa cloud_blockstorage cloud_compute:selinux cloud_container cloud_dashboard cloud_identity cloud_image cloud_networking:1718-neutronsetup"
+PUPPET_HOSTGROUPS="cloud_adm:qa cloud_blockstorage cloud_compute:selinux cloud_container cloud_dashboard cloud_identity cloud_image:swap cloud_networking:1718-neutronsetup"
 
 # OS_PODS holds the list of pods to be started on 'launch'
 OS_PODS=${OS_PODS:-keystone glance cinder neutron nova compute client horizon}
