@@ -73,10 +73,10 @@ node /.*client.*/ inherits default {
       priority => hiera('magnum_repo_priority', 3),
       includepkgs => join(hiera_array('magnum7_include_pkgs'), ','),
   }
-  ->
-  package { 'python2-magnumclient':
-    ensure => present,
-  }
+  #->
+  #package { 'python2-magnumclient':
+  #  ensure => present,
+  #}
 
   # dependencies and setup for run_tempest.sh in a virtualenv
   package { 'python-testrepository':
