@@ -98,16 +98,16 @@ kubernetes_start() {
 	kubectl version > /dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		make > /tmp/kubernetes-build.log 2>&1
+		sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBELET_ARGS="--cluster-dns 10.0.0.10 --cluster-domain cluster.local" setsid ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
+		echo 'waiting for kubernetes start (and build if not done before)...'
+		while ! kubectl get pod > /dev/null 2>&1
+		do
+			sleep 5
+		done
+		exit_on_err $?
+		sudo chown -R $USER $CLOUDDEV_KUB
+		exit_on_err $?
 	fi
-	sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBELET_ARGS="--cluster-dns 10.0.0.10 --cluster-domain cluster.local" ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
-	echo 'waiting for kubernetes start (and build if not done before)...'
-	while ! kubectl get pod > /dev/null 2>&1
-	do
-		sleep 5
-	done
-	exit_on_err $?
-	sudo chown -R $USER $CLOUDDEV_KUB
-	exit_on_err $?
 }
 
 # start the base cluster pods
@@ -259,6 +259,7 @@ centos_install() {
 	# launch docker
 	systemctl daemon-reload
 	systemctl start docker
+	docker login -u docker -p docker -e none docker.cern.ch
 }
 
 exit_on_err() {
