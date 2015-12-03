@@ -1,3 +1,5 @@
+[![Build Status](https://gitlab.cern.ch/cloud-infrastructure/cloud-dev/ci_settings/edit#)](https://gitlab.cern.ch/cloud-infrastructure/cloud-dev/ci_settings/edit#)
+
 ## Overview
 
 Goals:
@@ -194,4 +196,3 @@ apt-get remove libnss-mdns
 ```
 
 which also updates /etc/nsswitch.conf appropriately.
-
