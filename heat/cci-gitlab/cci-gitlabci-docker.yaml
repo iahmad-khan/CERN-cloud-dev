@@ -1,0 +1,100 @@
+heat_template_version: 2013-05-23
+
+description: Deploy runners for gitlabci
+
+parameters:
+  image:
+    type: string
+    description: image used for runners
+    default: "CC7 Extra - x86_64 [2015-06-12]"
+  flavor:
+    type: string
+    description: flavor used for runners
+    default: m1.medium
+  key:
+    type: string
+    description: ssh key to access runners
+  min:
+    type: number
+    description: min number of runner instances
+    default: 1
+  max:
+    type: number
+    description: max number of runner instandes
+    default: 5
+  limit:
+    type: number
+    description: num of concurrent executors on each runner
+    default: 1
+  tag:
+    type: string
+    description: gitlabci tag for the runners
+    default: "cci-builder"
+
+resources:
+  runners:
+    type: OS::Heat::AutoScalingGroup
+    properties:
+      min_size: { get_param: min }
+      max_size: { get_param: max }
+      resource:
+        type: OS::Nova::Server
+        properties:
+          flavor: { get_param: flavor }
+          image: { get_param: image }
+          key_name: { get_param: key }
+        user_data:
+          str_replace:
+            template: |
+              #!/bin/sh
+              # install docker from upstream repo
+              tee /etc/yum.repos.d/docker.repo <<-'EOF'
+              [dockerrepo]
+              name=Docker Repository
+              baseurl=https://yum.dockerproject.org/repo/main/centos/$releasever/
+              enabled=1
+              gpgcheck=1
+              gpgkey=https://yum.dockerproject.org/gpg
+              EOF
+              yum install -y docker-engine
+              systemctl restart docker
+
+              # install and configure the gitlab runner
+              curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-ci-multi-runner/script.rpm.sh | sudo bash
+              yum install -y gitlab-ci-multi-runner
+              gitlab-ci-multi-runner register -n -u 'https://gitlab.cern.ch/ci' -r 'runner_token' --tag-list runner_tag --executor 'shell' --limit runner_limit
+              gitlab-ci-multi-runner start
+            params:
+              runner_token: { get_param: token }
+              runner_tag: { get_param: tag }
+              runner_limit: { get_param: limit }
+
+  slave_scaleup_policy:
+    type: OS::Heat::ScalingPolicy
+    properties:
+      adjustment_type: change_in_capacity
+      auto_scaling_group_id: { get_resource: runners }
+      cooldown: 600
+      scaling_adjustment: 1
+
+  slave_scaledown_policy:
+    type: OS::Heat::ScalingPolicy
+    properties:
+      adjustment_type: change_in_capacity
+      auto_scaling_group_id: { get_resource: runners }
+      cooldown: 600
+      scaling_adjustment: -1
+
+outputs:
+  scale_up_url:
+    description: >
+      This URL is the webhook to scale up the autoscaling group.  You
+      can invoke the scale-up operation by doing an HTTP POST to this
+      URL; no body nor extra headers are needed.
+    value: {get_attr: [slave_scaleup_policy, alarm_url]}
+  scale_dn_url:
+    description: >
+      This URL is the webhook to scale down the autoscaling group.
+      You can invoke the scale-down operation by doing an HTTP POST to
+      this URL; no body nor extra headers are needed.
+    value: {get_attr: [slave_scaledown_policy, alarm_url]}

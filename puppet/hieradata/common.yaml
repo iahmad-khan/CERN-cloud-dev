@@ -464,6 +464,7 @@ keystone_rabbit_virtual_host: ''
 keystone_rabbit_level: "hostgroup=\"cloud_identity/cache/main\""
 keystone_rabbit_port: '5672'
 keystone_rabbit_userid: 'keystone'
+keystone_rabbit_virtual_host: '/'
 keystone_revoke_driver: 'keystone.contrib.revoke.backends.sql.Revoke'
 keystone_seltype_etc: 'etc_t'
 keystone_seltype_lib: 'httpd_var_lib_t'
