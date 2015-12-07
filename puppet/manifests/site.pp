@@ -30,6 +30,36 @@ node default {
   ->
   Firewall<||>
 
+  if hiera('cci_dev_yum_forcecache', false) {
+    Package {
+      install_options => '-C',
+    }
+  }
+
+  ini_setting { 'yum conf keepcache':
+    ensure  => present,
+    path    => '/etc/yum.conf',
+    section => 'main',
+    setting => 'keepcache',
+    value   => hiera('cci_dev_yum_keepcache', 1),
+  }
+  ->
+  ini_setting { 'yum conf retries':
+    ensure  => present,
+    path    => '/etc/yum.conf',
+    section => 'main',
+    setting => 'retries',
+    value   => hiera('cci_dev_yum_retries', 1),
+  }
+  ->
+  ini_setting { 'yum conf timeout':
+    ensure  => present,
+    path    => '/etc/yum.conf',
+    section => 'main',
+    setting => 'timeout',
+    value   => hiera('cci_dev_yum_timeout', 5),
+  }
+  ->
   Osrepos::Ai121yumrepo<||>
   ->
   Package<||>
