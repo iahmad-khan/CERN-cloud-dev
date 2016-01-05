@@ -1,4 +1,4 @@
-FROM rochaporto/base:latest
+FROM docker.cern.ch/cloud-infrastructure/base:latest
 MAINTAINER Ricardo Rocha <ricardo.rocha@cern.ch>
 
 RUN mkdir -p /etc/yum-puppet.repos.d && \

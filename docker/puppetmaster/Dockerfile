@@ -1,4 +1,4 @@
-FROM rochaporto/puppetbase:latest
+FROM docker.cern.ch/cloud-infrastructure/puppetbase:latest
 MAINTAINER Ricardo Rocha <ricardo.rocha@cern.ch>
 
 RUN yum install -y \
