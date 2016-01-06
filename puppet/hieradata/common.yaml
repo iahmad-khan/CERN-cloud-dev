@@ -1,5 +1,5 @@
 cci_dev_yum_keepcache: 1
-cci_dev_yum_forcecache: true
+cci_dev_yum_forcecache: false
 ceph_repo_release: 'hammer'
 ceph_cluster:
   ceph:
@@ -73,6 +73,7 @@ openstack_rdo_include_pkgs:
   - python-XStatic-Angular
   - python-netifaces
   - python-cryptography
+  - python-unicodecsv
   - openstack-selinux
 
 # cloud_compute
@@ -493,6 +494,7 @@ keystone_notification_driver: 'rabbit'
 keystone_notification_topics: false
 keystone_package_ensure: present
 keystone_public_endpoint: "https://%{::hostname}/main"
+keystone_rabbit_virtual_host: ''
 keystone_rabbit_level: "hostgroup=\"cloud_identity/cache/main\""
 keystone_rabbit_port: '5672'
 keystone_rabbit_userid: 'keystone'
