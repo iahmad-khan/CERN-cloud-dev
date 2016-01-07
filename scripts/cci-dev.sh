@@ -21,7 +21,7 @@ export PATH=$PATH:$CLOUDDEV_KUB/_output/local/go/bin
 PUPPET_MODULES="abrt afs apache bridged cernlib cinder cloud_common cloud_monitoring concat filemapper firewall flume glance haproxy horizon inifile kerberos keystone lemon limits logrotate magnum memcached motd mysql network neutron:1748-neutrondev nova openstack_clients openstacklib:kilo osrepos psacct puppet puppetdbquery sssd stdlib sudo swap_file sysctl teigi:tbag_teigiurl xinetd"
 
 # PUPPET_HOSTGROUPS holds the list of hostgroups we need to run the build(s)
-PUPPET_HOSTGROUPS="cloud_adm:qa cloud_blockstorage cloud_compute:selinux cloud_container cloud_dashboard cloud_identity cloud_image:swap cloud_networking:1718-neutronsetup"
+PUPPET_HOSTGROUPS="cloud_adm:qa cloud_blockstorage cloud_compute:selinux cloud_container cloud_dashboard cloud_identity cloud_image:swap cloud_networking:1718-neutronsetup cloud_orchestration cloud_telemetry"
 
 # OS_PODS holds the list of pods to be started on 'launch'
 OS_PODS=${OS_PODS:-keystone glance cinder neutron nova compute client horizon}
@@ -91,7 +91,6 @@ kubernetes_install() {
 
 # start the kubernetes cluster
 kubernetes_start() {
-	cluster_cleanup
 	# make sure the ebtables module is loaded
 	sudo modprobe ebtables
 	# start the kube daemons
@@ -113,6 +112,7 @@ kubernetes_start() {
 
 # start the base cluster pods
 cluster_pod_base_start() {
+	cluster_cleanup
 	echo "starting the base pods (skydns, puppet, ceph)"
 	# launch the pods
 	cd $CLOUDDEV/kubernetes
@@ -146,10 +146,15 @@ cluster_pod_base_start() {
 
 # start with a clean runtime
 cluster_cleanup() {
-	echo "cleaning up any kubernetes, etcd and docker leftovers..."
-	sudo killall etcd > /dev/null 2>&1
-	for k in $(ps aux | grep kube | awk '{print $2}'); do sudo kill -9 $k; done > /dev/null 2>&1
-	sudo docker ps --all | awk '{print $1}' | xargs sudo docker rm -f > /dev/null 2>&1
+	echo "cleaning up all kubernetes pods..."
+	kubectl delete -f $CLOUDDEV/kubernetes --ignore-not-found --grace-period=5 --timeout=2s --cascade
+	kubectl get pod | grep Terminating > /dev/null 2>&1
+	echo "waiting for pods to be terminated..."
+	while [ $? -eq 0 ]
+	do
+		sleep 2
+		kubectl get pod | grep Terminating > /dev/null 2>&1
+	done
 }
 
 # start the base cluster
