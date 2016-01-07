@@ -1,3 +1,5 @@
+psacct_enabled: false
+abrt_enabled: false
 cci_dev_yum_keepcache: 1
 cci_dev_yum_forcecache: false
 ceph_repo_release: 'hammer'
@@ -16,7 +18,7 @@ teigi_ssl_port: 8082
 tellme_enabled: false
 iaas_release: 'kilo'
 iaas_qa_repo_enable: 1
-iaas_testing_repo_enable: 0
+iaas_testing_repo_enable: 1
 osrepos_ai_testing_enable: 1
 osrepos_ai_qa_enable: 1
 operator_access_enable: false
@@ -31,11 +33,10 @@ iaas_include_pkgs:
   - openstack-dashboard
   - openstack-dashboard-theme
   - python-django-horizon
-  - python-django-openstack-auth
   - python-django-maintenancemode
   - python-django-piwik
-  - openstack-neutron
-  - openstack-neutron-ml2
+    python-django-openstack-auth
+  - openstack-neutron*
 openstack_rdo_include_pkgs:
   - python-oslo*
   - python-sqlalchemy
@@ -75,6 +76,8 @@ openstack_rdo_include_pkgs:
   - python-cryptography
   - python-unicodecsv
   - openstack-selinux
+  - fontawesome-fonts
+  - fontawesome-fonts-web
 
 # cloud_compute
 
@@ -107,7 +110,7 @@ nova_api_auth_strategy: keystone
 nova_api_auth_host: 'keystone.default.svc.cluster.local'
 nova_api_auth_protocol: 'https'
 nova_api_auth_admin_prefix: '/admin'
-nova_api_auth_uri: 'https://keystone.default.svc.cluster.local:443/'
+nova_api_auth_uri: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
 nova_api_ca_file: '/var/lib/puppet/ssl/certs/ca.pem'
 nova_api_enabled_apis: 'osapi_compute,metadata'
 nova_api_keystone_ec2_url: 'https://keystone.default.svc.cluster.local:443/v2.0/ec2tokens'
@@ -124,7 +127,7 @@ nova_compute_libvirt_virt_type: 'qemu'
 nova_compute_monitoring: false
 nova_compute_ksm: false
 nova_compute_reserved_host_memory: 0
-nova_neutron_enabled: false
+nova_neutron_enabled: true
 nova_metadata_host: 'nova'
 nova_compute_disable_snoop: false
 nova_compute_bridgeconfig: false
@@ -137,6 +140,7 @@ nova_compute_vncserver_proxyclient_address: "%{::ipaddress}"
 # nova_network
 nova_network_network_manager: 'nova.network.manager.CernManager'
 nova_network_create_networks: false
+nova_network_enabled: false
 
 # cloud_networking
 neutron_verbose: true
@@ -159,7 +163,7 @@ neutron_auth_cafile: '/var/lib/puppet/ssl/certs/ca.pem'
 neutron_server_auth_user: 'neutron'
 neutron_server_auth_tenant: 'services'
 neutron_server_auth_uri: 'https://keystone.default.svc.cluster.local:443/main'
-neutron_server_identity_uri: 'https://keystone.default.svc.cluster.local:443/admin'
+neutron_server_identity_uri: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
 neutron_server_landb_hostname: 'puppet'
 neutron_server_landb_port: '8043'
 neutron_server_landb_protocol: 'https'
@@ -302,6 +306,9 @@ iaas7_kilo_include_pkgs:
 openstack_kilo_exclude_pkgs:
     - puppet
     - facter
+openstack_liberty_exclude_pkgs:
+    - puppet
+    - facter
 iaas7_juno_include_pkgs:
     - openstack-cinder
     - python-cinder
@@ -428,12 +435,12 @@ keystone_default_catalog:
     - publicURL: 'http://cinder.default.svc.cluster.local:8776/v2/%(tenant_id)s'
     - adminURL: 'http://cinder.default.svc.cluster.local:8776/v2/%(tenant_id)s'
     - internalURL: 'http://cinder.default.svc.cluster.local:8776/v2/%(tenant_id)s'
-  #- network:
-  #  - name: 'neutron'
-  #  - description: 'Openstack Networking Service'
-  #  - publicURL: 'http://neutron.default.svc.cluster.local:9696'
-  #  - adminURL: 'http://neutron.default.svc.cluster.local:9696'
-  #  - internalURL: 'http://neutron.default.svc.cluster.local:9696'
+  - network:
+    - name: 'neutron'
+    - description: 'Openstack Networking Service'
+    - publicURL: 'http://neutron.default.svc.cluster.local:9696'
+    - adminURL: 'http://neutron.default.svc.cluster.local:9696'
+    - internalURL: 'http://neutron.default.svc.cluster.local:9696'
   - compute:
     - name: 'nova'
     - description: 'Openstack Nova Service'
@@ -606,12 +613,13 @@ horizon_websso_default_redirect_logout: 'https://login/'
 magnum7_include_pkgs:
   - openstack-magnum*
   - python2-magnumclient
+
 magnum_api_port: '9511'
 magnum_control_exchange: 'magnum'
 magnum_rabbit_host: ''
 magnum_rabbit_port: '5672'
 magnum_rabbit_hosts:
-  - 'controller'
+   - 'controller'
 magnum_rabbit_virtual_host: '/'
 magnum_rabbit_userid: 'guest'
 magnum_package_ensure: 'present'
@@ -629,4 +637,4 @@ magnum_api_keystone_identity_uri: 'https://keystone.default.svc.cluster.local:44
 magnum_api_service_port: '443'
 magnum_api_package_ensure: 'present'
 magnum_api_bind_host: '0.0.0.0'
-magnum_api_enabled: true 
+magnum_api_enabled: true
