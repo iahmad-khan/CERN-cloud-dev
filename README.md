@@ -32,6 +32,7 @@ Otherwise here are the detailed steps:
 sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
 sudo yum install -y wget git vim docker etcd golang patch psmisc
 sed -i "s/^# INSECURE_REGISTRY.*/INSECURE_REGISTRY='--insecure-registry docker-reg.cern.ch:5000'/g" /etc/sysconfig/docker
+sed -i "s/^OPTIONS.*/OPTIONS='--storage-driver overlay'/g" /etc/sysconfig/docker
 systemctl restart docker
 ```
 
