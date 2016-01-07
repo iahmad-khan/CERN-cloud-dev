@@ -19,6 +19,11 @@ spec:
           mountPath: /etc/facter
         - name: yumcache
           mountPath: /var/cache/yum
+        - name: cgroup
+          mountPath: /sys/fs/cgroup
+          readOnly: true
+        - name: run
+          mountPath: /run
       command:
         - /usr/sbin/init
   volumes:
@@ -34,3 +39,8 @@ spec:
     - name: yumcache
       hostPath:
         path: /opt/cloud-dev/cache
+    - name: cgroup
+      hostPath:
+        path: /sys/fs/cgroup
+    - name: run
+      emptyDir: 
