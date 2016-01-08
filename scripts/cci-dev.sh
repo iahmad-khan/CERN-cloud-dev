@@ -147,6 +147,10 @@ cluster_pod_base_start() {
 # start with a clean runtime
 cluster_cleanup() {
 	echo "cleaning up all kubernetes pods..."
+	kubectl version > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		return
+	fi
 	kubectl delete -f $CLOUDDEV/kubernetes --ignore-not-found --grace-period=5 --timeout=2s --cascade
 	kubectl get pod | grep Terminating > /dev/null 2>&1
 	echo "waiting for pods to be terminated..."
