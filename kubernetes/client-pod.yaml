@@ -9,7 +9,9 @@ spec:
     - name: client
       image: docker.cern.ch/cloud-infrastructure/puppetagent
       securityContext:
-        privileged: true
+        capabilities:
+          add:
+            - NET_ADMIN
       volumeMounts:
         - name: puppetcfg
           mountPath: /etc/puppet
@@ -21,6 +23,11 @@ spec:
           mountPath: /etc/tempest
         - name: yumcache
           mountPath: /var/cache/yum
+        - name: cgroup
+          mountPath: /sys/fs/cgroup
+          readOnly: true
+        - name: run
+          mountPath: /run
       command:
         - /usr/sbin/init
   volumes:
@@ -39,3 +46,8 @@ spec:
     - name: yumcache
       hostPath:
         path: /opt/cloud-dev/cache
+    - name: cgroup
+      hostPath:
+        path: /sys/fs/cgroup
+    - name: run
+      emptyDir: 
