@@ -12,6 +12,8 @@ rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
 rm -f /lib/systemd/system/basic.target.wants/*;\
 rm -f /lib/systemd/system/anaconda.target.wants/*;
 
+RUN rm /etc/sysconfig/network-scripts/ifcfg-ens3
+
 RUN yum install -y \
     hostname \
     less \
