@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: landb
+  labels:
+    name: landb
+spec:
+  containers:
+    - name: landb
+      image: docker.cern.ch/cloud-infrastructure/landb
+      ports:
+        - containerPort: 8443
+    - name: landb-dhcp
+      image: docker.cern.ch/cloud-infrastructure/landb-dhcp
+      ports:
+        - containerPort: 67
+        - containerPort: 68
+  volumes:
+    - name: puppet
+      hostPath:
+        path: /opt/cloud-dev/puppet
+    - name: factercfg
+      hostPath:
+        path: /opt/cloud-dev/facter
+    - name: puppetmodules
+      hostPath:
+        path: /opt/puppet-modules
+    - name: puppetssl
+      hostPath:
+        path: /opt/cloud-dev/puppetssl
+    - name: teigifiles
+      hostPath:
+        path: /opt/cloud-dev/teigi/certs
+    - name: teigidb
+      hostPath:
+        path: /opt/cloud-dev/teigi/data

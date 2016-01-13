@@ -43,15 +43,6 @@ spec:
           mountPath: /opt/teigi
         - name: teigidb
           mountPath: /data
-    - name: landb
-      image: docker.cern.ch/cloud-infrastructure/landb
-      ports:
-        - containerPort: 8443
-    - name: landb-dhcp
-      image: docker.cern.ch/cloud-infrastructure/landb-dhcp
-      ports:
-        - containerPort: 67
-        - containerPort: 68
   volumes:
     - name: puppet
       hostPath:

@@ -116,7 +116,7 @@ cluster_pod_base_start() {
 	echo "starting the base pods (skydns, puppet, ceph)"
 	# launch the pods
 	cd $CLOUDDEV/kubernetes
-	for z in skydns-rc.yaml skydns-svc.yaml puppet-pod.yaml puppet-svc.yaml ceph-pod.yaml wigner-pod.yaml; do
+	for z in skydns-rc.yaml skydns-svc.yaml puppet-pod.yaml puppet-svc.yaml landb-pod.yaml landb-svc.yaml ceph-pod.yaml wigner-pod.yaml; do
 		kubectl create -f $z
 	done
 
@@ -282,6 +282,8 @@ case "$1" in
 		puppet_manifest_checkout
 		sudo rm -f /opt/puppet-modules
 		sudo ln -s $CLOUDDEV_PUPPET /opt/puppet-modules
+		sudo modprobe iptables
+		sudo modprobe ip6_tables
 		kubernetes_install
 		kubernetes_start
 		sudo docker login -u docker -p docker -e 'foo@bar' docker.cern.ch
