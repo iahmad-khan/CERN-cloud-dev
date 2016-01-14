@@ -9,9 +9,7 @@ spec:
     - name: neutron
       image: docker.cern.ch/cloud-infrastructure/puppetagent
       securityContext:
-        capabilities:
-          add:
-            - NET_ADMIN
+        privileged: true
       volumeMounts:
         - name: puppetcfg
           mountPath: /etc/puppet

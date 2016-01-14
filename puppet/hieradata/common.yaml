@@ -80,6 +80,18 @@ openstack_rdo_include_pkgs:
   - fontawesome-fonts-web
 
 # cloud_compute
+openstack_centos_kilo_excludepkgs:
+  - openstack-neutron*
+  - python-neutron*
+iaas_stable_repo_includepkgs:
+  - openstack-neutron*
+  - python-neutron*
+iaas_qa_repo_includepkgs:
+  - openstack-neutron*
+  - python-neutron*
+iaas_testing_repo_includepkgs:
+  - openstack-neutron*
+  - python-neutron*
 
 # nova::base
 nova_debug: True
@@ -128,6 +140,7 @@ nova_compute_monitoring: false
 nova_compute_ksm: false
 nova_compute_reserved_host_memory: 0
 nova_neutron_enabled: true
+nova_neutron_identity_uri: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
 nova_metadata_host: 'nova'
 nova_compute_disable_snoop: false
 nova_compute_bridgeconfig: false
@@ -162,14 +175,13 @@ neutron_log_facility: 'LOG_USER'
 neutron_auth_cafile: '/var/lib/puppet/ssl/certs/ca.pem'
 neutron_server_auth_user: 'neutron'
 neutron_server_auth_tenant: 'services'
-neutron_server_auth_uri: 'https://keystone.default.svc.cluster.local:443/main'
-neutron_server_identity_uri: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
-neutron_server_landb_hostname: 'puppet'
-neutron_server_landb_port: '8043'
+neutron_server_auth_uri: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
+neutron_server_identity_uri: 'https://keystone.default.svc.cluster.local:443/admin'
+neutron_server_landb_hostname: 'landb'
+neutron_server_landb_port: '8443'
 neutron_server_landb_protocol: 'https'
 neutron_server_landb_username: 'neutron'
 neutron_service_plugins:
-        - 'router'
         - 'cern'
 neutron_ml2_type_drivers:
         - 'flat'
@@ -178,6 +190,10 @@ neutron_ml2_tenant_network_types:
 neutron_ml2_mechanism_drivers:
         - 'linuxbridge'
         - 'cern_landb'
+neutron_linuxbridge_phys_mapping:
+        - "external:%{::network_primary_interface}"
+neutron_metadata_host: 'nova.default.svc.cluster.local'
+neutron_metadata_port: '8775'
 
 # cloud_blockstorage
 cinder_api_port: '8776'

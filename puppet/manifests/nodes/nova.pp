@@ -48,74 +48,74 @@ node /.*nova.*/ inherits default {
   Service['openstack-nova-api']
 
   $nova_network_enabled = hiera('nova_network_enabled', true)
-  Package['python-nova']
-  ->
-  file { '/tmp/patch':
-    ensure  => present,
-    content => "
---- /usr/lib/python2.7/site-packages/nova/cern.py	2015-07-27 08:55:08.000000000 +0000
-+++ /root/cern.py	2015-10-07 14:31:30.628621278 +0000
-@@ -58,7 +58,7 @@
- 
-     def __auth(self, username=None, password=None):
-         \"\"\"Authenticates in landb\"\"\"
--        url = 'https://network.cern.ch/sc/soap/soap.fcgi?v=5&WSDL'
-+        url = 'https://puppet:8443/axis/services/NetworkServicePort?wsdl'
-         imp = Import('http://schemas.xmlsoap.org/soap/encoding/')
-         d = ImportDoctor(imp)
-         client = Client(url, doctor=d)
-@@ -168,7 +168,9 @@
-     def device_exists(self, device):
-         \"\"\"Check if a device is registered in landb\"\"\"
-         try:
--            self.client.service.getDeviceInfo(device)
-+            res = self.client.service.getDeviceInfo(device)
-+            if res is None:
-+                return False
-         except:
-             return False
-         return device
-",
-  }
-  -> 
-  exec { '/usr/bin/patch -p0 /usr/lib/python2.7/site-packages/nova/cern.py < /tmp/patch':
-    onlyif => "/bin/echo ${nova_network_enabled} | /usr/bin/grep -i true",
-    unless => "/usr/bin/grep puppet /usr/lib/python2.7/site-packages/nova/cern.py",
-  }
-  ->
-  # need the latest python-landbclient to run landb ipsrv-register
-  file { "/etc/yum-puppet.repos.d/cci${::operatingsystemmajrelease}-utils.repo":
-    ensure  => present,
-    content => "
-[cci${::operatingsystemmajrelease}-utils]
-name=Cloud Utils repository
-baseurl=http://linuxsoft.cern.ch/internal/repos/cci${::operatingsystemmajrelease}-utils-stable/x86_64/os/
-enabled=1
-gpgcheck=0
-includepkgs=python-landbclient
-priority=4
-",
-  }
-  ->
-  package { 'python-landbclient':
-    ensure => present,
-  }
-  ->
-  exec { '/usr/bin/landb --landb-host puppet --landb-port 8443 --landb-user someuser --landb-password 111 ipsrv-register CLUSTER1 compute':
-    unless => '/usr/bin/landb --landb-host puppet --landb-port 8443 --landb-user someuser --landb-password 111 cluster-dev CLUSTER1 | grep Z',
-  }
-  ->
-  exec { "/usr/bin/sed -i 's/\.CERN\.CH//g' /usr/lib/python2.7/site-packages/nova/network/manager.py":
-    onlyif => "/usr/bin/grep 'CERN.CH' /usr/lib/python2.7/site-packages/nova/network/manager.py",
-  }
-  ->
-  Service['openstack-nova-scheduler']
-  ->
-  Service['openstack-nova-conductor']
-  ->
-  Service['openstack-nova-api']
-
   if $nova_network_enabled {
+    Package['python-nova']
+    ->
+    file { '/tmp/patch':
+      ensure  => present,
+      content => "
+  --- /usr/lib/python2.7/site-packages/nova/cern.py	2015-07-27 08:55:08.000000000 +0000
+  +++ /root/cern.py	2015-10-07 14:31:30.628621278 +0000
+  @@ -58,7 +58,7 @@
+   
+       def __auth(self, username=None, password=None):
+           \"\"\"Authenticates in landb\"\"\"
+  -        url = 'https://network.cern.ch/sc/soap/soap.fcgi?v=5&WSDL'
+  +        url = 'https://landb:8443/axis/services/NetworkServicePort?wsdl'
+           imp = Import('http://schemas.xmlsoap.org/soap/encoding/')
+           d = ImportDoctor(imp)
+           client = Client(url, doctor=d)
+  @@ -168,7 +168,9 @@
+       def device_exists(self, device):
+           \"\"\"Check if a device is registered in landb\"\"\"
+           try:
+  -            self.client.service.getDeviceInfo(device)
+  +            res = self.client.service.getDeviceInfo(device)
+  +            if res is None:
+  +                return False
+           except:
+               return False
+           return device
+  ",
+    }
+    -> 
+    exec { '/usr/bin/patch -p0 /usr/lib/python2.7/site-packages/nova/cern.py < /tmp/patch':
+      onlyif => "/bin/echo ${nova_network_enabled} | /usr/bin/grep -i true",
+      unless => "/usr/bin/grep landb /usr/lib/python2.7/site-packages/nova/cern.py",
+    }
+    ->
+    # need the latest python-landbclient to run landb ipsrv-register
+    file { "/etc/yum-puppet.repos.d/cci${::operatingsystemmajrelease}-utils.repo":
+      ensure  => present,
+      content => "
+  [cci${::operatingsystemmajrelease}-utils]
+  name=Cloud Utils repository
+  baseurl=http://linuxsoft.cern.ch/internal/repos/cci${::operatingsystemmajrelease}-utils-stable/x86_64/os/
+  enabled=1
+  gpgcheck=0
+  includepkgs=python-landbclient
+  priority=4
+  ",
+    }
+    ->
+    package { 'python-landbclient':
+      ensure => present,
+    }
+    ->
+    exec { '/usr/bin/landb --landb-host landb --landb-port 8443 --landb-user someuser --landb-password 111 ipsrv-register CLUSTER1 compute':
+      unless => '/usr/bin/landb --landb-host nova --landb-port 8443 --landb-user someuser --landb-password 111 cluster-dev CLUSTER1 | grep Z',
+    }
+    ->
+    exec { "/usr/bin/sed -i 's/\.CERN\.CH//g' /usr/lib/python2.7/site-packages/nova/network/manager.py":
+      onlyif => "/usr/bin/grep 'CERN.CH' /usr/lib/python2.7/site-packages/nova/network/manager.py",
+    }
+    ->
+    Service['openstack-nova-scheduler']
+    ->
+    Service['openstack-nova-conductor']
+    ->
+    Service['openstack-nova-api']
+
     Service['openstack-nova-api']
     ->
     exec { "/usr/bin/mysql -u nova -D nova -p123456 -h controller -e \"insert into networks (injected, cidr, bridge, gateway, dns1, cidr_v6, gateway_v6, label, multi_host, dns2, uuid, deleted, enable_dhcp, share_address) values (0, '0.0.0.0/0', 'br100', '0.0.0.0', '0.0.0.0', '::/0', '::', 'KUB_NETWORK', 0, '0.0.0.0', '81b1390e-6d0e-11e5-87fb-68f728b18b2d', 0, 1, 0);\"":

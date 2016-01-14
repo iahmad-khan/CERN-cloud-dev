@@ -7,23 +7,24 @@ node /.*compute.*/ inherits default {
   class { 'hg_cloud_compute::nova::cinder': }
   class { 'hg_cloud_compute::nova::neutron': }
 
-  file { '/etc/sysconfig/network-scripts/ifcfg-eth0':
-    ensure  => file,
-    content => "
+  if hiera('nova_neutron_enabled') == false {
+    file { '/etc/sysconfig/network-scripts/ifcfg-eth0':
+      ensure  => file,
+      content => "
 DEVICE=eth0
 BOOTPROTO=dhcp
 ONBOOT=on
 BRIDGE=br100
 USERCTL=false
-    ",
-    owner   => 'root',
-    mode    => 0644,
-    notify  => Service['network'],
-  }
-  ->
-  file { '/etc/sysconfig/network-scripts/ifcfg-br100':
-    ensure  => file,
-    content => "
+      ",
+      owner   => 'root',
+      mode    => 0644,
+      notify  => Service['network'],
+    }
+    ->
+    file { '/etc/sysconfig/network-scripts/ifcfg-br100':
+      ensure  => file,
+      content => "
 DEVICE=br100
 BOOTPROTO=static
 ONBOOT=on
@@ -33,15 +34,16 @@ IPADDR=${::ipaddress}
 NETMASK=255.255.0.0
 GATEWAY=172.17.0.1
 GATEWAYDEV=br100
-    ",
-    owner   => root,
-    mode    => 0644,
-    notify  => Service['network'],
+      ",
+      owner   => root,
+      mode    => 0644,
+      notify  => Service['network'],
+    }
+    ->
+    Package['bridge-utils']
+    ->
+    Service['network']
   }
-  ->
-  Package['bridge-utils']
-  ->
-  Service['network']
 
   Package['nova-common']
   ->
