@@ -93,6 +93,7 @@ kubernetes_start() {
 	cd $CLOUDDEV_KUB
 	kubectl version > /dev/null 2>&1
 	if [ $? -ne 0 ]; then
+		echo "Building Kubernetes binaries..."
 		make > /tmp/kubernetes-build.log 2>&1
 		sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBELET_ARGS="--cluster-dns 10.0.0.10 --cluster-domain cluster.local" setsid ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
 		echo 'waiting for kubernetes start (and build if not done before)...'
@@ -105,6 +106,7 @@ kubernetes_start() {
 		exit_on_err $?
 		sudo chown -R $USER $CLOUDDEV_KUB
 		exit_on_err $?
+		echo "Kubernetes is started"
 	fi
 }
 
@@ -144,6 +146,7 @@ cluster_pod_base_start() {
 	done
 	echo ""
 	exit_on_err $?
+	echo "Environment services are started"
 }
 
 # start with a clean runtime
@@ -211,11 +214,14 @@ cluster_pod_launch() {
 	for pod in $OS_PODS
 	do
 		# run puppet on pod
+		echo "Running Puppet on pod ${pod}..."
 		sudo docker exec $(sudo docker ps | grep $pod | grep init | awk '{print $1}') /usr/bin/puppet agent -t
 		if [[ $? > 2  ]]; then
+			echo "Puppet run for ${pod} failed."
 			exit_on_err 1
 		fi
 	done
+	echo "OpenStack services are started"
 }
 
 # commit the OS docker containers and tag them
