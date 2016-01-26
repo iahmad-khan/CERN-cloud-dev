@@ -1,19 +1,15 @@
 #!/bin/bash
 
-if [ -z $CLOUDDEV ]; then
-	echo "CLOUDDEV needs to be defined in your environment"
+if [ -z $CLOUDDEV ] || [ -z $CLOUDDEV_PUPPET ] || [ -z $CLOUDDEV_KUB ]; then
+	echo "
+Required environment settings:
+export CLOUDDEV=~/ws/cloud-dev
+export CLOUDDEV_PUPPET=~/ws/cern-puppet
+export CLOUDDEV_KUB=~/ws/kubernetes
+"
 	exit 1
 fi
 
-if [ -z $CLOUDDEV_PUPPET ]; then
-	echo "CLOUDDEV_PUPPET needs to be defined in your environment"
-	exit 1
-fi
-
-if [ -z $CLOUDDEV_KUB ]; then
-	echo "CLOUDDEV_KUB needs to be defined in your environment"
-	exit 1
-fi
 
 export PATH=$PATH:$CLOUDDEV_KUB/_output/local/go/bin
 
