@@ -267,7 +267,7 @@ centos_install() {
 	sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
 	sudo yum install -y wget git vim docker-engine etcd golang patch psmisc
 	exit_on_err $?
-	sed -i "s#^ExecStart.*#ExecStart=/usr/bin/docker daemon --dns 137.138.17.5 --insecure-registry docker.cern.ch --bip 172.17.0.1/16 -H fd://#g" /lib/systemd/system/docker.service
+	sed -i "s#^ExecStart.*#ExecStart=/usr/bin/docker daemon --storage-driver=overlay --dns 137.138.17.5 --insecure-registry docker.cern.ch --bip 172.17.0.1/16 -H fd://#g" /lib/systemd/system/docker.service
 	iptables -F
 	# launch docker
 	systemctl daemon-reload
