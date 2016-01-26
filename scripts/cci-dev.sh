@@ -166,6 +166,7 @@ cluster_cleanup() {
 		kubectl get pod | grep Terminating > /dev/null 2>&1
 	done
 	echo ""
+	return 0
 }
 
 # start the base cluster
