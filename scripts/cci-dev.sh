@@ -98,8 +98,10 @@ kubernetes_start() {
 		echo 'waiting for kubernetes start (and build if not done before)...'
 		while ! kubectl get pod > /dev/null 2>&1
 		do
+			printf "."
 			sleep 5
 		done
+		echo ""
 		exit_on_err $?
 		sudo chown -R $USER $CLOUDDEV_KUB
 		exit_on_err $?
@@ -120,9 +122,11 @@ cluster_pod_base_start() {
 	echo "waiting for pods to be ready..."
 	while [ $? -eq 0 ]
 	do
+		printf "."
 		sleep 2
 		kubectl get pod | grep Pending > /dev/null 2>&1
 	done
+	echo ""
 
 	for cluster in ceph wigner; do
 		kubectl exec -it ${cluster} -c cephall -- /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 auth add client.images -i /etc/ceph/${cluster}.client.images.keyring
@@ -135,8 +139,10 @@ cluster_pod_base_start() {
 	echo "waiting for puppetdb to start..."
 	while ! kubectl exec -p puppet -c puppetdb -- /usr/bin/curl -s http://localhost:8080/v3/facts > /dev/null 2>&1
 	do
+		printf "."
 		sleep 2
 	done
+	echo ""
 	exit_on_err $?
 }
 
@@ -152,9 +158,11 @@ cluster_cleanup() {
 	echo "waiting for pods to be terminated..."
 	while [ $? -eq 0 ]
 	do
+		printf "."
 		sleep 2
 		kubectl get pod | grep Terminating > /dev/null 2>&1
 	done
+	echo ""
 }
 
 # start the base cluster
@@ -195,8 +203,10 @@ cluster_pod_launch() {
 	echo "waiting for pods to be ready..."
 	while kubectl get pod | grep Pending > /dev/null 2>&1
 	do
+		printf "."
 		sleep 2
 	done
+	echo ""
 	# run puppet in the openstack pods, even if built from tag
 	for pod in $OS_PODS
 	do
