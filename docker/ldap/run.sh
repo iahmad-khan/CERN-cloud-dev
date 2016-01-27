@@ -35,7 +35,8 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     cp -ar /etc/openldap /data/etc
 fi
 
-rm -rf /var/lib/ldap && ln -s /data/lib/ldap /var/lib/ldap
-rm -rf /etc/openldap && ln -s /data/etc/openldap /etc/openldap
+# The symbolic links override the view of the destination. So no need to rm the folder
+ln -s /data/lib/ldap /var/lib/ldap
+ln -s /data/etc/openldap /etc/openldap
 
 exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
