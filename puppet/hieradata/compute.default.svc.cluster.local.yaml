@@ -13,6 +13,9 @@ neutron::rabbit_hosts:
   - 'controller'
 neutron::metadata_host: 'nova.default.svc.cluster.local'
 neutron::metadata_port: '8775'
+neutron::metadata_auth_tenant: 'services'
+neutron::metadata_auth_user: 'svcneu'
+neutron::metadata_auth_url: 'https://keystone.default.svc.cluster.local:443/main/v2.0'
 
 neutron::agents::ml2::linuxbridge::physical_interface_mappings:
   - "external:%{::network_primary_interface}"
