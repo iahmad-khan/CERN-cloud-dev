@@ -31,13 +31,20 @@ puppet_manifest_checkout() {
 		echo "$CLOUDDEV_PUPPET exists, not touching..."
 		return
 	fi
-	echo "cloning puppet modules and hostgroups into ${CLOUDDEV_PUPPET}..."
+
+	klist 2>&1 > /dev/null
+	if [ $? -ne 0 ]; then
+		echo "To clone repositories, you need to have a Kerberos ticket"
+	fi
+
+	echo "Cloning puppet modules and hostgroups into ${CLOUDDEV_PUPPET}..."
 	mkdir -p $CLOUDDEV_PUPPET
 	for mod in $PUPPET_MODULES
 	do
 		cd $CLOUDDEV_PUPPET
 		IFS=':' read -r module branch <<< "$mod"
-		git clone -q http://git.cern.ch/cernpub/it-puppet-module-$module
+		echo "Cloning module ${module} on branch ${branch:-master}"
+		git clone -q https://:@gitlab.cern.ch:8443/ai/it-puppet-module-${module}.git
 		exit_on_err $?
 		ln -s it-puppet-module-$module/code $module
 		if [[ ! -z $branch ]]; then
@@ -52,12 +59,13 @@ puppet_manifest_checkout() {
 	for hg in $PUPPET_HOSTGROUPS;
 	do
 		cd $CLOUDDEV_PUPPET
-		IFS=':' read -r module branch <<< "$hg"
-		git clone -q http://git.cern.ch/cernpub/it-puppet-hostgroup-$module
+		IFS=':' read -r hostgroup branch <<< "$hg"
+		echo "Cloning hostgroup ${hostgroup} on branch ${branch:-master}"
+		git clone -q https://:@gitlab.cern.ch:8443/ai/it-puppet-hostgroup-${hostgroup}.git
 		exit_on_err $?
-		ln -s it-puppet-hostgroup-$module/code hg_$module
+		ln -s it-puppet-hostgroup-$hostgroup/code hg_$hostgroup
 		if [[ ! -z $branch ]]; then
-			cd it-puppet-hostgroup-$module
+			cd it-puppet-hostgroup-$hostgroup
 			exit_on_err $?
 			git checkout $branch
 			exit_on_err $?
