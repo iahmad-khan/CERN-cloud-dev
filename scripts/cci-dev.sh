@@ -2,7 +2,8 @@
 
 if [ -z $CLOUDDEV ] || [ -z $CLOUDDEV_PUPPET ] || [ -z $CLOUDDEV_KUB ]; then
 	echo "
-Required environment settings:
+Required environment settings: CLOUDDEV, CLOUDDEV_PUPPET, CLOUDDEV_KUB
+Example:
 export CLOUDDEV=~/ws/cloud-dev
 export CLOUDDEV_PUPPET=~/ws/cern-puppet
 export CLOUDDEV_KUB=~/ws/kubernetes
@@ -362,7 +363,8 @@ COMMAND can be one of:
   centos       Install required dependencies for CentOS
   tempest      Run tempest tests against the dev environment
 
-Required environment settings:
+Required environment settings: CLOUDDEV, CLOUDDEV_PUPPET, CLOUDDEV_KUB
+Example:
 export CLOUDDEV=~/ws/cloud-dev
 export CLOUDDEV_PUPPET=~/ws/cern-puppet
 export CLOUDDEV_KUB=~/ws/kubernetes
