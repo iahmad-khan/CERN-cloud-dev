@@ -225,7 +225,12 @@ cluster_pod_launch() {
 		# run puppet on pod
 		echo "Running Puppet on pod ${pod}..."
 		sudo docker exec $(sudo docker ps | grep $pod | grep init | awk '{print $1}') /usr/bin/puppet agent -t
-		if [[ $? > 2  ]]; then
+		# Puppet return code:
+		# 1 -> did not even start doing some things
+		# 2 -> applied things, and everything went fine
+		# 4 -> failures
+		# 6 -> changes and failures
+		if [ $? > 2  ] || [ $? -eq 1 ]; then
 			echo "Puppet run for ${pod} failed."
 			exit_on_err 1
 		fi
