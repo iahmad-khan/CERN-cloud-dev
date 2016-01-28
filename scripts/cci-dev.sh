@@ -104,7 +104,7 @@ kubernetes_start() {
 		echo "Building Kubernetes binaries..."
 		make > /tmp/kubernetes-build.log 2>&1
 		sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBELET_ARGS="--cluster-dns 10.0.0.10 --cluster-domain cluster.local" setsid ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
-		echo 'waiting for kubernetes start (and build if not done before)...'
+		echo 'Waiting for kubernetes start...'
 		while ! kubectl get pod > /dev/null 2>&1
 		do
 			printf "."
@@ -234,6 +234,7 @@ cluster_pod_launch() {
 			echo "Puppet run for ${pod} failed."
 			exit_on_err 1
 		fi
+		echo "Puppet run for ${pod} finished."
 	done
 	echo "OpenStack services are started"
 }
