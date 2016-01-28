@@ -87,9 +87,7 @@ puppet_manifest_checkout() {
 	fi
 
 	klist 2>&1 > /dev/null
-	if [ $? -ne 0 ]; then
-		echo "To clone repositories, you need to have a Kerberos ticket"
-	fi
+	exit_on_err $? "To clone repositories, you need to have a Kerberos ticket"
 
 	echo "Cloning puppet modules and hostgroups into ${CLOUDDEV_PUPPET}..."
 	mkdir -p $CLOUDDEV_PUPPET
@@ -104,9 +102,9 @@ puppet_manifest_checkout() {
 		if [[ ! -z $branch ]]; then
 			cd it-puppet-module-$module
 			exit_on_err $?
-			git checkout $branch
-			exit_on_err $?
-			cd -
+			git checkout $branch > /dev/null
+			exit_on_err $? "It seems branch $branch does not exist"
+			cd - > /dev/null
 		fi
 		branch=''
 	done
@@ -121,9 +119,9 @@ puppet_manifest_checkout() {
 		if [[ ! -z $branch ]]; then
 			cd it-puppet-hostgroup-$hostgroup
 			exit_on_err $?
-			git checkout $branch
-			exit_on_err $?
-			cd -
+			git checkout $branch > /dev/null
+			exit_on_err $? "It seems branch $branch does not exist"
+			cd - > /dev/null
 		fi
 	done
 	#TODO: remove once we figure out gitlab checkouts
@@ -346,6 +344,10 @@ centos_install() {
 
 exit_on_err() {
 	if [[ $1 != 0 ]]; then
+		# If there is an error msg, print it
+		if [[ ! -z $2 ]]; then
+			echo $2
+		fi
 		exit $1
 	fi
 }
@@ -355,7 +357,6 @@ tempest_run() {
 	echo "running tempest tests..."
 	sudo docker exec -it $(sudo docker ps | grep client | grep init | awk '{print $1}') /etc/tempest/run.sh
 	exit_on_err $?
-
 }
 
 case "$1" in
