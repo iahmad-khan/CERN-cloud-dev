@@ -168,6 +168,7 @@ cinder_qpid_tcp_nodelay: true
 cinder_package_ensure: 'present'
 cinder_state_path: '/var/lib/cinder'
 cinder_volume_tmp_dir: '$state_path/conversion/'
+cinder_osapi_max_limit: '10000'
 cinder_api_paste_config: '/etc/cinder/api-paste.ini'
 cinder_use_syslog: false
 cinder_log_facility: 'LOG_USER'
