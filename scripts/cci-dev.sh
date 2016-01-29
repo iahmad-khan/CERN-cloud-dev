@@ -86,8 +86,9 @@ puppet_manifest_checkout() {
 		return
 	fi
 
+	echo "To clone repositories, you need to have a Kerberos ticket"
 	klist 2>&1 > /dev/null
-	exit_on_err $? "To clone repositories, you need to have a Kerberos ticket"
+	exit_on_err $?
 
 	echo "Cloning puppet modules and hostgroups into ${CLOUDDEV_PUPPET}..."
 	mkdir -p $CLOUDDEV_PUPPET
