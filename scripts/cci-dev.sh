@@ -283,7 +283,8 @@ cluster_pod_launch() {
 		# 2 -> applied things, and everything went fine
 		# 4 -> failures
 		# 6 -> changes and failures
-		if [ $? > 2  ] || [ $? -eq 1 ]; then
+		local ret=$?
+		if [[ $ret > 2  ]] || [[ $ret -eq 1 ]]; then
 			echo "Puppet run for ${pod} failed."
 			exit_on_err 1
 		fi
