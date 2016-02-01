@@ -332,6 +332,12 @@ cluster_pod_push() {
 
 # install required centos dependencies
 centos_install() {
+	# Check for the CentOS version. It works on 7.2, but not 7.1
+	ver=$(grep -oe '[0-9]\.[0-9]' /etc/centos-release)
+	if [[ $ver -ne "7.2" ]]; then
+		exit_on_err 1 "WARNING, the dev environment has been tested on 7.2, and it seems there are problems on previous version. You should update"
+	fi
+
 	echo "installing dependencies for centos..."
 	printf "[docker-main-repo]\nname=Docker main Repository\nbaseurl=https://yum.dockerproject.org/repo/main/centos/7\nenabled=1\ngpgcheck=1\ngpgkey=https://yum.dockerproject.org/gpg" > /etc/yum.repos.d/docker.repo
 	sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
