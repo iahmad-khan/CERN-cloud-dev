@@ -19,6 +19,8 @@ PUPPET_MODULES="
 abrt
 afs
 apache
+augeasproviders_core
+augeasproviders_sysctl
 bridged
 cernlib
 cinder
