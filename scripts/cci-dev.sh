@@ -152,6 +152,14 @@ kubernetes_install() {
 kubernetes_start() {
 	# make sure the ebtables module is loaded
 	sudo modprobe ebtables
+	# iptables kernel module is not named the same on Ubuntu/CentOS
+	if [ -e /etc/centos-release ]; then
+		sudo modprobe ip_tables
+	else
+		sudo modprobe iptables
+	fi
+	sudo modprobe ip6_tables
+
 	# start the kube daemons
 	cd $CLOUDDEV_KUB
 	kubectl version > /dev/null 2>&1
@@ -376,13 +384,6 @@ case "$1" in
 		puppet_manifest_checkout
 		sudo rm -f /opt/puppet-modules
 		sudo ln -s $CLOUDDEV_PUPPET /opt/puppet-modules
-		# iptables kernel module is not named the same on Ubuntu/CentOS
-		if [ -e /etc/centos-release ]; then
-			sudo modprobe ip_tables
-		else
-			sudo modprobe iptables
-		fi
-		sudo modprobe ip6_tables
 		kubernetes_install
 		kubernetes_start
 		sudo docker login -u docker -p docker -e 'foo@bar' docker.cern.ch
