@@ -22,7 +22,10 @@ Basic knowledge of kubernetes (what is a pod, what is a service, ...).
 If you're in CentOS 7, the following command should help you (we use it in the CI setup):
 ```
 cd ~/ws
-git clone ssh://git@gitlab.cern.ch:7999/cloud-infrastructure/cloud-dev.git
+git clone https://:@gitlab.cern.ch:8443/cloud-infrastructure/cloud-dev.git
+export CLOUDDEV=~/ws/cloud-dev
+export CLOUDDEV_PUPPET=~/ws/cern-puppet
+export CLOUDDEV_KUB=~/ws/kubernetes
 cd scripts
 ./cci-dev.sh centos
 ```
@@ -52,15 +55,17 @@ Helper to handle a CERN openstack dev workspace.
 
 COMMAND can be one of:
   prepare      Prepare the dev workspace (fetch kubernetes, puppet modules, ...)
-  base         Cleanup any running containers and recreate the base containers (skydns, puppet, ceph)
+  restart      Cleanup any running containers and recreate the base containers (skydns, puppet, ceph)
   launch [tag] Launch the openstack containers, optionally from 'tag' (docker image tag) - otherwise full puppet run
   last         Launch the 'last' built openstack containers - wrapper for 'launch last'
+  tag [tag]    Tag all running containers with the give tag (commit first, then tag)
   push [tags]  (done by CI only) Push the current OS containers as a new image, optionally tagging with the given list
   cleanup      Cleanup any running containers so we get a clean set
   centos       Install required dependencies for CentOS
   tempest      Run tempest tests against the dev environment
 
-Required environment settings:
+Required environment settings: CLOUDDEV, CLOUDDEV_PUPPET, CLOUDDEV_KUB
+Example:
 export CLOUDDEV=~/ws/cloud-dev
 export CLOUDDEV_PUPPET=~/ws/cern-puppet
 export CLOUDDEV_KUB=~/ws/kubernetes
@@ -73,7 +78,7 @@ export CLOUDDEV_PUPPET=~/ws/cern-puppet
 export CLOUDDEV_KUB=~/ws/kubernetes
 
 cd ~/ws
-git clone ssh://git@gitlab.cern.ch:7999/cloud-infrastructure/cloud-dev.git
+git clone https://:@gitlab.cern.ch:8443/cloud-infrastructure/cloud-dev.git
 cd cloud-dev/scripts
 ./cci-dev.sh prepare
 ```
@@ -92,8 +97,19 @@ If you really want to rebuild all the nodes from scratch (full puppet runs), tri
 
 ```
 
+You can then save these containers as image in you local repository with the command "tag". So that next run will start from this last state.
+```
+./cci-dev.sh tag mylatest-20160201
+```
+To start from a tag, you can do:
+```
+./cci-dev.sh launch mylatest-20160201
+```
+
+
 With an environment set, you can *login* to a container and run the usual commands:
 ```
+export PATH=$PATH:$CLOUDDEV_KUB/_output/local/bin/linux/amd64
 kubectl exec -it -p keystone -c keystone -- /bin/bash
 [root@keystone /]# puppet agent -t
 ```
