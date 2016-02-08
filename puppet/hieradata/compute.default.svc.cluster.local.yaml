@@ -1,0 +1,44 @@
+iaas_release: 'kilo'
+
+neutron::enabled: true
+neutron::verbose: true
+neutron::debug: true
+neutron::core_plugin: 'ml2'
+neutron::service_plugins:
+  - cern
+neutron::rabbit_user: 'guest'
+neutron::rabbit_password: 'neutron_rabbit_password'
+neutron::rabbit_host: 'controller'
+neutron::rabbit_hosts: 
+  - 'controller'
+neutron::metadata_host: 'nova.default.svc.cluster.local'
+neutron::metadata_port: '8775'
+
+neutron::agents::ml2::linuxbridge::physical_interface_mappings:
+  - "external:%{::network_primary_interface}"
+
+nova::network::neutron::neutron_admin_username: 'neutron'
+nova::network::neutron::neutron_admin_password: 'neutron_admin_password'
+nova::network::neutron::neutron_admin_tenant_name: 'services'
+nova::network::neutron::neutron_admin_auth_url: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
+nova::network::neutron::neutron_url: 'http://neutron.default.svc.cluster.local:9696'
+nova::network::neutron::neutron_region_name: undef
+nova::network::neutron::neutron_ca_certificates_file: '/var/lib/puppet/ssl/certs/ca.pem'
+
+# old style definitions
+nova_neutron_enabled: true
+
+libvirtd_logs: false
+nova_compute_libvirt_virt_type: 'qemu'
+nova_compute_monitoring: false
+nova_compute_ksm: false
+nova_compute_reserved_host_memory: 0
+nova_metadata_host: 'nova'
+nova_compute_disable_snoop: false
+nova_compute_bridgeconfig: false
+nova_compute_bridgetables: false
+nova_compute_netconntrack: false
+nova_config_use_ipv6: false
+nova_compute_vncproxy_host: 'nova'
+nova_compute_vncserver_proxyclient_address: "%{::ipaddress}"
+

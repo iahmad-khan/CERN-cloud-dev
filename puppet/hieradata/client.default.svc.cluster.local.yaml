@@ -1,0 +1,17 @@
+iaas_release: 'liberty'
+
+enable_afs: false
+
+openstack_centos_liberty_excludepkgs:
+  - openstack-neutron*
+    #- python-neutron*
+ 
+osclients_include_pkgs:
+  - cci-tools
+  - python-keystoneclient-kerberos
+  - python-keystoneclient-x509
+  - python-landbclient
+  - python-magnum*
+    #- python-neutron*
+  - python2-magnum*
+  - openstack-db*

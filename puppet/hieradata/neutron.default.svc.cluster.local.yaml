@@ -1,0 +1,41 @@
+iaas_release: 'kilo'
+
+neutron::enabled: true
+neutron::verbose: true
+neutron::debug: true
+neutron::core_plugin: 'ml2'
+neutron::service_plugins:
+  - cern
+neutron::rabbit_user: 'guest'
+neutron::rabbit_password: 'neutron_rabbit_password'
+neutron::rabbit_host: 'controller'
+neutron::rabbit_hosts: 
+  - 'controller'
+neutron::metadata_host: 'nova.default.svc.cluster.local'
+neutron::metadata_port: '8775'
+
+neutron::server::auth_user: 'neutron'
+neutron::server::auth_password: 'neutron_admin_password'
+neutron::server::auth_tenant: 'services'
+neutron::server::auth_uri: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
+neutron::server::identity_uri: 'https://keystone.default.svc.cluster.local:443/admin'
+neutron::server::auth_cafile: '/var/lib/puppet/ssl/certs/ca.pem'
+neutron::server::database_connection: 'neutron_sql_connection'
+neutron::server::landb_hostname: 'landb'
+neutron::server::landb_port: '8443'
+neutron::server::landb_protocol: 'https'
+neutron::server::landb_username: 'neutron'
+neutron::server::landb_password: 'neutron_landb_password'
+
+neutron::server::notifications::nova_admin_username: 'neutron'
+neutron::server::notifications::nova_admin_password: 'neutron_admin_password'
+
+neutron::db::database_idle_timeout: 3600
+
+neutron::plugins::ml2::type_drivers:
+  - 'flat'
+neutron::plugins::ml2::tenant_network_types:
+  - 'flat'
+neutron::plugins::ml2::mechanism_drivers:
+  - 'linuxbridge'
+  - 'cern_landb'
