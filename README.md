@@ -90,6 +90,8 @@ After this you'll be relaunching the containers from scratch quite often:
 ./cci-dev.sh restart
 ./cci-dev.sh launch last
 ```
+(Note that you currently cannot use "launch last", and should use "launch" for a full Puppet run, because Neutron image in repository is not yet pushed)
+
 
 Note we launched from the 'last' tag, which launches containers from a pre-built image and runs puppet from there (much faster). These 'last' images are maintained by the CI system, updated when things get merged to master.
 
