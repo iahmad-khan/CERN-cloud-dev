@@ -22,6 +22,7 @@ Basic knowledge of kubernetes (what is a pod, what is a service, ...).
 If you're in CentOS 7, the following command should help you (we use it in the CI setup):
 ```
 cd ~/ws
+# You need a Kerberos ticket to get the code
 git clone https://:@gitlab.cern.ch:8443/cloud-infrastructure/cloud-dev.git
 export CLOUDDEV=~/ws/cloud-dev
 export CLOUDDEV_PUPPET=~/ws/cern-puppet
@@ -78,6 +79,7 @@ export CLOUDDEV_PUPPET=~/ws/cern-puppet
 export CLOUDDEV_KUB=~/ws/kubernetes
 
 cd ~/ws
+# You need a Kerberos ticket to get the code
 git clone https://:@gitlab.cern.ch:8443/cloud-infrastructure/cloud-dev.git
 cd cloud-dev/scripts
 ./cci-dev.sh prepare
