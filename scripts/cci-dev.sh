@@ -367,7 +367,6 @@ centos_install() {
 	# launch docker
 	systemctl daemon-reload
 	systemctl start docker
-	docker login -u docker -p docker -e none docker.cern.ch
 	systemctl enable docker.service
 }
 
