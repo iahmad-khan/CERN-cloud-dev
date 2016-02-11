@@ -342,7 +342,7 @@ cluster_pod_push() {
 centos_install() {
 	# Check for the CentOS version. It works on 7.2, but not 7.1
 	ver=$(grep -oe '[0-9]\.[0-9]' /etc/centos-release)
-	if [[ $ver -ne "7.2" ]]; then
+	if [[ $ver != "7.2" ]]; then
 		exit_on_err 1 "WARNING, the dev environment has been tested on 7.2, and it seems there are problems on previous version. You should update"
 	fi
 
