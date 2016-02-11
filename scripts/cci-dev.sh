@@ -164,6 +164,17 @@ kubernetes_start() {
 	cd $CLOUDDEV_KUB
 	kubectl version > /dev/null 2>&1
 	if [ $? -ne 0 ]; then
+		# Test if tools to build are installed
+		which make 2>&1 > /dev/null
+		if [[ $? -ne 0 ]]; then
+			echo "Tools to build are not installed (make), installing them..."
+			if [ -e /etc/redhat-release ]; then
+				sudo yum groupinstall "Development Tools"
+			else
+				sudo apt-get install build-essential
+			fi
+		fi
+
 		echo "Building Kubernetes binaries..."
 		make > /tmp/kubernetes-build.log 2>&1
 		sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBELET_ARGS="--cluster-dns 10.0.0.10 --cluster-domain cluster.local" setsid ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
