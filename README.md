@@ -17,32 +17,47 @@ What it provides:
 
 Basic knowledge of kubernetes (what is a pod, what is a service, ...).
 
+## Get the code
+```
+mkdir ~/ws
+cd ~/ws
+# You need a Kerberos ticket to get the code
+git clone https://:@gitlab.cern.ch:8443/cloud-infrastructure/cloud-dev.git
+```
+
 ## Setup
 
 If you're in CentOS 7, the following command should help you (we use it in the CI setup):
 ```
 cd ~/ws
-# You need a Kerberos ticket to get the code
-git clone https://:@gitlab.cern.ch:8443/cloud-infrastructure/cloud-dev.git
+# The meaning of these environment variable is explained in the next part
+# It is meaningful but mandatory in this part
 export CLOUDDEV=~/ws/cloud-dev
 export CLOUDDEV_PUPPET=~/ws/cern-puppet
 export CLOUDDEV_KUB=~/ws/kubernetes
-cd scripts
+cd cloud-dev/scripts
+# This command will install and setup Go, Docker, and some other requirements
 ./cci-dev.sh centos
 ```
 
 Otherwise here are the detailed steps:
 ```
-printf "[docker-main-repo]\nname=Docker main Repository\nbaseurl=https://yum.dockerproject.org/repo/main/centos/7\nenabled=1\ngpgcheck=1\ngpgkey=https://yum.dockerproject.org/gpg" > /etc/yum.repos.d/docker.repo
 sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
-sudo yum install -y wget git vim docker-engine etcd golang patch psmisc
+sudo yum install -y wget git etcd golang patch psmisc
+echo "Installing Docker"
+curl -fsSL https://get.docker.com/ | sh
 sed -i "s#^ExecStart.*#ExecStart=/usr/bin/docker daemon --storage-driver=overlay --dns 137.138.17.5 --insecure-registry docker.cern.ch --bip 172.17.0.1/16 -H fd://#g" /lib/systemd/system/docker.service
 iptables -F
+# launch docker
 systemctl daemon-reload
 systemctl start docker
 docker login -u docker -p docker -e none docker.cern.ch
 systemctl enable docker.service
 ```
+
+Note that in Fedora 23, it seems that it's currently mandatory to disable selinux with Docker.
+[http://www.projectatomic.io/blog/2015/06/notes-on-fedora-centos-and-docker-storage-drivers/] See part on OverlaFS.
+
 
 ## Quick Start
 
