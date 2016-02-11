@@ -153,7 +153,7 @@ kubernetes_start() {
 	# make sure the ebtables module is loaded
 	sudo modprobe ebtables
 	# iptables kernel module is not named the same on Ubuntu/CentOS
-	if [ -e /etc/centos-release ]; then
+	if [ -e /etc/redhat-release ]; then
 		sudo modprobe ip_tables
 	else
 		sudo modprobe iptables
