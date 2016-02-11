@@ -127,8 +127,6 @@ puppet_manifest_checkout() {
 			cd - > /dev/null
 		fi
 	done
-	#TODO: remove once we figure out gitlab checkouts
-	sed -i "/.*class { 'afs': }.*/d" ${CLOUDDEV_PUPPET}/it-puppet-hostgroup-cloud_adm/code/manifests/client/linux.pp
 }
 
 # install kubernetes from a fixed release
