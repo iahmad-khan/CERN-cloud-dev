@@ -127,6 +127,7 @@ puppet_manifest_checkout() {
 			cd - > /dev/null
 		fi
 	done
+	echo "All repositories have been cloned"
 }
 
 # install kubernetes from a fixed release
@@ -138,7 +139,7 @@ kubernetes_install() {
 	echo "installing kubernetes at ${CLOUDDEV_KUB}..."
 	mkdir -p $CLOUDDEV_KUB
 	cd $CLOUDDEV_KUB
-	wget --quiet https://github.com/kubernetes/kubernetes/archive/v1.1.2.tar.gz
+	wget https://github.com/kubernetes/kubernetes/archive/v1.1.2.tar.gz
 	tar zxf v1.1.2.tar.gz
 	mv kubernetes-1.1.2/* .
 	rm -rf kubernetes-1.1.2 v1.1.2.tar.gz
@@ -175,7 +176,11 @@ kubernetes_start() {
 
 		echo "Building Kubernetes binaries..."
 		make > /tmp/kubernetes-build.log 2>&1
-		sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBELET_ARGS="--cluster-dns 10.0.0.10 --cluster-domain cluster.local" setsid ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
+		echo "Finished"
+
+		sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBELET_ARGS="--cluster-dns 10.0.0.10 --cluster-domain cluster.local" \
+			setsid ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
+
 		echo 'Waiting for kubernetes start...'
 		while ! kubectl get pod > /dev/null 2>&1
 		do
