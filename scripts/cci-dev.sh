@@ -143,7 +143,6 @@ kubernetes_install() {
 	tar zxf v1.1.2.tar.gz
 	mv kubernetes-1.1.2/* .
 	rm -rf kubernetes-1.1.2 v1.1.2.tar.gz
-	#patch -s -p0 $CLOUDDEV_KUB/hack/local-up-cluster.sh < $CLOUDDEV/kubernetes/local-cluster.patch
 	exit_on_err $?
 }
 
@@ -176,6 +175,7 @@ kubernetes_start() {
 
 		echo "Building Kubernetes binaries..."
 		make > /tmp/kubernetes-build.log 2>&1
+		exit_on_err $? "Kubernetes could not be built. Check /tmp/kubernetes-build.log for errors"
 		echo "Finished"
 
 		sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBELET_ARGS="--cluster-dns 10.0.0.10 --cluster-domain cluster.local" \
@@ -224,7 +224,7 @@ cluster_pod_base_start() {
 	done
 
 	echo "waiting for puppetdb to start..."
-	while ! kubectl exec -p puppet -c puppetdb -- /usr/bin/curl -s http://localhost:8080/v3/facts > /dev/null 2>&1
+	while ! kubectl exec puppet -c puppetdb -- /usr/bin/curl -s http://localhost:8080/v3/facts > /dev/null 2>&1
 	do
 		printf "."
 		sleep 2
@@ -401,6 +401,7 @@ case "$1" in
 		sudo ln -s $CLOUDDEV_PUPPET /opt/puppet-modules
 		kubernetes_install
 		kubernetes_start
+		echo "Login to CERN docker registry"
 		sudo docker login -u docker -p docker -e 'foo@bar' docker.cern.ch
 		;;
 	'restart')
@@ -442,12 +443,6 @@ COMMAND can be one of:
   cleanup      Cleanup any running containers so we get a clean set
   centos       Install required dependencies for CentOS
   tempest      Run tempest tests against the dev environment
-
-Required environment settings: CLOUDDEV, CLOUDDEV_PUPPET, CLOUDDEV_KUB
-Example:
-export CLOUDDEV=~/ws/cloud-dev
-export CLOUDDEV_PUPPET=~/ws/cern-puppet
-export CLOUDDEV_KUB=~/ws/kubernetes
 "
 		exit 1
 		;;
