@@ -29,13 +29,12 @@ git clone https://:@gitlab.cern.ch:8443/cloud-infrastructure/cloud-dev.git
 
 If you're in CentOS 7, the following command should help you (we use it in the CI setup):
 ```
-cd ~/ws
-# The meaning of these environment variable is explained in the next part
+# The meaning of these environment variables is explained in the next part
 # It is meaningful but mandatory in this part
 export CLOUDDEV=~/ws/cloud-dev
 export CLOUDDEV_PUPPET=~/ws/cern-puppet
 export CLOUDDEV_KUB=~/ws/kubernetes
-cd cloud-dev/scripts
+cd ~/wscloud-dev/scripts
 # This command will install and setup Go, Docker, and some other requirements
 ./cci-dev.sh centos
 ```
@@ -66,7 +65,12 @@ There are 3 relevant locations in the workspace:
 * CLOUDDEV_PUPPET is the directory where the CERN puppet modules will be cloned
 * CLOUDDEV_KUB is where the kubernetes installation will be placed
 
-The script *scripts/cci-dev.sh* should help with the setup commands.
+These are the folder we are going to use in all the documentation.
+```
+export CLOUDDEV=~/ws/cloud-dev
+export CLOUDDEV_PUPPET=~/ws/cern-puppet
+export CLOUDDEV_KUB=~/ws/kubernetes
+```
 
 ```
 cloud-dev/scripts$ ./cci-dev.sh 
@@ -84,23 +88,11 @@ COMMAND can be one of:
   centos       Install required dependencies for CentOS
   tempest      Run tempest tests against the dev environment
 
-Required environment settings: CLOUDDEV, CLOUDDEV_PUPPET, CLOUDDEV_KUB
-Example:
-export CLOUDDEV=~/ws/cloud-dev
-export CLOUDDEV_PUPPET=~/ws/cern-puppet
-export CLOUDDEV_KUB=~/ws/kubernetes
 ```
 
 First prepare your development environment (you only need to do this once):
 ```
-export CLOUDDEV=~/ws/cloud-dev
-export CLOUDDEV_PUPPET=~/ws/cern-puppet
-export CLOUDDEV_KUB=~/ws/kubernetes
-
-cd ~/ws
-# You need a Kerberos ticket to get the code
-git clone https://:@gitlab.cern.ch:8443/cloud-infrastructure/cloud-dev.git
-cd cloud-dev/scripts
+cd ~/wscloud-dev/scripts
 ./cci-dev.sh prepare
 ```
 
@@ -117,7 +109,6 @@ Note we launched from the 'last' tag, which launches containers from a pre-built
 If you really want to rebuild all the nodes from scratch (full puppet runs), trigger launch with no args.
 ```
 ./cci-dev.sh launch
-
 ```
 
 You can then save these containers as image in you local repository with the command "tag". So that next run will start from this last state.
