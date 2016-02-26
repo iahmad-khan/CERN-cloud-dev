@@ -5,6 +5,7 @@ MAINTAINER Bertrand NOEL <bertrand.noel@cern.ch>, Ricardo Rocha <ricardo.rocha@c
 # cern base dependencies
 ADD http://linux.web.cern.ch/linux/centos7/CentOS-CERN.repo /etc/yum.repos.d/CentOS-CERN.repo
 RUN /usr/bin/rpm --import http://linuxsoft.cern.ch/cern/centos/7.1/os/x86_64/RPM-GPG-KEY-cern
+ADD cci7-openstack-clients-qa.repo /etc/yum.repos.d/
 
 # nice to have utilities
 RUN yum install -y \

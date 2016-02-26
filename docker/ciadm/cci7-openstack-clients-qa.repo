@@ -1,0 +1,6 @@
+[cci7-openstack-clients-qa]
+name=CERN rebuilds for OpenStack clients - QA
+baseurl=http://linuxsoft.cern.ch/internal/repos/openstackclients7-liberty-qa/x86_64/os/
+enabled=0
+gpgcheck=0
+priority=5
