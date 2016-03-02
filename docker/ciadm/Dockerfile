@@ -1,10 +1,20 @@
 FROM centos:7
 
-MAINTAINER Bertrand NOEL, bertrand.noel@cern.ch
+MAINTAINER Bertrand NOEL <bertrand.noel@cern.ch>, Ricardo Rocha <ricardo.rocha@cern.ch>
 
 # cern base dependencies
 ADD http://linux.web.cern.ch/linux/centos7/CentOS-CERN.repo /etc/yum.repos.d/CentOS-CERN.repo
 RUN /usr/bin/rpm --import http://linuxsoft.cern.ch/cern/centos/7.1/os/x86_64/RPM-GPG-KEY-cern
+
+# nice to have utilities
+RUN yum install -y \
+	man-pages \
+	vim
+
+# krb client
+RUN yum -y install \
+	krb5-workstation
+ADD krb5.conf /etc/krb5.conf
 
 # openstack clients
 RUN echo $'\n\
