@@ -34,4 +34,5 @@ gpgkey=https://yum.dockerproject.org/gpg \n'\
 >> /etc/yum.repos.d/docker.repo
 
 RUN yum install -y \
-	docker-engine
+	docker-engine-1.9.1 \
+	docker-engine-selinux-1.9.1
