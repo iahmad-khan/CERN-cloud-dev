@@ -30,6 +30,7 @@ RUN yum install -y \
 	centos-release-openstack-liberty
 
 RUN yum install -y \
+	python-heatclient \
 	python-openstackclient \
 	python2-magnumclient
 
@@ -46,3 +47,6 @@ gpgkey=https://yum.dockerproject.org/gpg \n'\
 RUN yum install -y \
 	docker-engine-1.9.1 \
 	docker-engine-selinux-1.9.1
+
+RUN curl -L https://github.com/docker/compose/releases/download/1.6.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose; \
+	chmod +x /usr/local/bin/docker-compose
