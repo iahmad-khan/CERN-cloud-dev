@@ -1,13 +1,22 @@
 variables:
         OS_PODS: "keystone glance cinder"
-        WORKSPACE: "/workspace"
-        CLOUDDEV: "$CI_PROJECT_DIR/cloud-dev"
-        CLOUDDEV_KUB: "/kubernetes"
-        CLOUDDEV_PUPPET: "$CI_PROJECT_DIR/cern-puppet"
+        CLOUDDEV: "$CI_PROJECT_DIR/ws/cloud-dev"
+        CLOUDDEV_KUB: "$CI_PROJECT_DIR/ws/kubernetes"
+        CLOUDDEV_PUPPET: "$CI_PROJECT_DIR/ws/cern-puppet"
         USER: "root"
 
+rebuild:
+        only:
+                - master
+        script:
+                - cd $CLOUDDEV/scripts
+                - sudo -E ./cci-dev.sh centos
+                - sudo -E ./cci-dev.sh prepare
+                - sudo -E ./cci-dev.sh restart
+                - sudo -E ./cci-dev.sh launch
+        tags:
+                - cci-builder
 update:
-        stage: build
         except:
                 - master
         script:
