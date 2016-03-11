@@ -169,4 +169,3 @@ osclients_include_pkgs:
   - python-neutronclient
 #  - python-kombu
 #  - python-urllib3
-

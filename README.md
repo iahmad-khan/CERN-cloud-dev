@@ -17,24 +17,46 @@ What it provides:
 
 Basic knowledge of kubernetes (what is a pod, what is a service, ...).
 
+## Get the code
+```
+mkdir ~/ws
+cd ~/ws
+# You need a Kerberos ticket to get the code
+git clone https://:@gitlab.cern.ch:8443/cloud-infrastructure/cloud-dev.git
+```
+
 ## Setup
 
 If you're in CentOS 7, the following command should help you (we use it in the CI setup):
 ```
-cd ~/ws
-git clone ssh://git@gitlab.cern.ch:7999/cloud-infrastructure/cloud-dev.git
-cd scripts
+# The meaning of these environment variables is explained in the next part
+# It is meaningful but mandatory in this part
+export CLOUDDEV=~/ws/cloud-dev
+export CLOUDDEV_PUPPET=~/ws/cern-puppet
+export CLOUDDEV_KUB=~/ws/kubernetes
+cd ~/wscloud-dev/scripts
+# This command will install and setup Go, Docker, and some other requirements
 ./cci-dev.sh centos
 ```
 
 Otherwise here are the detailed steps:
 ```
 sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
-sudo yum install -y wget git vim docker etcd golang patch psmisc
-sed -i "s/^# INSECURE_REGISTRY.*/INSECURE_REGISTRY='--insecure-registry docker-reg.cern.ch:5000'/g" /etc/sysconfig/docker
-sed -i "s/^OPTIONS.*/OPTIONS='--storage-driver overlay'/g" /etc/sysconfig/docker
-systemctl restart docker
+sudo yum install -y wget git etcd golang patch psmisc
+echo "Installing Docker"
+curl -fsSL https://get.docker.com/ | sh
+sed -i "s#^ExecStart.*#ExecStart=/usr/bin/docker daemon --storage-driver=overlay --dns 137.138.17.5 --insecure-registry docker.cern.ch --bip 172.17.0.1/16 -H fd://#g" /lib/systemd/system/docker.service
+iptables -F
+# launch docker
+systemctl daemon-reload
+systemctl start docker
+docker login -u docker -p docker -e none docker.cern.ch
+systemctl enable docker.service
 ```
+
+Note that in Fedora 23, it seems that it's currently mandatory to disable selinux with Docker.
+[http://www.projectatomic.io/blog/2015/06/notes-on-fedora-centos-and-docker-storage-drivers/] See part on OverlaFS.
+
 
 ## Quick Start
 
@@ -43,7 +65,12 @@ There are 3 relevant locations in the workspace:
 * CLOUDDEV_PUPPET is the directory where the CERN puppet modules will be cloned
 * CLOUDDEV_KUB is where the kubernetes installation will be placed
 
-The script *scripts/cci-dev.sh* should help with the setup commands.
+These are the folder we are going to use in all the documentation.
+```
+export CLOUDDEV=~/ws/cloud-dev
+export CLOUDDEV_PUPPET=~/ws/cern-puppet
+export CLOUDDEV_KUB=~/ws/kubernetes
+```
 
 ```
 cloud-dev/scripts$ ./cci-dev.sh 
@@ -52,29 +79,20 @@ Helper to handle a CERN openstack dev workspace.
 
 COMMAND can be one of:
   prepare      Prepare the dev workspace (fetch kubernetes, puppet modules, ...)
-  base         Cleanup any running containers and recreate the base containers (skydns, puppet, ceph)
+  restart      Cleanup any running containers and recreate the base containers (skydns, puppet, ceph)
   launch [tag] Launch the openstack containers, optionally from 'tag' (docker image tag) - otherwise full puppet run
   last         Launch the 'last' built openstack containers - wrapper for 'launch last'
+  tag [tag]    Tag all running containers with the give tag (commit first, then tag)
   push [tags]  (done by CI only) Push the current OS containers as a new image, optionally tagging with the given list
   cleanup      Cleanup any running containers so we get a clean set
   centos       Install required dependencies for CentOS
   tempest      Run tempest tests against the dev environment
 
-Required environment settings:
-export CLOUDDEV=~/ws/cloud-dev
-export CLOUDDEV_PUPPET=~/ws/cern-puppet
-export CLOUDDEV_KUB=~/ws/kubernetes
 ```
 
 First prepare your development environment (you only need to do this once):
 ```
-export CLOUDDEV=~/ws/cloud-dev
-export CLOUDDEV_PUPPET=~/ws/cern-puppet
-export CLOUDDEV_KUB=~/ws/kubernetes
-
-cd ~/ws
-git clone ssh://git@gitlab.cern.ch:7999/cloud-infrastructure/cloud-dev.git
-cd cloud-dev/scripts
+cd ~/wscloud-dev/scripts
 ./cci-dev.sh prepare
 ```
 
@@ -83,17 +101,29 @@ After this you'll be relaunching the containers from scratch quite often:
 ./cci-dev.sh restart
 ./cci-dev.sh launch last
 ```
+(Note that you currently cannot use "launch last", and should use "launch" for a full Puppet run, because Neutron image in repository is not yet pushed)
+
 
 Note we launched from the 'last' tag, which launches containers from a pre-built image and runs puppet from there (much faster). These 'last' images are maintained by the CI system, updated when things get merged to master.
 
 If you really want to rebuild all the nodes from scratch (full puppet runs), trigger launch with no args.
 ```
 ./cci-dev.sh launch
-
 ```
+
+You can then save these containers as image in you local repository with the command "tag". So that next run will start from this last state.
+```
+./cci-dev.sh tag mylatest-20160201
+```
+To start from a tag, you can do:
+```
+./cci-dev.sh launch mylatest-20160201
+```
+
 
 With an environment set, you can *login* to a container and run the usual commands:
 ```
+export PATH=$PATH:$CLOUDDEV_KUB/_output/local/bin/linux/amd64
 kubectl exec -it -p keystone -c keystone -- /bin/bash
 [root@keystone /]# puppet agent -t
 ```

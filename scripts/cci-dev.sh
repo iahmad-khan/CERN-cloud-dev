@@ -1,27 +1,79 @@
 #!/bin/bash
 
-if [ -z $CLOUDDEV ]; then
-	echo "CLOUDDEV needs to be defined in your environment"
+if [ -z $CLOUDDEV ] || [ -z $CLOUDDEV_PUPPET ] || [ -z $CLOUDDEV_KUB ]; then
+	echo "
+Required environment settings: CLOUDDEV, CLOUDDEV_PUPPET, CLOUDDEV_KUB
+Example:
+export CLOUDDEV=~/ws/cloud-dev
+export CLOUDDEV_PUPPET=~/ws/cern-puppet
+export CLOUDDEV_KUB=~/ws/kubernetes
+"
 	exit 1
 fi
 
-if [ -z $CLOUDDEV_PUPPET ]; then
-	echo "CLOUDDEV_PUPPET needs to be defined in your environment"
-	exit 1
-fi
-
-if [ -z $CLOUDDEV_KUB ]; then
-	echo "CLOUDDEV_KUB needs to be defined in your environment"
-	exit 1
-fi
 
 export PATH=$PATH:$CLOUDDEV_KUB/_output/local/go/bin
 
 # PUPPET_MODULES holds the list of module dependencies that we need to run the build
-PUPPET_MODULES="abrt afs apache bridged cernlib cinder cloud_common:optional-abrt-psacct cloud_monitoring concat filemapper firewall flume glance haproxy horizon inifile kerberos keystone lemon limits logrotate magnum memcached motd mysql network neutron:1748-neutrondev nova openstack_clients openstacklib:kilo osrepos psacct puppet puppetdbquery sssd stdlib sudo swap_file sysctl teigi:tbag_teigiurl xinetd"
+PUPPET_MODULES="
+abrt
+afs
+apache
+augeasproviders_core
+augeasproviders_sysctl
+bridged
+cernlib
+cinder
+cloud_common:optional-abrt-psacct
+cloud_monitoring
+concat
+filemapper
+firewall
+flume
+glance
+haproxy
+horizon
+inifile
+kerberos
+keystone
+lemon
+limits
+logrotate
+magnum
+memcached
+motd
+mysql
+network
+neutron:1748-neutrondev
+nova
+openstack_clients
+openstacklib:kilo
+osrepos
+psacct
+puppet
+puppetdbquery
+sssd
+stdlib
+sudo
+swap_file
+sysctl
+teigi:tbag_teigiurl
+xinetd
+"
 
 # PUPPET_HOSTGROUPS holds the list of hostgroups we need to run the build(s)
-PUPPET_HOSTGROUPS="cloud_adm:qa cloud_blockstorage cloud_compute:selinux cloud_container:dev cloud_dashboard cloud_identity cloud_image:swap cloud_networking:1718-neutronsetup cloud_orchestration cloud_telemetry"
+PUPPET_HOSTGROUPS="
+cloud_adm:qa
+cloud_blockstorage
+cloud_compute:devenv
+cloud_container
+cloud_dashboard
+cloud_identity
+cloud_image:swap
+cloud_networking:containerdev
+cloud_orchestration
+cloud_telemetry
+"
 
 # OS_PODS holds the list of pods to be started on 'launch'
 OS_PODS=${OS_PODS:-keystone glance cinder neutron nova compute client horizon}
@@ -35,41 +87,47 @@ puppet_manifest_checkout() {
 		echo "$CLOUDDEV_PUPPET exists, not touching..."
 		return
 	fi
-	echo "cloning puppet modules and hostgroups into ${CLOUDDEV_PUPPET}..."
+
+	echo "To clone repositories, you need to have a Kerberos ticket"
+	klist 2>&1 > /dev/null
+	exit_on_err $?
+
+	echo "Cloning puppet modules and hostgroups into ${CLOUDDEV_PUPPET}..."
 	mkdir -p $CLOUDDEV_PUPPET
 	for mod in $PUPPET_MODULES
 	do
 		cd $CLOUDDEV_PUPPET
 		IFS=':' read -r module branch <<< "$mod"
-		git clone -q http://git.cern.ch/cernpub/it-puppet-module-$module
+		echo "Cloning module ${module} on branch ${branch:-master}"
+		git clone -q https://:@gitlab.cern.ch:8443/ai/it-puppet-module-${module}.git
 		exit_on_err $?
 		ln -s it-puppet-module-$module/code $module
 		if [[ ! -z $branch ]]; then
 			cd it-puppet-module-$module
 			exit_on_err $?
-			git checkout $branch
-			exit_on_err $?
-			cd -
+			git checkout $branch > /dev/null
+			exit_on_err $? "It seems branch $branch does not exist"
+			cd - > /dev/null
 		fi
 		branch=''
 	done
 	for hg in $PUPPET_HOSTGROUPS;
 	do
 		cd $CLOUDDEV_PUPPET
-		IFS=':' read -r module branch <<< "$hg"
-		git clone -q http://git.cern.ch/cernpub/it-puppet-hostgroup-$module
+		IFS=':' read -r hostgroup branch <<< "$hg"
+		echo "Cloning hostgroup ${hostgroup} on branch ${branch:-master}"
+		git clone -q https://:@gitlab.cern.ch:8443/ai/it-puppet-hostgroup-${hostgroup}.git
 		exit_on_err $?
-		ln -s it-puppet-hostgroup-$module/code hg_$module
+		ln -s it-puppet-hostgroup-$hostgroup/code hg_$hostgroup
 		if [[ ! -z $branch ]]; then
-			cd it-puppet-hostgroup-$module
+			cd it-puppet-hostgroup-$hostgroup
 			exit_on_err $?
-			git checkout $branch
-			exit_on_err $?
-			cd -
+			git checkout $branch > /dev/null
+			exit_on_err $? "It seems branch $branch does not exist"
+			cd - > /dev/null
 		fi
 	done
-	#TODO: remove once we figure out gitlab checkouts
-	sed -i "/.*class { 'afs': }.*/d" ${CLOUDDEV_PUPPET}/it-puppet-hostgroup-cloud_adm/code/manifests/client/linux.pp
+	echo "All repositories have been cloned"
 }
 
 # install kubernetes from a fixed release
@@ -81,11 +139,10 @@ kubernetes_install() {
 	echo "installing kubernetes at ${CLOUDDEV_KUB}..."
 	mkdir -p $CLOUDDEV_KUB
 	cd $CLOUDDEV_KUB
-	wget --quiet https://github.com/kubernetes/kubernetes/archive/v1.1.2.tar.gz
+	wget https://github.com/kubernetes/kubernetes/archive/v1.1.2.tar.gz
 	tar zxf v1.1.2.tar.gz
 	mv kubernetes-1.1.2/* .
 	rm -rf kubernetes-1.1.2 v1.1.2.tar.gz
-	#patch -s -p0 $CLOUDDEV_KUB/hack/local-up-cluster.sh < $CLOUDDEV/kubernetes/local-cluster.patch
 	exit_on_err $?
 }
 
@@ -93,20 +150,48 @@ kubernetes_install() {
 kubernetes_start() {
 	# make sure the ebtables module is loaded
 	sudo modprobe ebtables
+	# iptables kernel module is not named the same on Ubuntu/CentOS
+	if [ -e /etc/redhat-release ]; then
+		sudo modprobe ip_tables
+	else
+		sudo modprobe iptables
+	fi
+	sudo modprobe ip6_tables
+
 	# start the kube daemons
 	cd $CLOUDDEV_KUB
 	kubectl version > /dev/null 2>&1
 	if [ $? -ne 0 ]; then
+		# Test if tools to build are installed
+		which make 2>&1 > /dev/null
+		if [[ $? -ne 0 ]]; then
+			echo "Tools to build are not installed (make), installing them..."
+			if [ -e /etc/redhat-release ]; then
+				sudo yum groupinstall "Development Tools"
+			else
+				sudo apt-get install build-essential
+			fi
+		fi
+
+		echo "building Kubernetes binaries..."
 		make > /tmp/kubernetes-build.log 2>&1
-		sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBELET_ARGS="--cluster-dns 10.0.0.10 --cluster-domain cluster.local" setsid ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
-		echo 'waiting for kubernetes start (and build if not done before)...'
+		exit_on_err $? "kubernetes could not be built. Check /tmp/kubernetes-build.log for errors"
+		echo "finished"
+
+		sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBELET_ARGS="--cluster-dns 10.0.0.10 --cluster-domain cluster.local" \
+			setsid ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
+
+		echo 'Waiting for kubernetes start...'
 		while ! kubectl get pod > /dev/null 2>&1
 		do
+			printf "."
 			sleep 5
 		done
+		echo ""
 		exit_on_err $?
 		sudo chown -R $USER $CLOUDDEV_KUB
 		exit_on_err $?
+		echo "kubernetes started"
 	fi
 }
 
@@ -124,9 +209,11 @@ cluster_pod_base_start() {
 	echo "waiting for pods to be ready..."
 	while [ $? -eq 0 ]
 	do
+		printf "."
 		sleep 2
 		kubectl get pod | grep Pending > /dev/null 2>&1
 	done
+	echo ""
 
 	for cluster in ceph wigner; do
 		kubectl exec -it ${cluster} -c cephall -- /usr/bin/ceph --cluster ${cluster} --connect-timeout 10 auth add client.images -i /etc/ceph/${cluster}.client.images.keyring
@@ -137,11 +224,14 @@ cluster_pod_base_start() {
 	done
 
 	echo "waiting for puppetdb to start..."
-	while ! kubectl exec -p puppet -c puppetdb -- /usr/bin/curl -s http://localhost:8080/v3/facts > /dev/null 2>&1
+	while ! kubectl exec puppet -c puppetdb -- /usr/bin/curl -s http://localhost:8080/v3/facts > /dev/null 2>&1
 	do
+		printf "."
 		sleep 2
 	done
+	echo ""
 	exit_on_err $?
+	echo "Environment services are started"
 }
 
 # start with a clean runtime
@@ -156,9 +246,12 @@ cluster_cleanup() {
 	echo "waiting for pods to be terminated..."
 	while [ $? -eq 0 ]
 	do
+		printf "."
 		sleep 2
 		kubectl get pod | grep Terminating > /dev/null 2>&1
 	done
+	echo ""
+	return 0
 }
 
 # start the base cluster
@@ -199,17 +292,29 @@ cluster_pod_launch() {
 	echo "waiting for pods to be ready..."
 	while kubectl get pod | grep Pending > /dev/null 2>&1
 	do
+		printf "."
 		sleep 2
 	done
+	echo ""
 	# run puppet in the openstack pods, even if built from tag
 	for pod in $OS_PODS
 	do
 		# run puppet on pod
+		echo "Running Puppet on pod ${pod}..."
 		sudo docker exec $(sudo docker ps | grep $pod | grep init | awk '{print $1}') /usr/bin/puppet agent -t
-		if [[ $? > 2  ]]; then
+		# Puppet return code:
+		# 1 -> did not even start doing some things
+		# 2 -> applied things, and everything went fine
+		# 4 -> failures
+		# 6 -> changes and failures
+		local ret=$?
+		if [[ $ret > 2  ]] || [[ $ret -eq 1 ]]; then
+			echo "Puppet run for ${pod} failed."
 			exit_on_err 1
 		fi
+		echo "Puppet run for ${pod} finished."
 	done
+	echo "OpenStack services are started"
 }
 
 # commit the OS docker containers and tag them
@@ -249,12 +354,20 @@ cluster_pod_push() {
 
 # install required centos dependencies
 centos_install() {
+	# Check for the CentOS version. It works on 7.2, but not 7.1
+	ver=$(grep -oe '[0-9]\.[0-9]' /etc/centos-release)
+	if [[ $ver != "7.2" ]]; then
+		exit_on_err 1 "WARNING, the dev environment has been tested on 7.2, and it seems there are problems on previous version. You should update"
+	fi
+
 	echo "installing dependencies for centos..."
-	printf "[docker-main-repo]\nname=Docker main Repository\nbaseurl=https://yum.dockerproject.org/repo/main/centos/7\nenabled=1\ngpgcheck=1\ngpgkey=https://yum.dockerproject.org/gpg" > /etc/yum.repos.d/docker.repo
 	sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
-	sudo yum install -y wget git vim docker-engine etcd golang patch psmisc
+	sudo yum install -y wget git etcd golang patch psmisc
 	exit_on_err $?
-	sed -i "s#^ExecStart.*#ExecStart=/usr/bin/docker daemon --dns 137.138.17.5 --insecure-registry docker.cern.ch --bip 172.17.0.1/16 -H fd://#g" /lib/systemd/system/docker.service
+	echo "Installing Docker"
+	curl -fsSL https://get.docker.com/ | sh
+	exit_on_err $?
+	sed -i "s#^ExecStart.*#ExecStart=/usr/bin/docker daemon --storage-driver=overlay --dns 137.138.17.5 --insecure-registry docker.cern.ch --bip 172.17.0.1/16 -H fd://#g" /lib/systemd/system/docker.service
 	iptables -F
 	# launch docker
 	systemctl daemon-reload
@@ -264,6 +377,10 @@ centos_install() {
 
 exit_on_err() {
 	if [[ $1 != 0 ]]; then
+		# If there is an error msg, print it
+		if [[ ! -z $2 ]]; then
+			echo $2
+		fi
 		exit $1
 	fi
 }
@@ -273,7 +390,6 @@ tempest_run() {
 	echo "running tempest tests..."
 	sudo docker exec -it $(sudo docker ps | grep client | grep init | awk '{print $1}') /etc/tempest/run.sh
 	exit_on_err $?
-
 }
 
 case "$1" in
@@ -283,10 +399,9 @@ case "$1" in
 		puppet_manifest_checkout
 		sudo rm -f /opt/puppet-modules
 		sudo ln -s $CLOUDDEV_PUPPET /opt/puppet-modules
-		sudo modprobe iptables
-		sudo modprobe ip6_tables
 		kubernetes_install
 		kubernetes_start
+		echo "Login to CERN docker registry"
 		sudo docker login -u docker -p docker -e 'foo@bar' docker.cern.ch
 		;;
 	'restart')
@@ -328,11 +443,6 @@ COMMAND can be one of:
   cleanup      Cleanup any running containers so we get a clean set
   centos       Install required dependencies for CentOS
   tempest      Run tempest tests against the dev environment
-
-Required environment settings:
-export CLOUDDEV=~/ws/cloud-dev
-export CLOUDDEV_PUPPET=~/ws/cern-puppet
-export CLOUDDEV_KUB=~/ws/kubernetes
 "
 		exit 1
 		;;

@@ -1,7 +1,19 @@
-build:
-        image: docker.io/centos
-        script:
-                - ls /
-        tags:
-                - cci-swarm-builder
+variables:
+        OS_PODS: "keystone glance cinder"
+        WORKSPACE: "/workspace"
+        CLOUDDEV: "$CI_PROJECT_DIR/cloud-dev"
+        CLOUDDEV_KUB: "/kubernetes"
+        CLOUDDEV_PUPPET: "$CI_PROJECT_DIR/cern-puppet"
+        USER: "root"
 
+update:
+        stage: build
+        except:
+                - master
+        script:
+                - sudo -p /kubernetes
+                - cd $CLOUDDEV/scripts
+                - sudo -E ./cci-dev.sh restart
+                - sudo -E ./cci-dev.sh launch
+        tags:
+                - cci-builder
