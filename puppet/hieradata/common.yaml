@@ -79,7 +79,12 @@ openstack_rdo_include_pkgs:
   - fontawesome-fonts
   - fontawesome-fonts-web
 
+openstack_liberty_exclude_pkgs:
+    - puppet
+    - facter
+
 # cloud_compute
+
 openstack_centos_kilo_excludepkgs:
   - openstack-neutron*
   - python-neutron*

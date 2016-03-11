@@ -1,5 +1,9 @@
 iaas_release: 'liberty'
 
+rabbitmq7_include_pkgs:
+    - rabbitmq-server
+    - lemon-sensor-rabbitmq
+
 magnum7_include_pkgs:
   - openstack-magnum*
   - python2-magnumclient
