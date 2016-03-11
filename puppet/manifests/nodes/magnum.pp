@@ -15,7 +15,7 @@ node /.*magnum.*/ inherits default {
     refreshonly => true,
   }
   ~>
-  Package['magnum']
+  Package['magnum-common']
   ->
   Teigi::Secret<||>
   ->
