@@ -1,6 +1,9 @@
 iaas_release: 'liberty'
-
 enable_afs: false
+
+osclients_default_rc: false
+osclients_acron: false
+
 
 openstack_centos_liberty_excludepkgs:
   - openstack-neutron*
