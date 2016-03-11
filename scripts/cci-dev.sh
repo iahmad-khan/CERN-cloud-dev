@@ -365,7 +365,8 @@ centos_install() {
 	sudo yum install -y wget git etcd golang patch psmisc
 	exit_on_err $?
 	echo "Installing Docker"
-	curl -fsSL https://get.docker.com/ | sh
+	echo '\n\[dockerrepo] \n\name=Docker Repository \n\baseurl=https://yum.dockerproject.org/repo/main/centos/$releasever/ \n\enabled=1 \n\gpgcheck=1 \n\gpgkey=https://yum.dockerproject.org/gpg \n' >> /etc/yum.repos.d/docker.repo
+	yum install -y docker-engine-1.9.1 docker-engine-selinux-1.9.1
 	exit_on_err $?
 	sed -i "s#^ExecStart.*#ExecStart=/usr/bin/docker daemon --storage-driver=overlay --dns 137.138.17.5 --insecure-registry docker.cern.ch --bip 172.17.0.1/16 -H fd://#g" /lib/systemd/system/docker.service
 	iptables -F
