@@ -10,8 +10,6 @@ node /.*client.*/ inherits default {
   ->
   class { 'motd': }
   ->
-  class { 'hg_cloud_adm': }
-  ->
   class { 'hg_cloud_adm::client::linux': }
   ->
   exec { 'clone-tempest':
@@ -60,24 +58,6 @@ node /.*client.*/ inherits default {
     environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=glance','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
   }
 
-  Osrepos::Ai121yumrepo['cci7-utils']
-  ->
-  Package['cci-tools']
-
-  # keeping the magnum client here for now TODO: move to openstack_clients
-  osrepos::ai121yumrepo { 'magnum7-testing':
-      descr    => "Magnum testing repo",
-      baseurl  => "http://linuxsoft.cern.ch/internal/repos/magnum7-testing/${::architecture}/os/",
-      gpgcheck => 0,
-      enabled  => 1,
-      priority => hiera('magnum_repo_priority', 3),
-      includepkgs => join(hiera_array('magnum7_include_pkgs'), ','),
-  }
-  #->
-  #package { 'python2-magnumclient':
-  #  ensure => present,
-  #}
-
   # dependencies and setup for run_tempest.sh in a virtualenv
   package { 'python-testrepository':
     ensure => present,
@@ -103,7 +83,7 @@ node /.*client.*/ inherits default {
     ensure => present,
   }
 
-  Osrepos::Ai121yumrepo['cci7-utils']
+  Yumrepo['cci7-utils']
   ->
   Package['cci-tools']
 
