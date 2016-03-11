@@ -17,63 +17,34 @@ What it provides:
 
 Basic knowledge of kubernetes (what is a pod, what is a service, ...).
 
-## Get the code
+## Setup
+
+Prepare the environment (might be handy to put this somewhere to source later).
+```
+export CLOUDDEV=~/ws/cloud-dev
+export CLOUDDEV_PUPPET=~/ws/cern-puppet
+export CLOUDDEV_KUB=~/ws/kubernetes
+export PATH=$PATH:$CLOUDDEV_KUB/_output/local/bin/linux/amd64
+```
+
+Fetch the code:
 ```
 mkdir ~/ws
 cd ~/ws
-# You need a Kerberos ticket to get the code
 git clone https://:@gitlab.cern.ch:8443/cloud-infrastructure/cloud-dev.git
 ```
 
-## Setup
-
-If you're in CentOS 7, the following command should help you (we use it in the CI setup):
+Setup the local environment (handy command for CentOS, used for CI too):
 ```
-# The meaning of these environment variables is explained in the next part
-# It is meaningful but mandatory in this part
-export CLOUDDEV=~/ws/cloud-dev
-export CLOUDDEV_PUPPET=~/ws/cern-puppet
-export CLOUDDEV_KUB=~/ws/kubernetes
-cd ~/wscloud-dev/scripts
-# This command will install and setup Go, Docker, and some other requirements
+cd ~/ws/cloud-dev/scripts
 ./cci-dev.sh centos
 ```
 
-Otherwise here are the detailed steps:
+Check inside the cci-dev.sh script (centos_install function) for details on how to install in other environments.
+
+The script provides some additional details on available commands:
 ```
-sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
-sudo yum install -y wget git etcd golang patch psmisc
-echo "Installing Docker"
-curl -fsSL https://get.docker.com/ | sh
-sed -i "s#^ExecStart.*#ExecStart=/usr/bin/docker daemon --storage-driver=overlay --dns 137.138.17.5 --insecure-registry docker.cern.ch --bip 172.17.0.1/16 -H fd://#g" /lib/systemd/system/docker.service
-iptables -F
-# launch docker
-systemctl daemon-reload
-systemctl start docker
-docker login -u docker -p docker -e none docker.cern.ch
-systemctl enable docker.service
-```
-
-Note that in Fedora 23, it seems that it's currently mandatory to disable selinux with Docker.
-[http://www.projectatomic.io/blog/2015/06/notes-on-fedora-centos-and-docker-storage-drivers/] See part on OverlaFS.
-
-
-## Quick Start
-
-There are 3 relevant locations in the workspace:
-* CLOUDDEV is where you clone the cloud-dev repo
-* CLOUDDEV_PUPPET is the directory where the CERN puppet modules will be cloned
-* CLOUDDEV_KUB is where the kubernetes installation will be placed
-
-These are the folder we are going to use in all the documentation.
-```
-export CLOUDDEV=~/ws/cloud-dev
-export CLOUDDEV_PUPPET=~/ws/cern-puppet
-export CLOUDDEV_KUB=~/ws/kubernetes
-```
-
-```
-cloud-dev/scripts$ ./cci-dev.sh 
+./cci-dev.sh
 Usage: cci-dev COMMAND
 Helper to handle a CERN openstack dev workspace.
 
@@ -90,6 +61,8 @@ COMMAND can be one of:
 
 ```
 
+## Quick Start
+
 First prepare your development environment (you only need to do this once):
 ```
 cd ~/wscloud-dev/scripts
@@ -99,43 +72,22 @@ cd ~/wscloud-dev/scripts
 After this you'll be relaunching the containers from scratch quite often:
 ```
 ./cci-dev.sh restart
-./cci-dev.sh launch last
-```
-(Note that you currently cannot use "launch last", and should use "launch" for a full Puppet run, because Neutron image in repository is not yet pushed)
-
-
-Note we launched from the 'last' tag, which launches containers from a pre-built image and runs puppet from there (much faster). These 'last' images are maintained by the CI system, updated when things get merged to master.
-
-If you really want to rebuild all the nodes from scratch (full puppet runs), trigger launch with no args.
-```
 ./cci-dev.sh launch
 ```
 
-You can then save these containers as image in you local repository with the command "tag". So that next run will start from this last state.
-```
-./cci-dev.sh tag mylatest-20160201
-```
-To start from a tag, you can do:
-```
-./cci-dev.sh launch mylatest-20160201
-```
-
-
 With an environment set, you can *login* to a container and run the usual commands:
 ```
-export PATH=$PATH:$CLOUDDEV_KUB/_output/local/bin/linux/amd64
-kubectl exec -it -p keystone -c keystone -- /bin/bash
+kubectl exec -it keystone -c keystone /bin/bash
 [root@keystone /]# puppet agent -t
 ```
 
 Whatever changes you do to the puppet modules in CLOUDDEV_PUPPET are seen immediately.
 
-
 ### Test the environment
 
 Let's try to create an image in glance, the client is available in the glance pod/container:
 ```
-kubectl.sh exec -it -p glance -c glance -- /bin/bash
+kubectl exec -it glance -c glance /bin/bash
 [root@glance /]# . root/openrc
 [root@glance /]# wget http://download.cirros-cloud.net/0.3.3/cirros-0.3.3-x86_64-disk.img
 [root@glance /]# glance image-create --name cirros --disk-format aki --file cirros-0.3.3-x86_64-disk.img
@@ -149,7 +101,7 @@ kubectl.sh exec -it -p glance -c glance -- /bin/bash
 
 And check the data is actually in our local ceph container:
 ```
-kubectl.sh exec -it -p ceph -c cephall -- /bin/bash
+kubectl.sh exec -it ceph -c cephall /bin/bash
 root@ /# rados ls -p images
 rbd_data.10155d46d745.0000000000000001
 rbd_directory
@@ -159,16 +111,6 @@ rbd_header.10155d46d745
 ```
 
 ## Common Use Cases
-
-### Relaunching a failing build/commit
-
-After each build the CI system adds an additional tag to each image with the commit ID. This allows you to launch an
-environment corresponding to the failing build (useful for debugging).
-```
-cd scripts
-./cci-dev.sh restart
-./cci-dev.sh launch <commit-id>
-```
 
 ## Tempest
 
@@ -183,26 +125,6 @@ The list of tests enabled is in cloud-dev/tempest/tempest.list.
 
 
 ## Maintenance
-
-### Redeploy the jenkins master
-
-Jenkins resources are held under the *Cloud CI* tenant.
-
-There should be a volume name jenkins-config already holding the master configuration.
-
-You can confidently recreate the heat stack as the configuration is kept persistent in the volume:
-```
-cd $CLOUDDEV/heat
-heat stack-create cci-jenkins -f jenkins.yaml -e jenkins-env-clouddev.yaml
-```
-
-### Jenkins / Gitlab integration
-
-Same recipe as in:
-http://jenkinsdocs.web.cern.ch/jenkinsdocs/chapters/demos/jenkinsdocs-build.html
-
-and:
-http://jenkinsdocs.web.cern.ch/jenkinsdocs/chapters/revision-control-systems/git/gitlab.html
 
 ### Rebuilding the 'latest' mysql
 
