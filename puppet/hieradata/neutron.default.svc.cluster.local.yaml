@@ -14,6 +14,14 @@ neutron::rabbit_hosts:
 neutron::metadata_host: 'nova.default.svc.cluster.local'
 neutron::metadata_port: '8775'
 
+neutron::quota::default_quota: -1
+neutron::quota::quota_items: ''
+neutron::quota::quota_network: -1
+neutron::quota::quota_subnet: -1
+neutron::quota::quota_port: -1
+neutron::quota::quota_security_group: -1
+neutron::quota::quota_security_group_rule: -1
+
 neutron::server::auth_user: 'neutron'
 neutron::server::auth_password: 'neutron_admin_password'
 neutron::server::auth_tenant: 'services'

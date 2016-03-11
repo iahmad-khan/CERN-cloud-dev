@@ -15,3 +15,6 @@ osclients_include_pkgs:
     #- python-neutron*
   - python2-magnum*
   - openstack-db*
+
+docker::version: '1.9.1-1'
+hg_cloud_adm::client::linux::migrated_cells: 'cell37'

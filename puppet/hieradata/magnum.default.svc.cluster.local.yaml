@@ -1,0 +1,34 @@
+iaas_release: 'liberty'
+
+magnum7_include_pkgs:
+  - openstack-magnum*
+  - python2-magnumclient
+  - python-magnumclient
+
+magnum::verbose: false
+magnum::debug: false
+magnum::package_ensure: 'present'
+magnum::use_syslog: false
+magnum::rabbit_host: ''
+magnum::rabbit_port: '5672'
+magnum::rabbit_hosts:
+  - 'controller'
+magnum::rabbit_virtual_host: '/'
+magnum::rabbit_userid: 'guest'
+magnum::rabbit_password: 'magnum_rabbit_password'
+
+magnum::db::database_connection: 'magnum_database_connection'
+
+magnum::api::enabled: true
+magnum::api::admin_password: 'magnum_keystone_password'
+magnum::api::admin_tenant_name: 'services'
+magnum::api::admin_user: 'admin'
+magnum::api::auth_uri: 'https://keystone.default.svc.cluster.local:443/admin'
+magnum::api::identity_uri: 'https://keystone.default.svc.cluster.local:443/admin'
+magnum::api::package_ensure: 'present'
+magnum::api::host_ip: '0.0.0.0'
+magnum::api::port: '9511'
+
+magnum::conductor::enabled: true
+
+flume_agent_enable: true
