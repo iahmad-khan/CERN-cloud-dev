@@ -24,7 +24,7 @@ augeasproviders_sysctl
 bridged
 cernlib
 cinder
-cloud_common:optional-abrt-psacct
+cloud_common:nosysstat
 cloud_monitoring
 concat
 filemapper
@@ -231,7 +231,6 @@ cluster_pod_base_start() {
 	done
 	echo ""
 	exit_on_err $?
-	echo "Environment services are started"
 }
 
 # start with a clean runtime
