@@ -1,0 +1,2 @@
+barbican::db::mysql::password: '123456'
+barbican::api::client_package_ensure: false

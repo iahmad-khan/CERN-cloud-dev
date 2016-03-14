@@ -10,3 +10,5 @@
 0x000a 2015-11-30T15:03:34UTC 2020-11-29T15:03:34UTC /CN=magnum.default.svc.cluster.local
 0x000b 2015-11-30T15:03:37UTC 2020-11-29T15:03:37UTC /CN=client.default.svc.cluster.local
 0x000c 2016-03-15T17:39:12UTC 2021-03-15T17:39:12UTC /CN=aiadm.default.svc.cluster.local
+0x000c 2016-03-13T20:17:44UTC 2021-03-13T20:17:44UTC /CN=barbican.default.svc.cluster.local.pem
+0x000d 2016-03-13T20:21:58UTC 2021-03-13T20:21:58UTC /CN=barbican.default.svc.cluster.local
