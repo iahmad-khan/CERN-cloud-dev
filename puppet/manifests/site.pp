@@ -23,6 +23,10 @@ node default {
     ensure => present,
   }
   ->
+  package { 'cronie':
+    ensure => present,
+  }
+  ->
   service { 'iptables':
     enable => true,
     ensure => running,
