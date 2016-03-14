@@ -17,8 +17,6 @@ spec:
           mountPath: /var/lib/puppet/ssl
         - name: factercfg
           mountPath: /etc/facter
-        - name: yumcache
-          mountPath: /var/cache/yum
         - name: cgroup
           mountPath: /sys/fs/cgroup
           readOnly: true
@@ -36,9 +34,6 @@ spec:
     - name: factercfg
       hostPath:
         path: /opt/cloud-dev/facter
-    - name: yumcache
-      hostPath:
-        path: /opt/cloud-dev/cache
     - name: cgroup
       hostPath:
         path: /sys/fs/cgroup

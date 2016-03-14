@@ -21,8 +21,6 @@ spec:
           mountPath: /etc/facter
         - name: tempestcfg
           mountPath: /etc/tempest
-        - name: yumcache
-          mountPath: /var/cache/yum
         - name: cgroup
           mountPath: /sys/fs/cgroup
           readOnly: true
@@ -43,9 +41,6 @@ spec:
     - name: tempestcfg
       hostPath:
         path: /opt/cloud-dev/tempest
-    - name: yumcache
-      hostPath:
-        path: /opt/cloud-dev/cache
     - name: cgroup
       hostPath:
         path: /sys/fs/cgroup
