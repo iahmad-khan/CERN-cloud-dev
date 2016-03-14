@@ -1,6 +1,6 @@
 psacct_enabled: false
 abrt_enabled: false
-cci_dev_yum_keepcache: 1
+cci_dev_yum_keepcache: 0
 cci_dev_yum_forcecache: false
 ceph_repo_release: 'hammer'
 ceph_cluster:
