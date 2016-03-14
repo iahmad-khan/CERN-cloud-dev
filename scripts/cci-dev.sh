@@ -47,7 +47,7 @@ network
 neutron:1748-neutrondev
 nova
 openstack_clients
-openstacklib:kilo
+openstacklib:liberty
 osrepos
 psacct
 puppet
