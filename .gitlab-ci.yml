@@ -26,6 +26,6 @@ update:
                 - ./cci-dev.sh prepare
                 - ./cci-dev.sh restart
                 - ./cci-dev.sh launch
-                - ./cci-dev.sh tempest
+                - script -q -c "./cci-dev.sh tempest"
         tags:
                 - cci-builder
