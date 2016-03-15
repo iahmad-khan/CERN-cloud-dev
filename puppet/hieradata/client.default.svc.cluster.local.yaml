@@ -19,5 +19,5 @@ osclients_include_pkgs:
   - python2-magnum*
   - openstack-db*
 
-docker::version: '1.9.1-1'
+docker::version: '1.9.1-1.el7.centos'
 hg_cloud_adm::client::linux::migrated_cells: 'cell37'

@@ -1,5 +1,9 @@
 haproxy_enable: false
 glance_swap: false
+glance_rabbit_host: 'controller'
+glance_rabbit_userid: 'guest'
+glance_rabbit_virtual_host: '/'
+
 glance_api_auth_admin_prefix: '/admin'
 glance_api_auth_host: 'keystone.default.svc.cluster.local'
 glance_api_auth_protocol: 'https'
