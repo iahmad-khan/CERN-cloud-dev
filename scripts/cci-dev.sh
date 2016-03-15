@@ -395,7 +395,7 @@ exit_on_err() {
 # run tempest tests against the dev setup
 tempest_run() {
 	echo "running tempest tests..."
-	sudo docker exec -it $(sudo docker ps | grep client | grep init | awk '{print $1}') /etc/tempest/run.sh
+	kubectl exec -it client -c client /etc/tempest/run.sh
 	exit_on_err $?
 }
 
