@@ -39,7 +39,7 @@ keystone
 lemon
 limits
 logrotate
-magnum
+magnum:dev
 memcached
 motd
 mysql
@@ -66,7 +66,7 @@ PUPPET_HOSTGROUPS="
 cloud_adm:qa
 cloud_blockstorage
 cloud_compute:devenv
-cloud_container
+cloud_container:dev
 cloud_dashboard
 cloud_identity
 cloud_image:swap
