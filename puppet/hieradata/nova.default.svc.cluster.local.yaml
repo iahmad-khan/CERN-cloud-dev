@@ -1,0 +1,90 @@
+iaas_release: 'kilo'
+
+# nova::base
+nova_debug: True
+nova_verbose: True
+nova_config_use_local: true
+nova_enabled_ssl_apis: []
+nova_glance_api_servers: 'glance.default.svc.cluster.local:9292'
+nova_manage_selinux: false
+landb_username: 'neutron'
+rabbit_host: 'controller'
+nova_identity_uri: 'https://keystone.default.svc.cluster.local/admin'
+
+# nova::conductor
+nova_conductor_monitoring: false
+
+# nova::api
+haproxy_enable: false
+haproxy_nova_api_enable: false
+firewall_nova_api_enable: true
+firewall_nova_metadata_enable: true
+firewall_nova_novnc_enable: true
+
+nova_api_port: 8774
+nova_api_admin_port: 443
+nova_api_admin_user: 'nova'
+nova_api_admin_tenant_name: 'services'
+nova_api_admin_prefix: '/admin'
+nova_api_auth_strategy: keystone
+nova_api_auth_host: 'keystone.default.svc.cluster.local'
+nova_api_auth_protocol: 'https'
+nova_api_auth_admin_prefix: '/admin'
+nova_api_auth_uri: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
+nova_api_ca_file: '/var/lib/puppet/ssl/certs/ca.pem'
+nova_api_enabled_apis: 'osapi_compute,metadata'
+nova_api_keystone_ec2_url: 'https://keystone.default.svc.cluster.local:443/v2.0/ec2tokens'
+nova_api_metadata_workers: 2
+nova_api_sync_db: false
+overwrite_nova_policy: true
+nova_static_conf: "[DEFAULT]\nglance_api_servers=glance.default.svc.cluster.local:9292\n"
+nova_conductor_workers: 1
+nova_vncproxy_host: "0.0.0.0"
+
+# nova_network
+nova_network_network_manager: 'nova.network.manager.CernManager'
+nova_network_create_networks: false
+nova_network_enabled: false
+
+#nova::neutron
+nova_neutron_enabled: true
+nova_neutron_url: 'https://neutron.default.svc.cluster.local:9696'
+nova_neutron_identity_uri: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
+
+#neutron
+neutron_auth_cafile: '/var/lib/puppet/ssl/certs/ca.pem'
+neutron_admin_username: 'neutron'
+neutron_admin_tenant_name: 'services'
+neutron_use_ssl: false
+neutron_use_syslog: false
+neutron_rabbit_user: 'guest'
+neutron_rabbit_host: 'controller'
+neutron_rabbit_port: '5672'
+neutron_rabbit_hosts:
+  - 'controller'
+neutron_rabbit_virtual_host: '/'
+neutron_qpid_hostname: "%{neutron_rabbit_host}"
+neutron_qpid_port: "%{neutron_rabbit_port}"
+neutron_qpid_username: "%{neutron_rabbit_port}"
+neutron_service_plugins:
+  - 'cern'
+neutron_ml2_type_drivers:
+  - 'flat'
+neutron_ml2_tenant_network_types:
+  - 'flat'
+neutron_ml2_mechanism_drivers:
+  - 'linuxbridge'
+  - 'cern_landb'
+neutron_linuxbridge_phys_mapping:
+  - "external:%{::network_primary_interface}"
+neutron_metadata_host: 'nova.default.svc.cluster.local'
+neutron_metadata_port: '8775'
+
+pluginsync_filter:
+  - neutron
+openstack_centos_kilo_excludepkgs:
+  - openstack-neutron*
+  - python-neutron*
+iaas_stable_repo_includepkgs:
+  - openstack-neutron*
+  - python-neutron*
