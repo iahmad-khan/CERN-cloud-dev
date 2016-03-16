@@ -31,6 +31,7 @@ RUN yum install -y \
 
 RUN yum install -y \
 	python-heatclient \
+	python-keystoneclient-kerberos \
 	python-openstackclient \
 	python2-magnumclient
 
