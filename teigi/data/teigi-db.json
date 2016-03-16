@@ -1,4 +1,5 @@
 {
+	"svckey_password": "123456",
         "unit_test_secret_key": "unit_test_secret_value",
         "ceph_client_images_keyring": "[client.images]\n\tkey = AQDFIqlVdr2VMRAAeZjXcV3DwpWxuJfaSAdUMg==\n\tcaps mon = allow r\n\tcaps osd = allow *",
         "ceph_client_volumes_keyring": "[client.volumes]\n\tkey = AQArZa5VqkPjOhAAXxRwNIXXN9jxnzrC8zxnEA==\n\tcaps mon = allow r\n\tcaps osd = allow *",

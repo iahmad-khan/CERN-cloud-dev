@@ -19,5 +19,13 @@ osclients_include_pkgs:
   - python2-magnum*
   - openstack-db*
 
+hg_cloud_adm::client::linux::tenant: 'services'
+hg_cloud_adm::client::linux::user: 'admin'
+hg_cloud_adm::client::linux::cell_authurl: 'https://keystone.default.svc.cluster.local/admin/v2.0'
+hg_cloud_adm::client::linux::cell_authurlv3: 'https://keystone.default.svc.cluster.local/admin/v3'
+hg_cloud_adm::client::linux::cell_authurl_legacy: 'https://keystone.default.svc.cluster.local/admin/v2.0'
+hg_cloud_adm::client::linux::authurl: 'https://keystone.default.svc.cluster.local/admin/v2.0'
+hg_cloud_adm::client::linux::authurlv3: 'https://keystone.default.svc.cluster.local/admin/v3'
+
 docker::version: '1.9.1-1.el7.centos'
 hg_cloud_adm::client::linux::migrated_cells: 'cell37'
