@@ -41,6 +41,7 @@ iaas_include_pkgs:
   - openstack-neutron*
 openstack_rdo_include_pkgs:
   - python-oslo*
+  - python2-oslo*
   - python-sqlalchemy
   - python-routes
   - python-paste-deploy

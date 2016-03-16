@@ -83,8 +83,9 @@ node /.*client.*/ inherits default {
     ensure => present,
   }
 
-  #Yumrepo['cci7-utils']
-  #->
-  #Package['cci-tools']
+  #TODO: move to cloud_adm
+  package { 'python-barbicanclient':
+    ensure => present,
+  }
 
 }

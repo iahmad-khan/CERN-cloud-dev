@@ -130,6 +130,12 @@ keystone_default_catalog:
     - publicURL: 'http://magnum.default.svc.cluster.local:9511/v1'
     - adminURL: 'http://magnum.default.svc.cluster.local:9511/v1'
     - internalURL: 'http://magnum.default.svc.cluster.local:9511/v1'
+  - key-manager:
+    - name: 'barbican'
+    - description: 'Openstack Key Management Service'
+    - publicURL: 'http://barbican.default.svc.cluster.local:9311/v1'
+    - adminURL: 'http://barbican.default.svc.cluster.local:9311/v1'
+    - internalURL: 'http://barbican.default.svc.cluster.local:9311/v1'
 
 keystone_domains:
   - /etc/keystone/domains/keystone.heat.conf
