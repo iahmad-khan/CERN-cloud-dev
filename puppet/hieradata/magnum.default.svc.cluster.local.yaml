@@ -1,5 +1,7 @@
 iaas_release: 'liberty'
 
+haproxy_enable: false
+
 rabbitmq7_include_pkgs:
     - rabbitmq-server
     - lemon-sensor-rabbitmq

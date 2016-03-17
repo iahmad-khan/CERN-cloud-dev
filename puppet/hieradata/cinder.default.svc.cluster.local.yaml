@@ -20,6 +20,8 @@ rabbitmq7_include_pkgs:
     - rabbitmq-server
     - lemon-sensor-rabbitmq
 
+haproxy_enable: false
+
 overwrite_cinder_policy: true
 
 cinder_ceph_user: 'volumes'
