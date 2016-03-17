@@ -32,6 +32,8 @@ node default {
     ensure => running,
   }
   ->
+  Service['ip6tables']
+  ->
   Firewall<||>
 
   if hiera('cci_dev_yum_forcecache', false) {
