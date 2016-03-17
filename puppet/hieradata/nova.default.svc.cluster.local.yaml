@@ -48,7 +48,7 @@ nova_network_enabled: false
 
 #nova::neutron
 nova_neutron_enabled: true
-nova_neutron_url: 'https://neutron.default.svc.cluster.local:9696'
+nova_neutron_url: 'http://neutron.default.svc.cluster.local:9696'
 nova_neutron_identity_uri: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
 
 #neutron

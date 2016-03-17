@@ -28,8 +28,43 @@ nova::network::neutron::neutron_url: 'http://neutron.default.svc.cluster.local:9
 nova::network::neutron::neutron_region_name: undef
 nova::network::neutron::neutron_ca_certificates_file: '/var/lib/puppet/ssl/certs/ca.pem'
 
+#nova::neutron
+nova_network_enabled: false
+nova_neutron_enabled: true
+nova_neutron_url: 'http://neutron.default.svc.cluster.local:9696'
+nova_neutron_identity_uri: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
+neutron_auth_cafile: '/var/lib/puppet/ssl/certs/ca.pem'
+neutron_admin_tenant_name: 'services'
+neutron_admin_username: 'neutron'
+neutron_use_ssl: false
+neutron_use_syslog: false
+neutron_rabbit_user: 'guest'
+neutron_rabbit_host: 'controller'
+neutron_rabbit_port: '5672'
+neutron_rabbit_hosts:
+  - 'controller'
+neutron_rabbit_virtual_host: '/'
+neutron_qpid_hostname: "%{neutron_rabbit_host}"
+neutron_qpid_port: "%{neutron_rabbit_port}"
+neutron_qpid_username: "%{neutron_rabbit_port}"
+neutron_service_plugins:
+  - 'cern'
+neutron_ml2_type_drivers:
+  - 'flat'
+neutron_ml2_tenant_network_types:
+  - 'flat'
+neutron_ml2_mechanism_drivers:
+  - 'linuxbridge'
+  - 'cern_landb'
+neutron_linuxbridge_phys_mapping:
+  - "external:%{::network_primary_interface}"
+neutron_metadata_host: 'nova.default.svc.cluster.local'
+neutron_metadata_port: '8775'
+
 # old style definitions
 nova_neutron_enabled: true
+
+rabbit_host: 'controller'
 
 libvirtd_logs: false
 nova_compute_libvirt_virt_type: 'qemu'
