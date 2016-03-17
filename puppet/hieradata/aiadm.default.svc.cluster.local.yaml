@@ -1,0 +1,36 @@
+osclients_default_rc: false
+
+osclients_rdo_include_pkgs:
+    # Clients
+    - python-cinderclient
+    - python-glanceclient
+    - python-heatclient
+    - python-keystoneclient
+    - python-neutronclient
+    - python-novaclient
+    - python-openstackclient
+    - python-swiftclient
+    # Dependences
+    - pyparsing # overrides epel
+    - python2-appdirs
+    - python-babel
+    - python-backports
+    - python-cliff # overrides epel
+    - python-cmd2 # overrides epel
+    - python2-debtcollector
+    - python-netaddr
+    - python-netifaces
+    - python2-os-client-config
+    - python2-oslo-config
+    - python2-oslo-i18n
+    - python2-oslo-serialization
+    - python2-oslo-utils
+    - python-six # overrides epel
+    - python-stevedore
+    - python-unicodecsv
+    - python-webob # overrides epel
+
+osclients_include_pkgs:
+    # Clients
+    - python-keystoneclient-kerberos
+    - python-keystoneclient-x509
