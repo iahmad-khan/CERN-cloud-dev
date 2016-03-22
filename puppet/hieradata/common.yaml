@@ -120,8 +120,8 @@ osclients_rdo_include_pkgs:
   - python-webob # overrides epel
 
 osclients_include_pkgs:
-#  - python-keystoneclient-kerberos
-#  - python-keystoneclient-x509
+  - python-keystoneclient-kerberos
+  - python-keystoneclient-x509
   - python-cornerstoneclient
   - python-neutronclient
 #  - python-kombu

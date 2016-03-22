@@ -1,5 +1,5 @@
-iaas_release: 'kilo'
-iaas_default_release: 'kilo'
+iaas_release: 'liberty'
+iaas_default_release: 'liberty'
 
 # review        
 cloud_identity_default_cache: false
@@ -11,59 +11,62 @@ keystone_token_flush_job: 'keystone-token-flush'
 keystone_token_flush_job_hour: '*/6'
 
 iaas_include_pkgs:
-  - python-pyws
   - openstack-keystone
   - python-keystone
   - python-keystoneclient
   - python-pysaml2
+  - python-pyws
   - python-repoze-who
 
 openstack_rdo_include_pkgs:
-  - python-oslo*
-  - python2-oslo*
-  - python-sqlalchemy
-  - python-routes
-  - python-paste-deploy
-  - python-six
-  - python-pycadf
-  - python-webob
-  - python-migrate
-  - python-novaclient
+  - openstack-selinux
+  - pyparsing
+  - python-alembic
+  - python-babel
   - python-cinderclient
+  - python-cliff
+  - python-cmd2
+  - python-cryptography
   - python-glanceclient
   - python-keystoneclient
-  - python-openstackclient
-  - python-neutronclient
-  - python-requests
-  - python-urllib3
-  - python-cliff
-  - python-unicodecsv
-  - python-cmd2
-  - pyparsing
-  - python-babel
-  - python-alembic
   - python-keystonemiddleware
   - python-ldappool
-  - python-netifaces
+  - python-migrate
   - python-netaddr
+  - python-netifaces
+  - python-neutronclient
+  - python-novaclient
+  - python-openstackclient
+  - python-oslo*
+  - python-paste-deploy
+  - python-pycadf
+  - python-pysaml2
+  - python-requests
+  - python-routes
+  - python-six
+  - python-sqlalchemy
   - python-stevedore
-  - python-cryptography
-  - openstack-selinux
+  - python-unicodecsv
+  - python-urllib3
+  - python-webob
+  - python2-appdirs
+  - python2-debtcollector
   - python2-eventlet
+  - python2-futurist
   - python2-greenlet
   - python2-iso8601
+  - python2-os-client-config
+  - python2-oslo*
   - python2-PyMySQL
-  - python2-debtcollector
-  - python2-futurist
 
 # Puppet plugin whitelist
 pluginsync_filter_enable: true
 pluginsync_filter:
   - apache
   - inifile
-  - stdlib
   - keystone
   - openstacklib
+  - stdlib
 
 # cloud_identity
 keystone_auth_admin_enable: true
