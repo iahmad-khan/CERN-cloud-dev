@@ -29,3 +29,13 @@ hg_cloud_adm::client::linux::authurlv3: 'https://keystone.default.svc.cluster.lo
 
 docker::version: '1.9.1-1.el7.centos'
 hg_cloud_adm::client::linux::migrated_cells: 'cell37'
+hg_cloud_adm::client::linux::tenant: 'services'
+hg_cloud_adm::client::linux::user: 'admin'
+hg_cloud_adm::client::linux::cell_authurl: 'https://keystone.default.svc.cluster.local/main/v2.0'
+hg_cloud_adm::client::linux::cell_authurlv3: 'https://keystone.default.svc.cluster.local/main/v3'
+hg_cloud_adm::client::linux::cell_authurl_legacy: 'https://keystone.default.svc.cluster.local/main/v2.0'
+hg_cloud_adm::client::linux::authurl: 'https://keystone.default.svc.cluster.local/main/v2.0'
+hg_cloud_adm::client::linux::authurlv3: 'https://keystone.default.svc.cluster.local/main/v3'
+hg_cloud_adm::client::linux::ca_cert: '/var/lib/puppet/ssl/certs/ca.pem'
+hg_cloud_adm::client::linux::cert: "/var/lib/puppet/ssl/certs/%{hostname}.default.svc.cluster.local.pem"
+hg_cloud_adm::client::linux::key: "/var/lib/puppet/ssl/private_keys/%{hostname}.default.svc.cluster.local.pem"
