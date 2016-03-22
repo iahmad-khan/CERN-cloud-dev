@@ -54,7 +54,7 @@ RUN curl -L https://github.com/docker/compose/releases/download/1.6.2/docker-com
 	chmod +x /usr/local/bin/docker-compose
 
 # kubectl client
-RUN wget -q https://github.com/kubernetes/kubernetes/releases/download/v1.2.0/kubernetes.tar.gz; \
+RUN wget -q https://github.com/kubernetes/kubernetes/releases/download/v1.0.7/kubernetes.tar.gz; \
 	tar zxvf kubernetes.tar.gz; \
 	cp /kubernetes/platforms/linux/amd64/kubectl /usr/bin; \
 	rm -rf /kubernetes
