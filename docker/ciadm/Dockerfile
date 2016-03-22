@@ -9,7 +9,8 @@ RUN /usr/bin/rpm --import http://linuxsoft.cern.ch/cern/centos/7.1/os/x86_64/RPM
 # nice to have utilities
 RUN yum install -y \
 	man-pages \
-	vim
+	vim \
+	wget
 
 # krb client
 RUN yum -y install \
@@ -51,3 +52,9 @@ RUN yum install -y \
 
 RUN curl -L https://github.com/docker/compose/releases/download/1.6.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose; \
 	chmod +x /usr/local/bin/docker-compose
+
+# kubectl client
+RUN wget -q https://github.com/kubernetes/kubernetes/releases/download/v1.2.0/kubernetes.tar.gz; \
+	tar zxvf kubernetes.tar.gz; \
+	cp /kubernetes/platforms/linux/amd64/kubectl /usr/bin; \
+	rm -rf /kubernetes
