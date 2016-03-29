@@ -35,8 +35,6 @@ node /.*nova.*/ inherits default {
   ->
   Teigi::Secret<||>
   ->
-  Service['ip6tables']
-  ->
   Nova_config <||>
   ~>
   exec { '/usr/bin/nova-manage db sync':
