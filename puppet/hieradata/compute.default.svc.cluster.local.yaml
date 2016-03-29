@@ -79,4 +79,4 @@ nova_compute_netconntrack: false
 nova_config_use_ipv6: false
 nova_compute_vncproxy_host: 'nova'
 nova_compute_vncserver_proxyclient_address: "%{::ipaddress}"
-
+nova_glance_api_servers: 'glance.default.svc.cluster.local:9292'
