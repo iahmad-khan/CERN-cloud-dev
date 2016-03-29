@@ -3,8 +3,8 @@ iaas_release: 'kilo'
 haproxy_enable: false
 
 neutron::enabled: true
-neutron::verbose: true
-neutron::debug: true
+neutron::verbose: false
+neutron::debug: false
 neutron::core_plugin: 'ml2'
 neutron::service_plugins:
   - cern
