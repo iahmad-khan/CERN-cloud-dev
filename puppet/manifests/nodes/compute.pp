@@ -57,6 +57,10 @@ GATEWAYDEV=br100
   ->
   File['ssh_config']
 
+  exec {'/usr/sbin/usermod -a -G puppet nova':
+    unless => "/usr/bin/grep 'puppet.*nova' /etc/group",
+  }
+  ->
   Service['openstack-nova-compute']
   ->
   exec { "bash -c 'for service in nova-scheduler nova-conductor nova-cert nova-consoleauth; do nova-manage service enable --host nova --service \${service}; done; nova-manage service enable --host compute --service nova-compute'":
