@@ -15,7 +15,7 @@ osclients_include_pkgs:
   - python-keystoneclient-x509
   - python-landbclient
   - python-magnum*
-    #- python-neutron*
+  - python-neutron*
   - python2-magnum*
   - openstack-db*
 
