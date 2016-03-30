@@ -48,10 +48,38 @@ nova_network_enabled: false
 
 #nova::neutron
 nova_neutron_enabled: true
-nova_neutron_url: 'http://neutron.default.svc.cluster.local:9696'
-nova_neutron_identity_uri: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
+
+nova::network::neutron::neutron_admin_username: 'neutron'
+nova::network::neutron::neutron_admin_password: 'neutron_admin_password'
+nova::network::neutron::neutron_admin_tenant_name: 'services'
+nova::network::neutron::neutron_admin_auth_url: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
+nova::network::neutron::neutron_url: 'http://neutron.default.svc.cluster.local:9696'
+nova::network::neutron::neutron_region_name: false
+nova::network::neutron::neutron_ca_certificates_file: '/var/lib/puppet/ssl/certs/ca.pem'
+nova::network::neutron::vif_plugging_is_fatal: false
+nova::network::neutron::vif_plugging_timeout: 0
 
 #neutron
+neutron::enabled: true
+neutron::verbose: true
+neutron::debug: false
+neutron::core_plugin: 'ml2'
+neutron::service_plugins:
+  - cern
+neutron::rabbit_user: 'guest'
+neutron::rabbit_password: 'neutron_rabbit_password'
+neutron::rabbit_host: 'controller'
+neutron::rabbit_hosts:
+  - 'controller'
+neutron::metadata_host: 'nova'
+neutron::metadata_port: '8775'
+
+neutron::agents::ml2::linuxbridge::physical_interface_mappings:
+  - "external:eth0"
+
+#neutron
+nova::network::neutron::neutron_admin_password: 'neutron_admin_password'
+neutron::rabbit_password: 'neutron_rabbit_password'
 neutron_auth_cafile: '/var/lib/puppet/ssl/certs/ca.pem'
 neutron_admin_username: 'neutron'
 neutron_admin_tenant_name: 'services'
