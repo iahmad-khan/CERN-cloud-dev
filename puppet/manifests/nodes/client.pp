@@ -83,8 +83,8 @@ node /.*client.*/ inherits default {
     ensure => present,
   }
 
-  Yumrepo['cci7-utils']
-  ->
-  Package['cci-tools']
+  #Yumrepo['cci7-utils']
+  #->
+  #Package['cci-tools']
 
 }
