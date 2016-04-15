@@ -21,7 +21,7 @@ node /.*neutron.*/ inherits default {
   ->
   Neutron_api_config<||>
   ~>
-  exec { '/usr/bin/neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade liberty':
+  exec { '/usr/bin/neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade heads':
     refreshonly => true,
   }
   ~>
