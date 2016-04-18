@@ -2,6 +2,8 @@
 node /.*barbican.*/ inherits default {
 
   class {'hg_cloud_secret': }
+  class {'hg_cloud_secret::controller': }
+  class {'hg_cloud_secret::controller::frontend': }
 
   package {'mariadb':
     ensure => 'present',
