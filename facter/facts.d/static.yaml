@@ -1,2 +1,3 @@
 ---
 puppetservers: puppet
+operatingsystemmajorrelease: 7

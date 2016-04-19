@@ -27,6 +27,8 @@ nova::network::neutron::neutron_admin_auth_url: 'https://keystone.default.svc.cl
 nova::network::neutron::neutron_url: 'http://neutron.default.svc.cluster.local:9696'
 nova::network::neutron::neutron_region_name: undef
 nova::network::neutron::neutron_ca_certificates_file: '/var/lib/puppet/ssl/certs/ca.pem'
+nova::network::neutron::vif_plugging_is_fatal: false
+nova::network::neutron::vif_plugging_timeout: 0
 
 #nova::neutron
 nova_network_enabled: false
@@ -79,4 +81,4 @@ nova_compute_netconntrack: false
 nova_config_use_ipv6: false
 nova_compute_vncproxy_host: 'nova'
 nova_compute_vncserver_proxyclient_address: "%{::ipaddress}"
-
+nova_glance_api_servers: 'glance.default.svc.cluster.local:9292'
