@@ -1,10 +1,4 @@
-iaas_release: 'liberty'
-
-openstack_rdo_include_pkgs:
-  - python2-debtcollector
-  - python2-futurist
-  - python2-eventlet
-  - python-ldap3
+iaas_release: 'mitaka'
 
 barbican::db::database_connection: 'mysql://barbican:123456@controller/barbican'
 

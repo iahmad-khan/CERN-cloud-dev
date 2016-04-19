@@ -8,25 +8,25 @@ node /.*barbican.*/ inherits default {
   package {'mariadb':
     ensure => 'present',
   }
-  ~>
-  exec {'create-barbican-db':
-    command     => "/usr/bin/mysql -u root -h controller -p123456 -e \"create database barbican CHARACTER SET utf8 COLLATE utf8_general_ci; grant all privileges on barbican.* to 'barbican'@'%' identified by '123456';\" || true",
-    environment => 'TERM=xterm',
-    refreshonly => true,
-  }
-  ~>
+  ->
   Package['openstack-barbican-api']
   ->
   Teigi::Secret<||>
   ->
-  Cinder_config <||>
-  ~>
-  exec { "/usr/bin/barbican-db-manage -d 'mysql://barbican:123456@controller:/barbican' upgrade":
-    refreshonly => true,
+  exec {'create-barbican-db':
+    command     => "/usr/bin/mysql -u root -h controller -p123456 -e \"create database barbican CHARACTER SET utf8 COLLATE utf8_general_ci; grant all privileges on barbican.* to 'barbican'@'%' identified by '123456';\"",
+    environment => 'TERM=xterm',
+    unless      => "/usr/bin/mysql -u root -h controller -p123456 -e \"use barbican\"",
   }
-  ~>
+  ->
+  exec { 'update-barbican-db':
+    command     => "/usr/bin/barbican-db-manage -d 'mysql://barbican:123456@controller:/barbican' upgrade",
+    environment => 'TERM=xterm',
+    unless      => "/usr/bin/mysql -u root -h controller -p123456 -e \"use barbican\"",
+  }
+  ->
   exec {'/usr/sbin/usermod -a -G puppet barbican':
-    refreshonly => true,
+    unless => "/usr/bin/grep 'puppet.*barbican' /etc/group",
   }
   ->
   Service['openstack-barbican-api']
