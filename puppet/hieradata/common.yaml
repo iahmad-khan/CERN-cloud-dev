@@ -89,16 +89,8 @@ openstack_liberty_exclude_pkgs:
 openstack_centos_kilo_excludepkgs:
   - openstack-neutron*
   - python-neutron*
-iaas_stable_repo_includepkgs:
-  - openstack-neutron*
-  - python-neutron*
-iaas_qa_repo_includepkgs:
-  - openstack-neutron*
-  - python-neutron*
-iaas_testing_repo_includepkgs:
-  - openstack-neutron*
-  - python-neutron*
-
+  - python-nova
+  - openstack-nova*
 
 osclients_rdo_include_pkgs:
   - python-cinderclient

@@ -110,9 +110,3 @@ neutron_metadata_port: '8775'
 
 pluginsync_filter:
   - neutron
-openstack_centos_kilo_excludepkgs:
-  - openstack-neutron*
-  - python-neutron*
-iaas_stable_repo_includepkgs:
-  - openstack-neutron*
-  - python-neutron*
