@@ -10,7 +10,7 @@ rebuild:
                 - master
         script:
                 - cd $CLOUDDEV/scripts
-                - ./cci-dev.sh centos
+                - sudo ./cci-dev.sh centos
                 - ./cci-dev.sh prepare
                 - ./cci-dev.sh restart
                 - ./cci-dev.sh launch
