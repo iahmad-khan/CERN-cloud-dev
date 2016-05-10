@@ -10,10 +10,11 @@ rebuild:
                 - master
         script:
                 - cd $CLOUDDEV/scripts
-                - sudo ./cci-dev.sh centos
+                - sudo -E ./cci-dev.sh centos
                 - ./cci-dev.sh prepare
                 - ./cci-dev.sh restart
                 - ./cci-dev.sh launch
+                - script -q -c "./cci-dev.sh tempest"
         tags:
                 - cci-builder
 update:
