@@ -18,7 +18,7 @@ iaas_include_pkgs:
   - python-pyws
   - python-repoze-who
 
-openstack_rdo_include_pkgs:
+openstack_centos_include_pkgs:
   - openstack-selinux
   - pyparsing
   - python-alembic
