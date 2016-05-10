@@ -64,6 +64,8 @@ node default {
     value   => hiera('cci_dev_yum_timeout', 5),
   }
   ->
+  Yumrepo<||>
+  ->
   Osrepos::Ai121yumrepo<||>
   ->
   Package<||>
