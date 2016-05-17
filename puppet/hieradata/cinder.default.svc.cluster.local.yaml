@@ -80,7 +80,7 @@ cinder_api_ratelimits: undef
 cinder_api_ratelimits_factory: 'cinder.api.v1.limits:RateLimitingMiddleware.factory'
 cinder_osapi_max_limit: '10000'
 
-cinder_scheduler_scheduler_driver: false
+cinder_scheduler_scheduler_driver: 'cinder.scheduler.filter_scheduler.FilterScheduler'
 cinder_scheduler_package_ensure: 'present'
 cinder_scheduler_enabled: true
 
@@ -96,7 +96,6 @@ cinder_rbd_pool: 'volumes'
 cinder_rbd_user: 'volumes'
 cinder_rbd_secret_uuid: '00000000-1111-1111-1111-000000000001'
 
-cinder_scheduler_driver: 'cinder.scheduler.filter_scheduler.FilterScheduler'
 cinder_scheduler_default_filters: 'CapabilitiesFilter'
 cinder_scheduler_default_weighers: 'CapacityWeigher'
 
