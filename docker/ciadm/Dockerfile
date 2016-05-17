@@ -8,9 +8,15 @@ RUN /usr/bin/rpm --import http://linuxsoft.cern.ch/cern/centos/7.1/os/x86_64/RPM
 
 # nice to have utilities
 RUN yum install -y \
+	ca-certificates \
 	man-pages \
 	vim \
 	wget
+
+# CERN CA
+ADD cerngridca.crt /etc/pki/ca-trust/source/anchors/cerngridca.crt
+ADD cernroot.crt /etc/pki/ca-trust/source/anchors/cernroot.crt
+RUN update-ca-trust
 
 # krb client
 RUN yum -y install \
@@ -21,19 +27,22 @@ ADD krb5.conf /etc/krb5.conf
 RUN echo $'\n\
 [cci7-openstack-clients-qa] \n\
 name=CERN rebuilds for OpenStack clients - QA \n\
-baseurl=http://linuxsoft.cern.ch/internal/repos/openstackclients7-liberty-qa/x86_64/os/ \n\
+baseurl=http://linuxsoft.cern.ch/internal/repos/openstackclients7-mitaka-qa/x86_64/os/ \n\
 enabled=1 \n\
 gpgcheck=0 \n\
 priority=5 \n'\
->> /etc/yum.repos.d/openstackclients7-liberty-qa.repo
+>> /etc/yum.repos.d/openstackclients7-mitaka-qa.repo
 
 RUN yum install -y \
-	centos-release-openstack-liberty
+	centos-release-openstack-mitaka
 
 RUN yum install -y \
+	python-barbicanclient \
 	python-heatclient \
 	python-keystoneclient-kerberos \
+	python-keystoneclient-x509 \
 	python-openstackclient \
+	python-swiftclient \
 	python2-magnumclient
 
 # docker client (upstream)
