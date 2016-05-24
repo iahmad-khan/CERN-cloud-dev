@@ -1,11 +1,11 @@
-iaas_release: 'liberty'
+iaas_release: 'mitaka'
 
 enable_afs: false
 
 osclients_default_rc: false
 osclients_acron: false
 
-openstack_centos_liberty_excludepkgs:
+openstack_centos_mitaka_excludepkgs:
   - openstack-neutron*
     #- python-neutron*
 
@@ -18,6 +18,7 @@ osclients_include_pkgs:
   - python-neutron*
   - python2-magnum*
   - openstack-db*
+  - python-vmmigrator
 
 hg_cloud_adm::client::linux::tenant: 'services'
 hg_cloud_adm::client::linux::user: 'admin'
