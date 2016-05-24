@@ -22,14 +22,14 @@ magnum::rabbit_hosts:
 magnum::rabbit_virtual_host: '/'
 magnum::rabbit_userid: 'guest'
 magnum::rabbit_password: 'magnum_rabbit_password'
+magnum::cert_manager_type: 'barbican'
 
 magnum::db::database_connection: 'magnum_database_connection'
-
 magnum::api::enabled: true
 magnum::api::admin_password: 'magnum_keystone_password'
 magnum::api::admin_tenant_name: 'services'
 magnum::api::admin_user: 'admin'
-magnum::api::auth_uri: 'https://keystone.default.svc.cluster.local:443/admin'
+magnum::api::auth_uri: 'https://keystone.default.svc.cluster.local:443/main/v3'
 magnum::api::identity_uri: 'https://keystone.default.svc.cluster.local:443/admin'
 magnum::api::package_ensure: 'present'
 magnum::api::host_ip: '0.0.0.0'
