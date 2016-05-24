@@ -70,7 +70,7 @@ pluginsync_filter:
 
 # cloud_identity
 keystone_auth_admin_enable: true
-keystone_admin_endpoint: "https://%{::hostname}/admin"
+keystone_admin_endpoint: "https://%{::fqdn}/admin"
 keystone_apache_admin_path: '/admin'
 keystone_apache_admin_port: 443
 keystone_apache_public_path: '/main'
@@ -133,9 +133,9 @@ keystone_default_catalog:
   - key-manager:
     - name: 'barbican'
     - description: 'Openstack Key Management Service'
-    - publicURL: 'http://barbican.default.svc.cluster.local:9311/v1'
-    - adminURL: 'http://barbican.default.svc.cluster.local:9311/v1'
-    - internalURL: 'http://barbican.default.svc.cluster.local:9311/v1'
+    - publicURL: 'http://barbican.default.svc.cluster.local:9311'
+    - adminURL: 'http://barbican.default.svc.cluster.local:9311'
+    - internalURL: 'http://barbican.default.svc.cluster.local:9311'
 
 keystone_domains:
   - /etc/keystone/domains/keystone.heat.conf
@@ -183,7 +183,7 @@ keystone_log_file: '/var/log/keystone/keystone.log'
 keystone_notification_driver: 'rabbit'
 keystone_notification_topics: false
 keystone_package_ensure: present
-keystone_public_endpoint: "https://%{::hostname}/main"
+keystone_public_endpoint: "https://%{::fqdn}/main"
 keystone_rabbit_virtual_host: ''
 keystone_rabbit_level: "hostgroup=\"cloud_identity/cache/main\""
 keystone_rabbit_port: '5672'
@@ -217,4 +217,5 @@ keystone_verbose: false
 keystone_x509_enable: false
 log_regex_keystone: '(\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}.\\d{3})\\s*\\d*\\s*([A-Z]+)'
 nova_compute_api_port: 8774
-
+keystone_log_formats:
+    proxy: '%%{}{X-Forwarded-For}i %h %l %u %t \"%r\" %>s %b %D \"%%{}{Referer}i\" \"%%{}{User-Agent}i\"'
