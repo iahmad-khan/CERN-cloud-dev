@@ -83,9 +83,4 @@ node /.*client.*/ inherits default {
     ensure => present,
   }
 
-  #TODO: move to cloud_adm
-  package { 'python-barbicanclient':
-    ensure => present,
-  }
-
 }
