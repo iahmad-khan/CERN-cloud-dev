@@ -1,3 +1,5 @@
+openstack_clients::repo::iaas_release: 'liberty'
+
 osclients_default_rc: false
 
 osclients_rdo_include_pkgs:
@@ -27,6 +29,7 @@ osclients_rdo_include_pkgs:
     - python2-oslo-utils
     - python-six # overrides epel
     - python-stevedore
+    - python-tablib
     - python-unicodecsv
     - python-webob # overrides epel
 
