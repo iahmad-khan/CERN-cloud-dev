@@ -1,4 +1,18 @@
 #!/bin/bash
+#
+# Submits a koji build (actual build, not scratch).
+#
+# Builds a srpm first based on either the code in CI_PROJECT_DIR or a given tarball.
+#
+# PARAMS:
+#   - CI_PROJECT_DIR
+#        the location of the code (including the spec file). if using gitlab
+#        this is predefined by the runner
+#   - KOJI_TARGET
+#        the koji tag to build against. if using gitlab define this in Settings/Variables
+#   - SVCBUILD_PASSWORD
+#        the password of the svcbuild user. if using gitlab define this in Settings/Variables
+#
 cd $CI_PROJECT_DIR
 export SPEC=$(ls *spec)
 export PKG=$(rpm -q --specfile $SPEC --queryformat "%{name}-%{version}")
