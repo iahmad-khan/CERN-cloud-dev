@@ -17,6 +17,10 @@ node /.*barbican.*/ inherits default {
   ->
   Package['openstack-barbican-api']
   ->
+  Teigi::Secret <||>
+  ->
+  Barbican_api_paste_ini <||>
+  ->
   exec { 'update-barbican-db':
     command     => "/usr/bin/barbican-db-manage -d 'mysql://barbican:123456@controller:/barbican' upgrade",
     environment => 'TERM=xterm',
