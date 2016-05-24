@@ -5,8 +5,6 @@ node /.*nova.*/ inherits default {
   class { 'hg_cloud_compute::nova::base': }
   class { 'hg_cloud_compute::nova::api': }
   class { 'hg_cloud_compute::nova::conductor': }
-  class { 'hg_cloud_compute::nova::neutron': }
-  class { 'hg_cloud_compute::nova::network': }
   class { 'hg_cloud_compute::nova::scheduler': }
   class { 'hg_cloud_compute::nova::cert': }
   class { 'hg_cloud_compute::nova::novnc': }
@@ -33,8 +31,6 @@ node /.*nova.*/ inherits default {
   ->
   Sudo::Directive['nova']
   ->
-  Teigi::Secret<||>
-  ->
   Nova_config <||>
   ~>
   exec { '/usr/bin/nova-manage db sync':
@@ -47,8 +43,11 @@ node /.*nova.*/ inherits default {
   ->
   Service['openstack-nova-api']
 
-  $nova_network_enabled = hiera('nova_network_enabled', true)
-  if $nova_network_enabled {
+  $nova_neutron_enabled = hiera('nova_neutron_enabled', false)
+  if $nova_neutron_enabled == false {
+
+    class { 'hg_cloud_compute::nova::network': }
+
     Package['python-nova']
     ->
     file { '/tmp/patch':
