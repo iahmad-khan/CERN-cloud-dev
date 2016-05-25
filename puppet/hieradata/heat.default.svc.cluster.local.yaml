@@ -1,0 +1,45 @@
+iaas_release: 'liberty'
+
+roger_enable: false
+haproxy_enable: false
+
+pluginsync_filter_enable: true
+pluginsync_filter:
+  - heat
+  - openstacklib
+
+heat::debug: false
+heat::verbose: false
+heat::rabbit_host: 'controller'
+heat::rabbit_port: '5672'
+heat::rabbit_hosts:
+  - 'controller:5672'
+heat::rabbit_userid: 'guest'
+heat::rabbit_password: 'heat_rabbit_password'
+heat::rabbit_virtual_host: '/'
+heat::keystone_user: 'admin'
+heat::keystone_password: 'heat_keystone_password'
+heat::heat_ec2_uri: 'https://keystone.default.svc.cluster.local/main/v2.0/ec2tokens'
+heat::auth_uri: 'https://keystone.default.svc.cluster.local:443/main/v3'
+heat::identity_uri: 'https://keystone.default.svc.cluster.local:443/admin'
+heat::database_connection: 'heat_sql_connection'
+heat::enable_stack_abandon: true
+
+heat::engine::auth_encryption_key: 'heat_auth_encryption_key'
+heat::engine::heat_stack_user_role: 'Member'
+heat::engine::deferred_auth_method: 'trusts'
+heat::engine::trusts_delegated_roles: 'Member'
+heat::engine::heat_metadata_server_url: 'https://heat.default.svc.cluster.local:8000'
+heat::engine::heat_waitcondition_server_url: 'https://heat.default.svc.cluster.local:8000/v1/waitcondition'
+
+heat::keystone::domain::domain_name: 'heat'
+heat::keystone::domain::domain_admin: 'heat_admin'
+heat::keystone::domain::domain_password: 'heat_domain_admin_pwd'
+heat::keystone::domain::manage_domain: false
+heat::keystone::domain::manage_user: false
+heat::keystone::domain::manage_role: false
+
+purge_heat_config: true
+heat_sso_url: 'https://sso/login-control/HeatManager.asmx?WSDL'
+heat_sso_user: 'heatsso'
+heat_cci_plugins: false

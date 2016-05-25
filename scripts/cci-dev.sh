@@ -18,9 +18,11 @@ export PATH=$PATH:$CLOUDDEV_KUB/_output/local/go/bin
 PUPPET_MODULES="
 abrt
 afs
+aitools
 apache
 augeasproviders_core
 augeasproviders_sysctl
+base
 bridged
 cernlib
 cinder
@@ -32,6 +34,7 @@ firewall
 flume
 glance
 haproxy
+heat
 horizon
 inifile
 kerberos
@@ -52,6 +55,7 @@ osrepos
 psacct
 puppet
 puppetdbquery
+rsyslog
 sssd
 stdlib
 sudo
@@ -71,7 +75,7 @@ cloud_dashboard
 cloud_identity
 cloud_image:swap
 cloud_networking:containerdev
-cloud_orchestration
+cloud_orchestration:2990-cleanup
 cloud_telemetry
 "
 

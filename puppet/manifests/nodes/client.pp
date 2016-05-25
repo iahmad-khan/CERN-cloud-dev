@@ -58,6 +58,11 @@ node /.*client.*/ inherits default {
     environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=glance','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
   }
 
+  # TODO: move this to cloud_adm module
+  package { 'python-swiftclient':
+    ensure => present,
+  }
+
   # dependencies and setup for run_tempest.sh in a virtualenv
   package { 'python-testrepository':
     ensure => present,

@@ -95,5 +95,11 @@ node /.*keystone.*/ inherits default {
     environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_SERVICE_TOKEN=512c2b7c2d94b5bb731469955d4b7455','OS_SERVICE_ENDPOINT=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
     unless      => "/usr/bin/keystone tenant-list | /usr/bin/grep services",
   }
+  ->
+  exec { 'openstack domain create heat; openstack role add --user admin --project services Member; openstack user create --domain heat --password 123456 heat_admin; openstack role add --user-domain heat --domain heat --user heat_admin admin':
+    path        => '/usr/bin:/usr/sbin',
+    environment => ['OS_AUTH_URL=https://keystone.default.svc.cluster.local/main/v3','OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_IDENTITY_API_VERSION=3','OS_PASSWORD=123456','OS_PROJECT_DOMAIN_ID=default','OS_PROJECT_NAME=services','OS_USERNAME=admin','OS_USER_DOMAIN_ID=default'],
+    unless      => '/usr/bin/openstack domain show heat',
+  }
 
 }
