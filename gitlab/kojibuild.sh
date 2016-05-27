@@ -18,9 +18,10 @@ export SPEC=$(ls *spec)
 export PKG=$(rpm -q --specfile $SPEC --queryformat "%{name}-%{version}\n" | head -n 1)
 export PKG_REL=$(rpm -q --specfile $SPEC --queryformat "%{name}-%{version}-%{release}\n" | head -n 1)
 if [ "$USE_SOURCE_TARBALL" == "1" ]; then
-	spectool -g $SPEC
+	spectool -f -g $SPEC
+	mv *.tar.gz $PKG.tar.gz
 	mv $PKG.tar.gz ~/rpmbuild/SOURCES
-	cp *spec ~/rpmbuild/SOURCES
+	cp *spec *patch ~/rpmbuild/SOURCES
 else
 	rm -rf /tmp/$PKG
 	mkdir /tmp/$PKG
