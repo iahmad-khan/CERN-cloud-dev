@@ -34,4 +34,6 @@ fi
 rpmbuild -bs -D 'dist .el7' $SPEC
 echo $SVCBUILD_PASSWORD | kinit svcbuild@CERN.CH
 echo $PKG_REL
-koji build --wait $KOJI_TARGET $(find ~/rpmbuild/SRPMS -name $PKG_REL*)
+export SRPM=$(find ~/rpmbuild/SRPMS -name $PKG_REL*)
+echo "koji build $KOJI_TARGET $SRPM"
+koji build --wait $KOJI_TARGET $SRPM
