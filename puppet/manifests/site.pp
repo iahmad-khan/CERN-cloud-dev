@@ -78,6 +78,11 @@ node default {
     unless => '/usr/bin/grep TERM /root/.bashrc',
   }
 
+  exec { 'cp /var/lib/puppet/ssl/certs/ca.pem /etc/pki/ca-trust/source/anchors/; update-ca-trust':
+    path    => '/usr/bin:/usr/sbin',
+    creates => '/etc/pki/ca-trust/source/anchors/ca.pem',
+  }
+
 }
 
 define cloud_monitoring::flume::agent(
