@@ -21,7 +21,7 @@ if [ "$USE_SOURCE_TARBALL" == "1" ]; then
 	spectool -f -g $SPEC
 	cp *.tar.gz $PKG.tar.gz
 	cp *.tar.gz ~/rpmbuild/SOURCES
-	cp *spec *patch ~/rpmbuild/SOURCES
+	cp *spec *patch *service *logrotate ~/rpmbuild/SOURCES
 else
 	rm -rf /tmp/$PKG
 	mkdir /tmp/$PKG
