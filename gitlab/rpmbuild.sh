@@ -11,7 +11,7 @@
 #
 cd $CI_PROJECT_DIR
 export SPEC=$(ls *spec)
-export PKG=$(rpm -q --specfile $SPEC --queryformat "%{name}-%{version}")
+export PKG=$(rpm -q --specfile $SPEC --queryformat "%{name}-%{version}\n" | head -n 1)
 if [ "$USE_SOURCE_TARBALL" == "1" ]; then
 	spectool -g $SPEC
 	mv $PKG.tar.gz ~/rpmbuild/SOURCES
