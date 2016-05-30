@@ -23,6 +23,16 @@ RUN yum -y install \
 	krb5-workstation
 ADD krb5.conf /etc/krb5.conf
 
+# rpm/koji rpms and setup
+RUN yum install -y \
+	koji \
+	rpm-build \
+	rpmdevtools
+
+ADD koji.conf /etc/koji.conf
+
+RUN rpmdev-setuptree
+
 # openstack clients
 RUN echo $'\n\
 [cci7-openstack-clients-qa] \n\
