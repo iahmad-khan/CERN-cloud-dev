@@ -31,7 +31,7 @@ else
 	cd $PKG
 	cp *spec ~/rpmbuild/SOURCES
 fi
-rpmbuild -bs -D 'dist .el7' $SPEC
+rpmbuild -bs -D "dist ${DIST:-el7}" $SPEC
 echo $SVCBUILD_PASSWORD | kinit svcbuild@CERN.CH
 echo $PKG_REL
 export SRPM=$(find ~/rpmbuild/SRPMS -name *.src.rpm)
