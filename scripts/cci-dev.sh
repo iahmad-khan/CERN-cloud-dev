@@ -47,10 +47,10 @@ memcached
 motd
 mysql
 network
-neutron:1748-neutrondev
+neutron
 nova
 openstack_clients
-openstacklib:liberty
+openstacklib
 osrepos
 psacct
 puppet
@@ -70,12 +70,12 @@ PUPPET_HOSTGROUPS="
 cloud_adm:qa
 cloud_blockstorage
 cloud_compute:devenv
-cloud_container:dev
+cloud_container
 cloud_dashboard
 cloud_identity
 cloud_image:swap
-cloud_networking:containerdev
-cloud_orchestration:2990-cleanup
+cloud_networking
+cloud_orchestration
 cloud_telemetry
 "
 
