@@ -26,6 +26,7 @@
         "keystone_ldap_password": "123456",
         "keystone_rabbit_password": "123456",
         "keystone_sql_connection_localdev": "mysql://keystone:123456@controller/keystone",
+        "keystone_sql_connection": "mysql://keystone:123456@controller/keystone",
         "neutron_admin_password": "123456",
         "neutron_landb_password": "123456",
         "neutron_rabbit_password": "guest",

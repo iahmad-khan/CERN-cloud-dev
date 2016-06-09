@@ -188,6 +188,10 @@ keystone_ldap_user_mail_attribute: 'mail'
 keystone_ldap_user_name_attribute: 'cn'
 keystone_ldap_user_objectclass: 'person'
 keystone_ldap_user_tree_dn: 'OU=users,DC=default,DC=cluster,DC=local'
+keystone_ldap_user: 'CN=admin,OU=users,DC=default,DC=cluster,DC=local'
+keystone_ldap_group_allow_create: 'False'
+keystone_ldap_group_allow_update: 'False'
+keystone_ldap_group_allow_delete: 'False'
 keystone_ldap_suffix: 'DC=default,DC=cluster,DC=local'
 keystone_log_dir: '/var/log/keystone'
 keystone_log_facility: 'LOG_USER'
@@ -226,6 +230,7 @@ keystone_token_provider: 'keystone.token.providers.uuid.Provider'
 keystone_trusted_dashboard: 'https://horizon.default.svc.cluster.local/auth/websso'
 keystone_use_syslog: false
 keystone_verbose: false
+keystone_wsgi_application_group: '%%{}{RESOURCE}'
 keystone_x509_enable: false
 log_regex_keystone: '(\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}.\\d{3})\\s*\\d*\\s*([A-Z]+)'
 nova_compute_api_port: 8774
