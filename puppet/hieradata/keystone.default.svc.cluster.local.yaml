@@ -85,7 +85,7 @@ keystone_cache_port: 11211
 keystone_catalog_driver: 'keystone.contrib.endpoint_filter.backends.catalog_templated.EndpointFilterCatalog'
 keystone_catalog_type: 'template'
 keystone_control_exchange: false
-keystone_debug: true
+keystone_debug: false
 keystone_default_catalog:
 - main:
   - identity:
