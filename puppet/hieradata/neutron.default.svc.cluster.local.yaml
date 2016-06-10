@@ -8,6 +8,7 @@ openstack_rdo_include_pkgs:
   - python-logutils
   - python-neutron*
   - python-pysaml2
+  - python-ryu
   - python2-debtcollector
   - python2-eventlet
   - python2-futurist
@@ -15,6 +16,7 @@ openstack_rdo_include_pkgs:
   - python2-oslo*
   - python2-pecan
   - python2-PyMySQL
+  - python2-suds
   - openstack-neutron*
 
 haproxy_enable: false
