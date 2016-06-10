@@ -32,6 +32,7 @@
         "neutron_rabbit_password": "guest",
         "neutron_sql_connection": "mysql://neutron:123456@controller/neutron",
         "magnum_database_connection": "mysql://magnum:123456@controller/magnum",
+        "magnum_domain_admin_password": "123456",
         "magnum_keystone_password": "123456",
         "magnum_rabbit_password": "guest",
         "barbican_rabbit_password": "123456",
