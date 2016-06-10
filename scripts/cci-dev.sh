@@ -51,6 +51,7 @@ neutron
 nova
 openstack_clients
 openstacklib
+oslo
 osrepos
 psacct
 puppet
