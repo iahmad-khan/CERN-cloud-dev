@@ -44,7 +44,7 @@ magnum::conductor::enabled: true
 # makes it a bit hard for the dev env, but ok in prod
 magnum::keystone::domain::domain_name: 'e54c8345ffe641ba8e042ea049586e4e'
 magnum::keystone::domain::domain_admin: 'd049d9b8c4904c0f94a8a7fda93e933d'
-magnum::keystone::domain::domain_password: 'magnum_keystone_password'
+magnum::keystone::domain::domain_password: 'magnum_domain_admin_password'
 magnum::keystone::domain::manage_domain: false
 magnum::keystone::domain::manage_user: false
 magnum::keystone::domain::manage_role: false
