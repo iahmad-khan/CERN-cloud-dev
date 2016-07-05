@@ -2,11 +2,13 @@ log_regex_common: '(\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}.\\d{3})\\s*(\\d
 log_regex_instance: '\\[instance:\\s+([\\w\\-]*)\\]'
 log_regex_request: '\\[([\\w\\-]*)\\s+([\\w]*)\\s+([\\w\\-]*)'
 
-iaas7_liberty_include_pkgs:
+iaas_release: liberty
+
+iaas_include_pkgs:
     - openstack-cinder
     - python-cinder
     - python-cinderclient
-openstack_liberty_exclude_pkgs:
+openstack_exclude_pkgs:
     - puppet
     - facter
 rabbitmq7_include_pkgs:
