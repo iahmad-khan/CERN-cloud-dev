@@ -12,6 +12,8 @@
 #        the koji tag to build against. if using gitlab define this in Settings/Variables
 #   - SVCBUILD_PASSWORD
 #        the password of the svcbuild user. if using gitlab define this in Settings/Variables
+#   - SCRATCH
+#        weither this should be a scratch build (1 if yes)
 #
 cd $CI_PROJECT_DIR
 export SPEC=$(ls *spec)
@@ -35,5 +37,9 @@ rpmbuild -bs -D "dist ${DIST:-.el7}" $SPEC
 echo $SVCBUILD_PASSWORD | kinit svcbuild@CERN.CH
 echo $PKG_REL
 export SRPM=$(find ~/rpmbuild/SRPMS -name *.src.rpm)
-echo "koji build $KOJI_TARGET $SRPM"
-koji build --wait $KOJI_TARGET $SRPM
+export OPTIONS="--wait"
+if [ "$SCRATCH" == "1" ]; then
+	OPTIONS="$OPTIONS --scratch"
+fi
+echo "koji build $OPTIONS $KOJI_TARGET $SRPM"
+koji build $OPTIONS $KOJI_TARGET $SRPM
