@@ -4,8 +4,6 @@ stage { 'osrepos': }
 
 node default {
 
-  include osrepos::params
-
   package { 'initscripts':
     ensure => present,
   }
