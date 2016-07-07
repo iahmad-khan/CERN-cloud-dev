@@ -40,6 +40,8 @@
         "magnum_domain_admin_password": "123456",
         "magnum_keystone_password": "123456",
         "magnum_rabbit_password": "guest",
+        "mistral_sql_connection": "mysql://mistral:123456@controller/mistral",
+        "mistral_rabbit_pwassword": "123456",
         "barbican_rabbit_password": "123456",
         "nova_api_admin_password": "123456",
         "rabbit_password": "guest",

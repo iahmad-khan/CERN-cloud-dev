@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mistral
+  labels:
+    name: mistral
+spec:
+  containers:
+    - name: mistral
+      image: docker.cern.ch/cloud-infrastructure/puppetagent
+      securityContext:
+        capabilities:
+          add:
+            - NET_ADMIN
+      volumeMounts:
+        - name: puppetcfg
+          mountPath: /etc/puppet
+        - name: puppetssl
+          mountPath: /var/lib/puppet/ssl
+        - name: factercfg
+          mountPath: /etc/facter
+        - name: cgroup
+          mountPath: /sys/fs/cgroup
+          readOnly: true
+        - name: run
+          mountPath: /run
+      command:
+        - /usr/sbin/init
+      ports:
+        - containerPort: 8989
+  volumes:
+    - name: puppetcfg
+      hostPath:
+        path: /opt/cloud-dev/puppet
+    - name: puppetssl
+      hostPath:
+        path: /opt/cloud-dev/puppetssl
+    - name: factercfg
+      hostPath:
+        path: /opt/cloud-dev/facter
+    - name: cgroup
+      hostPath:
+        path: /sys/fs/cgroup
+    - name: run
+      emptyDir: 

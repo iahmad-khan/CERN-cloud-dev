@@ -44,6 +44,7 @@ limits
 logrotate
 magnum:dev
 memcached
+mistral
 motd
 mysql
 network
@@ -78,10 +79,11 @@ cloud_image:swap
 cloud_networking
 cloud_orchestration
 cloud_telemetry
+cloud_workflow:mistral
 "
 
 # OS_PODS holds the list of pods to be started on 'launch'
-OS_PODS=${OS_PODS:-keystone glance cinder neutron nova compute client horizon}
+OS_PODS=${OS_PODS:-keystone glance cinder neutron nova compute mistral client horizon}
 
 # docker registry to push container images to (see push)
 DOCKER_REGISTRY=${DOCKER_REGISTRY:-docker.cern.ch/cloud-infrastructure}

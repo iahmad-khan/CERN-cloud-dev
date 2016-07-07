@@ -148,6 +148,12 @@ keystone_default_catalog:
     - publicURL: 'http://barbican.default.svc.cluster.local:9311'
     - adminURL: 'http://barbican.default.svc.cluster.local:9311'
     - internalURL: 'http://barbican.default.svc.cluster.local:9311'
+  - workflowv2:
+    - name: 'mistral'
+    - description: 'Openstack Workflow Service'
+    - publicURL: 'http://mistral.default.svc.cluster.local:8989/v2'
+    - adminURL: 'http://mistral.default.svc.cluster.local:8989/v2'
+    - internalURL: 'http://mistral.default.svc.cluster.local:8989/v2'
 
 keystone_domains:
   - /etc/keystone/domains/keystone.heat.conf
