@@ -60,6 +60,10 @@ neutron::server::landb_password: 'neutron_landb_password'
 
 neutron::server::notifications::nova_admin_username: 'neutron'
 neutron::server::notifications::nova_admin_password: 'neutron_admin_password'
+neutron::server::notifications::nova_url: 'http://nova.default.svc.cluster.local:8774/v2'
+neutron::server::notifications::nova_admin_auth_url: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
+neutron::server::notifications::notify_nova_on_port_status_changes: false
+neutron::server::notifications::notify_nova_on_port_data_changes: false
 
 neutron::db::database_idle_timeout: 3600
 
