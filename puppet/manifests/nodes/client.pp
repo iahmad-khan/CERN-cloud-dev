@@ -1,8 +1,42 @@
 
 node /.*client.*/ inherits default {
 
-  class { 'osrepos::centos': }
-  ->
+  yumrepo {
+    'centos-base':
+      descr       => 'CentOS-$releasever - Base',
+      baseurl     => 'http://linuxsoft.cern.ch/cern/centos/$releasever/os/$basearch',
+      gpgkey      => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7',
+      gpgcheck    => 1,
+      enabled     => 1,
+      priority    => 20;
+    'centos-updates':
+      descr       => 'CentOS-$releasever - Updates',
+      baseurl     => 'http://linuxsoft.cern.ch/cern/centos/$releasever/updates/$basearch',
+      gpgkey      => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7',
+      gpgcheck    => 1,
+      enabled     => 1,
+      priority    => 20;
+    'centos-extras':
+      descr       => 'CentOS-$releasever - Updates',
+      baseurl     => 'http://linuxsoft.cern.ch/cern/centos/$releasever/extras/$basearch',
+      gpgkey      => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7',
+      gpgcheck    => 1,
+      enabled     => 1,
+      priority    => 20;
+    'epel':
+      descr    => 'Extra Packages for Enterprise Linux',
+      baseurl  => 'http://linuxsoft.cern.ch/epel/$releasever/$basearch',
+      gpgkey   => 'http://linuxsoft.cern.ch/epel/RPM-GPG-KEY-EPEL-$releasever',
+      gpgcheck => 1,
+      enabled  => 1,
+      priority => 20;
+    'ai7-stable':
+      descr    => 'Utilities for the Agile Infrastructure project',
+      baseurl  => 'http://linuxsoft.cern.ch/internal/repos/ai$releasever-stable/$basearch/os',
+      gpgcheck => 0,
+      enabled  => 1,
+      priority => 20;
+  } ->
   exec { '/etc/pki/rpm-gpg/RPM-GPG-KEY-cern':
     command => '/usr/bin/curl -o /etc/pki/rpm-gpg/RPM-GPG-KEY-cern http://linuxsoft.cern.ch/cern/centos/7/os/x86_64/RPM-GPG-KEY-cern',
     creates => '/etc/pki/rpm-gpg/RPM-GPG-KEY-cern',
