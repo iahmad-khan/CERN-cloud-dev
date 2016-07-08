@@ -1,7 +1,16 @@
 
 node /.*horizon.*/ inherits default {
 
-  Osrepos::Ai121yumrepo<||>
+  yumrepo {
+    'ai7-stable':
+      descr    => 'Utilities for the Agile Infrastructure project',
+      baseurl  => 'http://linuxsoft.cern.ch/internal/repos/ai$releasever-stable/$basearch/os',
+      gpgcheck => 0,
+      enabled  => 1,
+      priority => 20;
+  }
+
+  Yumrepo<||>
   ->
   Package<||>
 

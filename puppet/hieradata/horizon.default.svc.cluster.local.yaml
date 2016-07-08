@@ -1,7 +1,81 @@
+iaas_release: 'liberty'
+
+osrepos_os_exclude_pkgs:
+  - python-bson
+
+iaas_include_pkgs:
+  - openstack-dashboard
+  - openstack-dashboard-theme
+  - python-django-horizon
+  - python2-django-openstack-auth
+  - python-django-piwik
+
+openstack_rdo_include_pkgs:
+  - python-oslo*
+  - python-sqlalchemy
+  - python-routes
+  - python-paste-deploy
+  - python-six
+  - python-pycadf
+  - python-cinderclient
+  - python-troveclient
+  - python-django-compressor
+  - python-ceilometerclient
+  - python-swiftclient
+  - python-neutronclient
+  - python-glanceclient
+  - python-heatclient
+  - python-novaclient
+  - python-keystoneclient
+  - python-requests
+  - python-urllib3
+  - python-saharaclient
+  - python-XStatic-*
+  - python-netifaces
+  - python-stevedore
+  - python-netaddr
+  - python-babel
+  - python-keystoneclient
+  - python-requests
+  - python-urllib3
+  - python-cliff
+  - python-unicodecsv
+  - python-cmd2
+  - pyparsing
+  - python-django-pyscss
+  - python-scss
+  - python-django
+  - python-django-bash-completion
+  - python-openstackclient
+  - python2-os-client-config
+  - python2-appdirs
+  - python2-debtcollector
+  - python2-oslo*
+  - python2-XStatic-*
+  - bootswatch-common
+  - bootswatch-fonts
+  - fontawesome-fonts
+  - fontawesome-fonts-web
+  - mdi-common
+  - mdi-fonts
+  - roboto-fontface-*
+  - python2-pysocks
+
+osc_include_pkgs:
+  - python-keystoneclient-kerberos
+
+cci7_utils_pkgs:
+  - python2-hzrequestspanel
+  - cci-tools-0.0.45
+  - ai-tools
+  - python-cornerstoneclient
+  - maintenance-horizon
+
 horizon_http_port: 80
 horizon_https_port: 443
 dashboard_loadbalancer_https_listening_service: 443
 dashboard_loadbalancer_http_listening_service: 80
+horizon_cache_backend: 'django.core.cache.backends.memcached.MemcachedCache'
 horizon_cache_server_ip: false
 horizon_cache_server_port: '11211'
 horizon_ca: '/etc/openstack-dashboard/ssl/certs/ca.pem'
@@ -41,4 +115,4 @@ horizon_websso_default_redirect_protocol: 'saml2'
 horizon_websso_default_redirect_region: 'https://keystone/main/v3'
 horizon_websso_default_redirect_logout: 'https://login/'
 
-
+horizon::secret_key: 'horizon_secret_keystore'
