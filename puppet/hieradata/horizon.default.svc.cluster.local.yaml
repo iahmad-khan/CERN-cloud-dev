@@ -114,5 +114,7 @@ horizon_manage_selinux: false
 horizon_websso_default_redirect_protocol: 'saml2'
 horizon_websso_default_redirect_region: 'https://keystone/main/v3'
 horizon_websso_default_redirect_logout: 'https://login/'
+horizon_nova_extension_blacklist:
+  - 'SimpleTenantUsage'
 
 horizon::secret_key: 'horizon_secret_keystore'
