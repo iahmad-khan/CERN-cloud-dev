@@ -79,7 +79,7 @@ cloud_image:swap
 cloud_networking
 cloud_orchestration
 cloud_telemetry
-cloud_workflow:mistral
+cloud_workflow
 "
 
 # OS_PODS holds the list of pods to be started on 'launch'

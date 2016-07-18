@@ -129,15 +129,17 @@ openstack_centos_include_pkgs:
 
 iaas_release: 'mitaka'
 
-mistral_keystone_user: 'mistral'
-mistral_keystone_tenant: 'services'
-mistral_keystone_auth_uri: 'https://keystone.default.svc.cluster.local:443/main/'
-mistral_keystone_identity_uri: 'https://keystone.default.svc.cluster.local:443/admin'
+mistral::keystone_user: 'svcmistral'
+mistral::keystone_password: 'mistral_keystone_password'
+mistral::keystone_tenant: 'services'
+mistral::database_connection: 'mistral_sql_connection'
+mistral::auth_uri: 'https://keystone.default.svc.cluster.local:443/main/'
+mistral::identity_uri: 'https://keystone.default.svc.cluster.local:443/admin'
 
 cloud_workflow_backend_api: 'openstack-mistral-api'
-mistral_rabbit_level: undef
-mistral_rabbit_hosts:
-  - mistral.default.svc.cluster.local
 mistral_port: 8989
-mistral_rabbit_port: 5672
-mistral_rabbit_user: 'mistral'
+
+mistral::rabbit_host: 'mistral.default.svc.cluster.local'
+mistral::rabbit_port: 5672
+mistral::rabbit_userid: 'mistral'
+mistral::rabbit_password: 'mistral_rabbit_password'
