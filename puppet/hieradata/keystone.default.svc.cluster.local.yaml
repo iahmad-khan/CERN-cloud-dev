@@ -91,9 +91,9 @@ keystone_default_catalog:
   - identity:
     - name: 'keystone'
     - description: 'Openstack Identity Service'
-    - publicURL : 'https://keystone.default.svc.cluster.local:443/main/v2.0'
-    - adminURL: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
-    - internalURL: 'https://keystone.default.svc.cluster.local:443/main/v2.0'
+    - publicURL : 'https://keystone.default.svc.cluster.local:443/main/v3'
+    - adminURL: 'https://keystone.default.svc.cluster.local:443/admin/v3'
+    - internalURL: 'https://keystone.default.svc.cluster.local:443/main/v3'
   - image:
     - name: 'glance'
     - description: 'Openstack Image Service'
