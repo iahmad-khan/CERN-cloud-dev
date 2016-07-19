@@ -1,12 +1,10 @@
 osrepos_sync_exclude_packages:
     - rabbitmq-server
+    - erlang*
 
 osrepos_epel_exclude_pkgs:
     - rabbitmq-server
-
-rabbitmq7_include_pkgs:
-    - rabbitmq-server
-    - lemon-sensor-rabbitmq
+    - erlang*
 
 iaas_include_pkgs:
   - openstack-mistral-api
