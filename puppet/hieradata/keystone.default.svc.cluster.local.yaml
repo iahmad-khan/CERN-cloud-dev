@@ -155,8 +155,6 @@ keystone_default_catalog:
     - adminURL: 'http://mistral.default.svc.cluster.local:8989/v2'
     - internalURL: 'http://mistral.default.svc.cluster.local:8989/v2'
 
-keystone_domains:
-  - /etc/keystone/domains/keystone.heat.conf
 keystone_enable_pki_setup: false
 keystone_enable_ssl: true
 keystone_enabled: false
