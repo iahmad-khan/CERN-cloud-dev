@@ -8,7 +8,7 @@ MAINTAINER Ricardo Rocha <ricardo.rocha@cern.ch>
 
 LABEL version=3.2.0
 
-RUN npm install -g gitbook-cli && gitbook fetch ${VERSION} && \
+RUN npm install -g gitbook-cli svgexport && gitbook fetch ${VERSION} && \
 	apt-get clean autoclean && npm cache clear && \
 	rm -rf /tmp/* /var/lib/{apt,dpkg,cache,log}/*
 
