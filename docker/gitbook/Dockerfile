@@ -2,13 +2,13 @@
 #
 # We keep our own in docker.cern.ch/cloud-infrastructure, just in case.
 
-FROM node:latest
+FROM node:6.3.0
 
 MAINTAINER Ricardo Rocha <ricardo.rocha@cern.ch>
 
-LABEL version="2.6.6"
+LABEL version=3.2.0
 
-RUN npm install -g gitbook-cli && gitbook versions:install 2.6.6 && \
+RUN npm install -g gitbook-cli && gitbook fetch ${VERSION} && \
 	apt-get clean autoclean && npm cache clear && \
 	rm -rf /tmp/* /var/lib/{apt,dpkg,cache,log}/*
 
