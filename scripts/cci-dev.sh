@@ -14,6 +14,8 @@ fi
 
 export PATH=$PATH:$CLOUDDEV_KUB/_output/local/go/bin
 
+KUBERNETES_VERSION=1.2.6
+
 # PUPPET_MODULES holds the list of module dependencies that we need to run the build
 PUPPET_MODULES="
 abrt
@@ -146,10 +148,10 @@ kubernetes_install() {
 	echo "installing kubernetes at ${CLOUDDEV_KUB}..."
 	mkdir -p $CLOUDDEV_KUB
 	cd $CLOUDDEV_KUB
-	wget https://github.com/kubernetes/kubernetes/archive/v1.1.2.tar.gz
-	tar zxf v1.1.2.tar.gz
-	mv kubernetes-1.1.2/* .
-	rm -rf kubernetes-1.1.2 v1.1.2.tar.gz
+	wget https://github.com/kubernetes/kubernetes/archive/v$KUBERNETES_VERSION.tar.gz
+	tar zxf v$KUBERNETES_VERSION.tar.gz
+	mv kubernetes-$KUBERNETES_VERSION/* .
+	rm -rf kubernetes-$KUBERNETES_VERSION v$KUBERNETES_VERSION.tar.gz
 	exit_on_err $?
 }
 
@@ -185,7 +187,7 @@ kubernetes_start() {
 		exit_on_err $? "kubernetes could not be built. Check /tmp/kubernetes-build.log for errors"
 		echo "finished"
 
-		sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBELET_ARGS="--cluster-dns 10.0.0.10 --cluster-domain cluster.local" \
+		sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBE_ENABLE_CLUSTER_DNS="true" \
 			setsid ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
 
 		echo 'Waiting for kubernetes start...'
@@ -208,7 +210,7 @@ cluster_pod_base_start() {
 	echo "starting the base pods (skydns, puppet, ceph)"
 	# launch the pods
 	cd $CLOUDDEV/kubernetes
-	for z in skydns-rc.yaml skydns-svc.yaml puppet-pod.yaml puppet-svc.yaml landb-pod.yaml landb-svc.yaml ceph-pod.yaml wigner-pod.yaml; do
+	for z in puppet-pod.yaml puppet-svc.yaml landb-pod.yaml landb-svc.yaml ceph-pod.yaml wigner-pod.yaml; do
 		kubectl create -f $z
 	done
 
@@ -379,7 +381,7 @@ enabled=1
 gpgcheck=1
 gpgkey=https://yum.dockerproject.org/gpg
 EOF
-	yum install -y docker-engine-1.9.1
+	yum install -y docker-engine
 	exit_on_err $?
 	sed -i "s#^ExecStart.*#ExecStart=/usr/bin/docker daemon --storage-driver=overlay --dns 137.138.17.5 --insecure-registry docker.cern.ch --bip 172.17.0.1/16 -H fd://#g" /lib/systemd/system/docker.service
 	iptables -F
