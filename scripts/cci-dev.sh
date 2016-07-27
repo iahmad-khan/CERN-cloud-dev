@@ -388,7 +388,7 @@ EOF
 	# launch docker
 	systemctl daemon-reload
 	systemctl start docker
-	docker login -u docker -p docker -e none docker.cern.ch
+	docker login -u docker -p docker docker.cern.ch
 }
 
 exit_on_err() {
@@ -418,7 +418,7 @@ case "$1" in
 		kubernetes_install
 		kubernetes_start
 		echo "Login to CERN docker registry"
-		sudo docker login -u docker -p docker -e 'foo@bar' docker.cern.ch
+		sudo docker login -u docker -p docker docker.cern.ch
 		;;
 	'restart')
 		cluster_restart
