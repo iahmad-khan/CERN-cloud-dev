@@ -298,10 +298,12 @@ cluster_pod_launch() {
 		fi
 	done
 	echo "waiting for pods to be ready..."
-	while kubectl get pod | grep Pending > /dev/null 2>&1
+	kubectl get pod | grep Pending > /dev/null 2>&1
+	while [ $? -eq 0 ]
 	do
 		printf "."
 		sleep 2
+		kubectl get pod | grep Pending > /dev/null 2>&1
 	done
 	echo ""
 	# run puppet in the openstack pods, even if built from tag
