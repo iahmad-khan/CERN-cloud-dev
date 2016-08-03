@@ -214,11 +214,13 @@ cluster_pod_base_start() {
 		kubectl create -f $z
 	done
 
+	kubectl get pod | grep Pending > /dev/null 2>&1
 	echo "waiting for pods to be ready..."
-	while [ `kubectl get pod | grep Running | wc -l` -ne `kubectl get pod | tail -n+2 | wc -l` ]
+	while [ $? -eq 0 ]
 	do
 		printf "."
 		sleep 2
+		kubectl get pod | grep Pending > /dev/null 2>&1
 	done
 	echo ""
 
@@ -248,11 +250,13 @@ cluster_cleanup() {
 		return
 	fi
 	kubectl delete -f $CLOUDDEV/kubernetes --ignore-not-found --grace-period=5 --timeout=2s --cascade
+	kubectl get pod | grep Terminating > /dev/null 2>&1
 	echo "waiting for pods to be terminated..."
-	while [ `kubectl get pod | grep Terminating | wc -l` -ne `kubectl get pod | tail -n+2 | wc -l` ]
+	while [ $? -eq 0 ]
 	do
 		printf "."
 		sleep 2
+		kubectl get pod | grep Terminating > /dev/null 2>&1
 	done
 	echo ""
 	return 0
@@ -294,10 +298,12 @@ cluster_pod_launch() {
 		fi
 	done
 	echo "waiting for pods to be ready..."
-	while [ `kubectl get pod | grep Running | wc -l` -ne `kubectl get pod | tail -n+2 | wc -l` ]
+	kubectl get pod | grep Pending > /dev/null 2>&1
+	while [ $? -eq 0 ]
 	do
 		printf "."
 		sleep 2
+		kubectl get pod | grep Pending > /dev/null 2>&1
 	done
 	echo ""
 	# run puppet in the openstack pods, even if built from tag
