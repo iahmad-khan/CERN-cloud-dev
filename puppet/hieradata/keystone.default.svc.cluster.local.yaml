@@ -227,6 +227,18 @@ keystone_ssl_cert_subject: '/CN=keystone.default.svc.cluster.local'
 keystone_ssl_certfile: '/etc/keystone/ssl/certs/hostcert.pem'
 keystone_ssl_chain: '/etc/keystone/ssl/certs/ca.pem'
 keystone_ssl_keyfile: '/etc/keystone/ssl/keys/hostkey.pem'
+keystone_ssl_crl_path: '/etc/keystone/ssl/certs'
+keystone_ssl_certs_dir: '/etc/keystone/ssl/certs'
+keystone_ssl_verify_depth: 10
+keystone_ssl_protocol:
+  - 'all'
+  - '-SSLv2'
+  - '-SSLv3'
+keystone_ssl_options:
+  - '+StdEnvVars'
+  - '+ExportCertData'
+cloud_identity_backend_default_api: ''
+keystone_ssl_cipher: ''
 keystone_token_driver: 'keystone.token.persistence.backends.sql.Token'
 keystone_token_expiration: '86400'
 keystone_token_format: false
