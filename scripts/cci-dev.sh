@@ -44,7 +44,7 @@ keystone
 lemon
 limits
 logrotate
-magnum:dev
+magnum
 memcached
 mistral
 motd
@@ -65,19 +65,19 @@ stdlib
 sudo
 swap_file
 sysctl
-teigi:tbag_teigiurl
+teigi
 xinetd
 "
 
 # PUPPET_HOSTGROUPS holds the list of hostgroups we need to run the build(s)
 PUPPET_HOSTGROUPS="
-cloud_adm:qa
+cloud_adm
 cloud_blockstorage
 cloud_compute:devenv
 cloud_container
 cloud_dashboard
 cloud_identity
-cloud_image:swap
+cloud_image
 cloud_networking
 cloud_orchestration
 cloud_telemetry
@@ -85,7 +85,7 @@ cloud_workflow
 "
 
 # OS_PODS holds the list of pods to be started on 'launch'
-OS_PODS=${OS_PODS:-keystone glance cinder neutron nova compute mistral client horizon}
+OS_PODS=${OS_PODS:-keystone glance cinder neutron nova compute heat magnum mistral client}
 
 # docker registry to push container images to (see push)
 DOCKER_REGISTRY=${DOCKER_REGISTRY:-docker.cern.ch/cloud-infrastructure}
@@ -183,7 +183,7 @@ kubernetes_start() {
 		fi
 
 		echo "building Kubernetes binaries..."
-		make > /tmp/kubernetes-build.log 2>&1
+		sudo make > /tmp/kubernetes-build.log 2>&1
 		exit_on_err $? "kubernetes could not be built. Check /tmp/kubernetes-build.log for errors"
 		echo "finished"
 
@@ -214,13 +214,10 @@ cluster_pod_base_start() {
 		kubectl create -f $z
 	done
 
-	kubectl get pod | grep Pending > /dev/null 2>&1
-	echo "waiting for pods to be ready..."
-	while [ $? -eq 0 ]
+	while kubectl get pod --no-headers | grep -v "Running" > /dev/null 2>&1
 	do
 		printf "."
 		sleep 2
-		kubectl get pod | grep Pending > /dev/null 2>&1
 	done
 	echo ""
 
@@ -298,7 +295,7 @@ cluster_pod_launch() {
 		fi
 	done
 	echo "waiting for pods to be ready..."
-	while kubectl get pod | grep Pending > /dev/null 2>&1
+	while kubectl get pod --no-headers | grep -v "Running" > /dev/null 2>&1
 	do
 		printf "."
 		sleep 2
@@ -309,7 +306,7 @@ cluster_pod_launch() {
 	do
 		# run puppet on pod
 		echo "Running Puppet on pod ${pod}..."
-		sudo docker exec $(sudo docker ps | grep $pod | grep init | awk '{print $1}') /usr/bin/puppet agent -t
+		kubectl exec ${pod} -c ${pod} -- /usr/bin/puppet agent -t
 		# Puppet return code:
 		# 1 -> did not even start doing some things
 		# 2 -> applied things, and everything went fine

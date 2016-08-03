@@ -1,5 +1,5 @@
 variables:
-        OS_PODS: "keystone glance cinder neutron nova horizon magnum client"
+        OS_PODS: "keystone"
         CLOUDDEV: "$CI_PROJECT_DIR"
         CLOUDDEV_KUB: "/tmp/kubernetes"
         CLOUDDEV_PUPPET: "$CI_PROJECT_DIR/ws/cern-puppet"
