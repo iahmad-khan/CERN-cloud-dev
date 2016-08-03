@@ -14,19 +14,16 @@ rebuild:
                 - ./cci-dev.sh prepare
                 - ./cci-dev.sh restart
                 - ./cci-dev.sh launch
-                - script -q -c "./cci-dev.sh tempest"
         tags:
                 - cci-builder
 update:
         except:
                 - master
         script:
-                - echo "building in $CI_PROJECT_DIR"
                 - cd $CLOUDDEV/scripts
                 - sudo -E ./cci-dev.sh centos
                 - ./cci-dev.sh prepare
                 - ./cci-dev.sh restart
                 - ./cci-dev.sh launch
-                - script -q -c "./cci-dev.sh tempest"
         tags:
                 - cci-builder
