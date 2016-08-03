@@ -1,11 +1,14 @@
 
 node /.*compute.*/ inherits default {
 
-  class { 'hg_cloud_compute': }
-  class { 'hg_cloud_compute::nova::base': }
-  class { 'hg_cloud_compute::nova::compute': }
-  class { 'hg_cloud_compute::nova::cinder': }
-  class { 'hg_cloud_compute::nova::neutron': }
+   class { 'hg_cloud_compute': }
+   class { 'hg_cloud_compute::nova::base': }
+#   class { 'hg_cloud_compute::nova::compute': }
+#   class { 'hg_cloud_compute::nova::cinder': }
+#   class { 'hg_cloud_compute::nova::neutron': }
+#   class { 'hg_cloud_compute::nova::neutronagent': }
+#   include hg_cloud_compute::nova::dhcp
+  class { 'hg_cloud_compute::level2::kvm': }
 
   if hiera('nova_neutron_enabled') == false {
     file { '/etc/sysconfig/network-scripts/ifcfg-eth0':
@@ -43,6 +46,7 @@ GATEWAYDEV=br100
     Package['bridge-utils']
     ->
     Service['network']
+
   }
 
   Package['nova-common']

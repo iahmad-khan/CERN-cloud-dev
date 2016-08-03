@@ -59,7 +59,7 @@ node /.*client.*/ inherits default {
   ->
   exec { "/usr/bin/openstack volume type create --property volume_backend_name=standard standard; /usr/bin/openstack volume type create --property volume_backend_name=critical critical;/usr/bin/openstack volume type create --property volume_backend_name=wig-standard wig-standard; /usr/bin/openstack volume type create --property volume_backend_name=wig-critical wig-critical;":
     path        => "/usr/bin:/usr/sbin",
-    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=cinder','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
+    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=cinder','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin'],
     unless      => "/usr/bin/openstack volume type list | grep critical",
   }
   ->
@@ -68,7 +68,7 @@ node /.*client.*/ inherits default {
     environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=neutron','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
   }
   ->
-  exec { '/usr/bin/neutron subnet-create KUB_NETWORK 128.0.0.0/16 --name IPSRV1 --disable-dhcp --dns-nameserver 10.0.0.10':
+  exec { "/usr/bin/neutron subnet-create KUB_NETWORK 172.17.0.0/16 --name IPSRV1 --disable-dhcp --gateway ${::ipaddress} --allocation-pool start=172.17.100.2,end=172.17.100.254 --dns-nameserver 10.0.0.10":
     unless      => "/usr/bin/neutron subnet-show IPSRV1",
     environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=neutron','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
   }
@@ -79,7 +79,7 @@ node /.*client.*/ inherits default {
   }
   ->
   exec { '/usr/bin/neutron cluster-insert-subnet CLUSTER1 IPSRV1':
-    unless      => "/usr/bin/neutron cluster-list | /usr/bin/grep 128.0.0.0/16",
+    unless      => "/usr/bin/neutron cluster-list | /usr/bin/grep 172.17.0.0/16",
     environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=neutron','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
   }
   ->
@@ -91,6 +91,14 @@ node /.*client.*/ inherits default {
     unless => '/usr/bin/glance image-show cirros',
     environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=glance','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
   }
+ ->
+ exec { '/sbin/iptables -t nat -I POSTROUTING -s 172.17.100.0/24 ! -d 172.17.0.0/16 -o eth0 -j MASQUERADE -m comment --comment DEV01':
+    unless => '/sbin/iptables -t nat -S |grep DEV01',
+  }
+ ->
+ exec { '/sbin/iptables -I FORWARD -i eth0 -o eth0 -j ACCEPT -m comment --comment DEV02':
+    unless => '/sbin/iptables -t nat -S |grep DEV02',
+ }
 
   # TODO: move this to cloud_adm module
   package { 'python-swiftclient':

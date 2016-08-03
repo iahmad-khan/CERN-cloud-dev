@@ -20,6 +20,8 @@ neutron::metadata_auth_url: 'https://keystone.default.svc.cluster.local:443/main
 neutron::agents::ml2::linuxbridge::physical_interface_mappings:
   - "external:%{::network_primary_interface}"
 
+neutron::actual_interface: 'eth0'
+
 nova::network::neutron::neutron_admin_username: 'neutron'
 nova::network::neutron::neutron_admin_password: 'neutron_admin_password'
 nova::network::neutron::neutron_admin_tenant_name: 'services'
@@ -33,47 +35,47 @@ nova::network::neutron::vif_plugging_timeout: 0
 #nova::neutron
 nova_network_enabled: false
 nova_neutron_enabled: true
-nova_neutron_url: 'http://neutron.default.svc.cluster.local:9696'
-nova_neutron_identity_uri: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
-neutron_auth_cafile: '/var/lib/puppet/ssl/certs/ca.pem'
-neutron_admin_tenant_name: 'services'
-neutron_admin_username: 'neutron'
-neutron_use_ssl: false
-neutron_use_syslog: false
-neutron_rabbit_user: 'guest'
-neutron_rabbit_host: 'controller'
-neutron_rabbit_port: '5672'
-neutron_rabbit_hosts:
-  - 'controller'
-neutron_rabbit_virtual_host: '/'
-neutron_qpid_hostname: "%{neutron_rabbit_host}"
-neutron_qpid_port: "%{neutron_rabbit_port}"
-neutron_qpid_username: "%{neutron_rabbit_port}"
-neutron_service_plugins:
-  - 'cern'
-neutron_ml2_type_drivers:
-  - 'flat'
-neutron_ml2_tenant_network_types:
-  - 'flat'
-neutron_ml2_mechanism_drivers:
-  - 'linuxbridge'
-  - 'cern_landb'
-neutron_linuxbridge_phys_mapping:
-  - "external:%{::network_primary_interface}"
-neutron_metadata_host: 'nova.default.svc.cluster.local'
-neutron_metadata_port: '8775'
+#nova_neutron_url: 'http://neutron.default.svc.cluster.local:9696'
+#nova_neutron_identity_uri: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
+#neutron_auth_cafile: '/var/lib/puppet/ssl/certs/ca.pem'
+#neutron_admin_tenant_name: 'services'
+#neutron_admin_username: 'neutron'
+#neutron_use_ssl: false
+#neutron_use_syslog: false
+#neutron_rabbit_user: 'guest'
+#neutron_rabbit_host: 'controller'
+#neutron_rabbit_port: '5672'
+#neutron_rabbit_hosts:
+#  - 'controller'
+#neutron_rabbit_virtual_host: '/'
+#neutron_qpid_hostname: "%{neutron_rabbit_host}"
+#neutron_qpid_port: "%{neutron_rabbit_port}"
+#neutron_qpid_username: "%{neutron_rabbit_port}"
+#neutron_service_plugins:
+#  - 'cern'
+#neutron_ml2_type_drivers:
+#  - 'flat'
+#neutron_ml2_tenant_network_types:
+#  - 'flat'
+#neutron_ml2_mechanism_drivers:
+#  - 'linuxbridge'
+#  - 'cern_landb'
+#neutron_linuxbridge_phys_mapping:
+#  - "external:%{::network_primary_interface}"
+#neutron_metadata_host: 'nova.default.svc.cluster.local'
+#neutron_metadata_port: '8775'
+
 
 # old style definitions
-nova_neutron_enabled: true
-
 rabbit_host: 'controller'
-
+flume_agent_install: false
 libvirtd_logs: false
 nova_compute_libvirt_virt_type: 'qemu'
 nova_compute_monitoring: false
 nova_compute_ksm: false
 nova_compute_reserved_host_memory: 0
-nova_metadata_host: 'nova'
+#nova_metadata_host: 'nova'
+nova_metadata_host: '10.0.0.157'
 nova_compute_disable_snoop: false
 nova_compute_bridgeconfig: false
 nova_compute_bridgetables: false
@@ -82,3 +84,39 @@ nova_config_use_ipv6: false
 nova_compute_vncproxy_host: 'nova'
 nova_compute_vncserver_proxyclient_address: "%{::ipaddress}"
 nova_glance_api_servers: 'glance.default.svc.cluster.local:9292'
+
+
+#new
+
+
+# neutron ignore chains
+cernfw::input_ipv4_ignore:
+  - '.*'
+cernfw::forward_ipv4_ignore:
+  - '.*'
+cernfw::output_ipv4_ignore:
+  - 'neutron-.*'
+cernfw::input_ipv6_ignore:
+  - 'neutron-.*'
+cernfw::forward_ipv6_ignore:
+  - 'neutron-.*'
+cernfw::output_ipv6_ignore:
+  - 'neutron-.*'
+cernfw::forward_ipv4_final: 'drop'
+
+
+pluginsync_filter_enable: true
+pluginsync_filter:
+  - neutron
+openstack_centos_kilo_excludepkgs:
+  - openstack-neutron*
+  - python-neutron*
+iaas_stable_repo_includepkgs:
+  - openstack-neutron*
+  - python-neutron*
+  - openstack-nova*
+  - python-nova*
+  - golang-neutron-dhcp
+
+nova_dhcp_enabled: true
+openstack_selinux: true
