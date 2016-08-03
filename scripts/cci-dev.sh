@@ -314,7 +314,7 @@ cluster_pod_launch() {
 		# 6 -> changes and failures
 		local ret=$?
 		if [[ $ret > 2  ]] || [[ $ret -eq 1 ]]; then
-			echo "Puppet run for ${pod} failed."
+			echo "Puppet run for ${pod} failed with return code ${ret}."
 			exit_on_err 1
 		fi
 		echo "Puppet run for ${pod} finished."
