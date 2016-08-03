@@ -82,78 +82,10 @@ keystone_cache_backend: 'keystone.common.cache.noop'
 keystone_cache_dir: '/var/cache/keystone'
 keystone_cache_level: "hostgroup=\"cloud_identity/cache/main\""
 keystone_cache_port: 11211
-keystone_catalog_driver: 'keystone.contrib.endpoint_filter.backends.catalog_templated.EndpointFilterCatalog'
-keystone_catalog_type: 'template'
+keystone_catalog_driver: 'endpoint_filter.sql'
+keystone_catalog_type: 'sql'
 keystone_control_exchange: false
 keystone_debug: false
-keystone_default_catalog:
-- main:
-  - identity:
-    - name: 'keystone'
-    - description: 'Openstack Identity Service'
-    - publicURL : 'https://keystone.default.svc.cluster.local:443/main/v3'
-    - adminURL: 'https://keystone.default.svc.cluster.local:443/admin/v3'
-    - internalURL: 'https://keystone.default.svc.cluster.local:443/main/v3'
-  - image:
-    - name: 'glance'
-    - description: 'Openstack Image Service'
-    - publicURL : 'http://glance.default.svc.cluster.local:9292'
-    - adminURL: 'http://glance.default.svc.cluster.local:9292'
-    - internalURL: 'http://glance.default.svc.cluster.local:9292'
-  - volume:
-    - name: 'cinder'
-    - description: 'Openstack Volume Service'
-    - publicURL: 'http://cinder.default.svc.cluster.local:8776/v1/%(tenant_id)s'
-    - adminURL: 'http://cinder.default.svc.cluster.local:8776/v1/%(tenant_id)s'
-    - internalURL: 'http://cinder.default.svc.cluster.local:8776/v1/%(tenant_id)s'
-  - volumev2:
-    - name: 'cinder'
-    - description: 'Openstack Volume Service'
-    - publicURL: 'http://cinder.default.svc.cluster.local:8776/v2/%(tenant_id)s'
-    - adminURL: 'http://cinder.default.svc.cluster.local:8776/v2/%(tenant_id)s'
-    - internalURL: 'http://cinder.default.svc.cluster.local:8776/v2/%(tenant_id)s'
-  - network:
-    - name: 'neutron'
-    - description: 'Openstack Networking Service'
-    - publicURL: 'http://neutron.default.svc.cluster.local:9696'
-    - adminURL: 'http://neutron.default.svc.cluster.local:9696'
-    - internalURL: 'http://neutron.default.svc.cluster.local:9696'
-  - compute:
-    - name: 'nova'
-    - description: 'Openstack Nova Service'
-    - publicURL: 'http://nova.default.svc.cluster.local:8774/v2/%(tenant_id)s'
-    - adminURL: 'http://nova.default.svc.cluster.local:8774/v2/%(tenant_id)s'
-    - internalURL: 'http://nova.default.svc.cluster.local:8774/v2/%(tenant_id)s'
-  - orchestration:
-    - name: 'heat'
-    - description: 'Openstack Orchestration Service'
-    - publicURL: 'http://heat.default.svc.cluster.local:8004/v1/%(tenant_id)s'
-    - adminURL: 'http://heat.default.svc.cluster.local:8004/v1/%(tenant_id)s'
-    - internalURL: 'http://heat.default.svc.cluster.local:8004/v1/%(tenant_id)s'
-  - cloudformation:
-    - name: 'heat-cfn'
-    - description: 'Openstack CloudFormation Service'
-    - publicURL: 'http://heat.default.svc.cluster.local:8000/v1'
-    - adminURL: 'http://heat.default.svc.cluster.local:8000/v1'
-    - internalURL: 'http://heat.default.svc.cluster.local:8000/v1'
-  - container:
-    - name: 'magnum'
-    - description: 'Openstack Container Service'
-    - publicURL: 'http://magnum.default.svc.cluster.local:9511/v1'
-    - adminURL: 'http://magnum.default.svc.cluster.local:9511/v1'
-    - internalURL: 'http://magnum.default.svc.cluster.local:9511/v1'
-  - key-manager:
-    - name: 'barbican'
-    - description: 'Openstack Key Management Service'
-    - publicURL: 'http://barbican.default.svc.cluster.local:9311'
-    - adminURL: 'http://barbican.default.svc.cluster.local:9311'
-    - internalURL: 'http://barbican.default.svc.cluster.local:9311'
-  - workflowv2:
-    - name: 'mistral'
-    - description: 'Openstack Workflow Service'
-    - publicURL: 'http://mistral.default.svc.cluster.local:8989/v2'
-    - adminURL: 'http://mistral.default.svc.cluster.local:8989/v2'
-    - internalURL: 'http://mistral.default.svc.cluster.local:8989/v2'
 
 keystone_enable_pki_setup: false
 keystone_enable_ssl: true
@@ -252,3 +184,70 @@ keystone_log_formats:
     proxy: '%%{}{X-Forwarded-For}i %h %l %u %t \"%r\" %>s %b %D \"%%{}{Referer}i\" \"%%{}{User-Agent}i\"'
 keystone_access_log_format: 'proxy'
 keystone_wsgi_application_group: '%%{}{RESOURCE}'
+keystone_services:
+  identity:
+    name: 'keystone'
+    description: 'Openstack Identity Service'
+    publicURL : 'https://keystone.default.svc.cluster.local:443/main/v3'
+    adminURL: 'https://keystone.default.svc.cluster.local:443/admin/v3'
+    internalURL: 'https://keystone.default.svc.cluster.local:443/main/v3'
+  image:
+    name: 'glance'
+    description: 'Openstack Image Service'
+    publicURL : 'http://glance.default.svc.cluster.local:9292'
+    adminURL: 'http://glance.default.svc.cluster.local:9292'
+    internalURL: 'http://glance.default.svc.cluster.local:9292'
+  volume:
+    name: 'cinder'
+    description: 'Openstack Volume Service'
+    publicURL: 'http://cinder.default.svc.cluster.local:8776/v1/%(tenant_id)s'
+    adminURL: 'http://cinder.default.svc.cluster.local:8776/v1/%(tenant_id)s'
+    internalURL: 'http://cinder.default.svc.cluster.local:8776/v1/%(tenant_id)s'
+  volumev2:
+    name: 'cinderv2'
+    description: 'Openstack Volume Service'
+    publicURL: 'http://cinder.default.svc.cluster.local:8776/v2/%(tenant_id)s'
+    adminURL: 'http://cinder.default.svc.cluster.local:8776/v2/%(tenant_id)s'
+    internalURL: 'http://cinder.default.svc.cluster.local:8776/v2/%(tenant_id)s'
+  network:
+    name: 'neutron'
+    description: 'Openstack Networking Service'
+    publicURL: 'http://neutron.default.svc.cluster.local:9696'
+    adminURL: 'http://neutron.default.svc.cluster.local:9696'
+    internalURL: 'http://neutron.default.svc.cluster.local:9696'
+  compute:
+    name: 'nova'
+    description: 'Openstack Nova Service'
+    publicURL: 'http://nova.default.svc.cluster.local:8774/v2/%(tenant_id)s'
+    adminURL: 'http://nova.default.svc.cluster.local:8774/v2/%(tenant_id)s'
+    internalURL: 'http://nova.default.svc.cluster.local:8774/v2/%(tenant_id)s'
+  orchestration:
+    name: 'heat'
+    description: 'Openstack Orchestration Service'
+    publicURL: 'http://heat.default.svc.cluster.local:8004/v1/%(tenant_id)s'
+    adminURL: 'http://heat.default.svc.cluster.local:8004/v1/%(tenant_id)s'
+    internalURL: 'http://heat.default.svc.cluster.local:8004/v1/%(tenant_id)s'
+  cloudformation:
+    name: 'heat-cfn'
+    description: 'Openstack CloudFormation Service'
+    publicURL: 'http://heat.default.svc.cluster.local:8000/v1'
+    adminURL: 'http://heat.default.svc.cluster.local:8000/v1'
+    internalURL: 'http://heat.default.svc.cluster.local:8000/v1'
+  container:
+    name: 'magnum'
+    description: 'Openstack Container Service'
+    publicURL: 'http://magnum.default.svc.cluster.local:9511/v1'
+    adminURL: 'http://magnum.default.svc.cluster.local:9511/v1'
+    internalURL: 'http://magnum.default.svc.cluster.local:9511/v1'
+  key-manager:
+    name: 'barbican'
+    description: 'Openstack Key Management Service'
+    publicURL: 'http://barbican.default.svc.cluster.local:9311'
+    adminURL: 'http://barbican.default.svc.cluster.local:9311'
+    internalURL: 'http://barbican.default.svc.cluster.local:9311'
+  workflowv2:
+    name: 'mistral'
+    description: 'Openstack Workflow Service'
+    publicURL: 'http://mistral.default.svc.cluster.local:8989/v2'
+    adminURL: 'http://mistral.default.svc.cluster.local:8989/v2'
+    internalURL: 'http://mistral.default.svc.cluster.local:8989/v2'

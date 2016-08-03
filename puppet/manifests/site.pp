@@ -113,3 +113,18 @@ define lemon::metric(
   
 }
 
+class { 'lemon::osrepos':
+
+}
+
+define keystone_services (
+  $services,
+  $environment,
+) {
+  exec { "$title":
+    command     => "/usr/bin/openstack service create --name ${services[$title]['name']} --description '${services[$title]['description']}' $title && /usr/bin/openstack endpoint create --region main ${services[$title]['name']} public '${services[$title]['publicURL']}' && /usr/bin/openstack endpoint create --region main ${services[$title]['name']} admin '${services[$title]['adminURL']}' && /usr/bin/openstack endpoint create --region main ${services[$title]['name']} internal '${services[$title]['internalURL']}'",
+    path        => '/usr/bin:/usr/sbin',
+    environment => $environment,
+    unless      => "/usr/bin/openstack service show ${services[$title]['name']}",
+  }
+}
