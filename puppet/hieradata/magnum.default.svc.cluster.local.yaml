@@ -1,14 +1,20 @@
 iaas_release: 'mitaka'
 
 haproxy_enable: false
-iaas_qa_repo_enable: true
+
+pluginsync_filter:
+    - magnum
+    - openstacklib
+    - rabbitmq
 
 iaas_include_pkgs:
   - openstack-magnum*
   - python-magnum*
 
-openstack_rdo_include_pkgs:
-  - python-pbr
+openstack_mitaka_exclude_pkgs:
+    - puppet
+    - facter
+    - rabbitmq*
 
 rabbitmq7_include_pkgs:
     - rabbitmq-server
@@ -37,6 +43,7 @@ magnum::api::identity_uri: 'https://keystone.default.svc.cluster.local:443/admin
 magnum::api::package_ensure: 'present'
 magnum::api::host: '0.0.0.0'
 magnum::api::port: '9511'
+magnum::api::sync_db: false
 
 magnum::conductor::enabled: true
 
