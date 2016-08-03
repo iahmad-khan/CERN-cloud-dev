@@ -128,3 +128,9 @@ define keystone_services (
     unless      => "/usr/bin/openstack service show ${services[$title]['name']}",
   }
 }
+
+# ignore sysctl settings, many missing in containers
+define sysctl::value(
+  $value,
+) {}
+

@@ -1,11 +1,8 @@
-
 node /.*compute.*/ inherits default {
 
   class { 'hg_cloud_compute': }
   class { 'hg_cloud_compute::nova::base': }
-  class { 'hg_cloud_compute::nova::compute': }
-  class { 'hg_cloud_compute::nova::cinder': }
-  class { 'hg_cloud_compute::nova::neutron': }
+  class { 'hg_cloud_compute::level2::kvm': }
 
   if hiera('nova_neutron_enabled') == false {
     file { '/etc/sysconfig/network-scripts/ifcfg-eth0':
@@ -43,6 +40,7 @@ GATEWAYDEV=br100
     Package['bridge-utils']
     ->
     Service['network']
+
   }
 
   Package['nova-common']
@@ -50,13 +48,7 @@ GATEWAYDEV=br100
   File['/var/lib/nova']
   ->
   File['/etc/nova/nova-static.conf']
-
-  package{ 'openssh': 
-    ensure => present,
-  }
   ->
-  File['ssh_config']
-
   exec {'/usr/sbin/usermod -a -G puppet nova':
     unless => "/usr/bin/grep 'puppet.*nova' /etc/group",
   }
@@ -67,6 +59,16 @@ GATEWAYDEV=br100
     path   => "/usr/sbin:/usr/bin",
     unless => "nova-manage service list | grep enabled",
   }
+
+  Service['iptables']
+  ->
+  Service['ip6tables']
+
+  package{ 'openssh': 
+    ensure => present,
+  }
+  ->
+  File['ssh_config']
 
   if hiera('nova_network_enabled', true) {
 

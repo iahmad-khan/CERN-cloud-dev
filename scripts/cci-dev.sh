@@ -74,7 +74,7 @@ xinetd
 PUPPET_HOSTGROUPS="
 cloud_adm
 cloud_blockstorage
-cloud_compute
+cloud_compute:dev-env-fixes
 cloud_container
 cloud_dashboard
 cloud_identity
