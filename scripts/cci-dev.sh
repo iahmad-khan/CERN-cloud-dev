@@ -107,34 +107,37 @@ puppet_manifest_checkout() {
 	do
 		cd $CLOUDDEV_PUPPET
 		IFS=':' read -r module branch <<< "$mod"
-		echo "Cloning module ${module} on branch ${branch:-master}"
+		if [[ -z $branch ]]; then
+			branch="master"
+		fi
+		echo "Cloning module ${module} on branch ${branch}"
 		git clone -q https://:@gitlab.cern.ch:8443/ai/it-puppet-module-${module}.git
 		exit_on_err $?
 		ln -s it-puppet-module-$module/code $module
-		if [[ ! -z $branch ]]; then
-			cd it-puppet-module-$module
-			exit_on_err $?
-			git checkout $branch > /dev/null
-			exit_on_err $? "It seems branch $branch does not exist"
-			cd - > /dev/null
-		fi
+		cd it-puppet-module-$module
+		exit_on_err $?
+		git checkout -q $branch > /dev/null
+		exit_on_err $? "It seems branch $branch does not exist"
+		cd - > /dev/null
 		branch=''
 	done
 	for hg in $PUPPET_HOSTGROUPS;
 	do
 		cd $CLOUDDEV_PUPPET
 		IFS=':' read -r hostgroup branch <<< "$hg"
-		echo "Cloning hostgroup ${hostgroup} on branch ${branch:-master}"
+		if [[ -z $branch ]]; then
+			branch="master"
+		fi
+		echo "Cloning hostgroup ${hostgroup} on branch ${branch}"
 		git clone -q https://:@gitlab.cern.ch:8443/ai/it-puppet-hostgroup-${hostgroup}.git
 		exit_on_err $?
 		ln -s it-puppet-hostgroup-$hostgroup/code hg_$hostgroup
-		if [[ ! -z $branch ]]; then
-			cd it-puppet-hostgroup-$hostgroup
-			exit_on_err $?
-			git checkout $branch > /dev/null
-			exit_on_err $? "It seems branch $branch does not exist"
-			cd - > /dev/null
-		fi
+		cd it-puppet-hostgroup-$hostgroup
+		exit_on_err $?
+		git checkout -q $branch > /dev/null
+		exit_on_err $? "It seems branch $branch does not exist"
+		cd - > /dev/null
+		branch=''
 	done
 	echo "All repositories have been cloned"
 }

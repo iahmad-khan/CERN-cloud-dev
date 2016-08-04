@@ -2,7 +2,7 @@ log_regex_common: '(\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}.\\d{3})\\s*(\\d
 log_regex_instance: '\\[instance:\\s+([\\w\\-]*)\\]'
 log_regex_request: '\\[([\\w\\-]*)\\s+([\\w]*)\\s+([\\w\\-]*)'
 
-iaas_release: liberty
+iaas_release: mitaka
 
 iaas_include_pkgs:
     - openstack-cinder

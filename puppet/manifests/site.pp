@@ -113,6 +113,3 @@ define lemon::metric(
   
 }
 
-class { 'lemon::osrepos':
-
-}
