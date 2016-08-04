@@ -65,7 +65,7 @@ COMMAND can be one of:
 
 First prepare your development environment (you only need to do this once):
 ```
-cd ~/wscloud-dev/scripts
+cd ~/ws/cloud-dev/scripts
 ./cci-dev.sh prepare
 ```
 
@@ -101,7 +101,7 @@ kubectl exec -it glance -c glance /bin/bash
 
 And check the data is actually in our local ceph container:
 ```
-kubectl.sh exec -it ceph -c cephall /bin/bash
+kubectl exec -it ceph -c cephall /bin/bash
 root@ /# rados ls -p images
 rbd_data.10155d46d745.0000000000000001
 rbd_directory
