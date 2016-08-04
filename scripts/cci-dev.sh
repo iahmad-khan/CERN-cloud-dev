@@ -53,7 +53,7 @@ network
 neutron
 nova
 openstack_clients
-openstacklib
+openstacklib:mitaka
 oslo
 osrepos
 psacct
