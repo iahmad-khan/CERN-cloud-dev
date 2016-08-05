@@ -31,4 +31,6 @@ node /.*neutron.*/ inherits default {
   ->
   Service['neutron-server']
 
+  Package['neutron'] -> Cloud_common::Policy<||>
+
 }
