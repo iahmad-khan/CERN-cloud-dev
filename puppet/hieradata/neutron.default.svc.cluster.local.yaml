@@ -7,6 +7,7 @@ iaas_include_pkgs:
 openstack_rdo_include_pkgs:
   - python-logutils
   - python-neutron*
+  - python-barbican*
   - python-pysaml2
   - python-ryu
   - python2-debtcollector
@@ -27,6 +28,7 @@ neutron::debug: false
 neutron::core_plugin: 'ml2'
 neutron::service_plugins:
   - cern
+  - neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2
 neutron::api_extensions_path:
   - /usr/lib/python2.7/site-packages/networking_cern/extensions
 neutron::rabbit_user: 'guest'

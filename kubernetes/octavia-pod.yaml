@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: octavia
+  labels:
+    name: octavia
+spec:
+  containers:
+    - name: octavia
+      image: docker.cern.ch/cloud-infrastructure/puppetagent
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - name: puppetcfg
+          mountPath: /etc/puppet
+        - name: puppetssl
+          mountPath: /var/lib/puppet/ssl
+        - name: factercfg
+          mountPath: /etc/facter
+        - name: cgroup
+          mountPath: /sys/fs/cgroup
+          readOnly: true
+        - name: run
+          mountPath: /run
+      command:
+        - /usr/sbin/init
+      ports:
+        - containerPort: 9696
+  volumes:
+    - name: puppetcfg
+      hostPath:
+        path: /opt/cloud-dev/puppet
+    - name: puppetssl
+      hostPath:
+        path: /opt/cloud-dev/puppetssl
+    - name: factercfg
+      hostPath:
+        path: /opt/cloud-dev/facter
+    - name: cgroup
+      hostPath:
+        path: /sys/fs/cgroup
+    - name: run
+      emptyDir: 

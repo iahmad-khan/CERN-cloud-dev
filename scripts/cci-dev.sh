@@ -53,9 +53,10 @@ network
 neutron
 nova
 openstack_clients
-openstacklib:mitaka
+openstacklib:newton-rc
 oslo
 osrepos
+octavia
 psacct
 puppet
 puppetdbquery
@@ -73,12 +74,12 @@ xinetd
 PUPPET_HOSTGROUPS="
 cloud_adm
 cloud_blockstorage
-cloud_compute:devenv
+cloud_compute
 cloud_container
 cloud_dashboard
 cloud_identity
 cloud_image
-cloud_networking
+cloud_networking:neutron-lbaas
 cloud_orchestration
 cloud_telemetry
 cloud_workflow

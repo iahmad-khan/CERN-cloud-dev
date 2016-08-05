@@ -251,3 +251,9 @@ keystone_services:
     publicURL: 'http://mistral.default.svc.cluster.local:8989/v2'
     adminURL: 'http://mistral.default.svc.cluster.local:8989/v2'
     internalURL: 'http://mistral.default.svc.cluster.local:8989/v2'
+  octavia:
+    name: 'octavia'
+    description: 'Openstack LBaaS Service'
+    publicURL: 'http://octavia.default.svc.cluster.local:9876'
+    adminURL: 'http://octavia.default.svc.cluster.local:9876'
+    internalURL: 'http://octavia.default.svc.cluster.local:9876'
