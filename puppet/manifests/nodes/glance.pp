@@ -27,12 +27,12 @@ node /.*glance.*/ inherits default {
   ->
   Glance_api_config <||>
   ->
-  exec { '/usr/bin/glance-manage db_sync':
-    refreshonly => true,
-  }
-  ->
   exec {'/usr/sbin/usermod -a -G puppet glance':
     unless => "/bin/grep -e 'puppet.*glance' /etc/group",
+  }
+  ~>
+  exec { '/usr/bin/glance-manage db_sync':
+    refreshonly => true,
   }
   ->
   Cloud_monitoring::Flume::Agent['glance']
