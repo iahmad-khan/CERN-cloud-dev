@@ -1,12 +1,11 @@
 iaas_release: 'liberty'
-iaas_default_release: 'liberty'
 
 # review        
-cloud_identity_default_cache: false
-keystone_default_public_endpoint: 'https://keystone.default.svc.cluster.local:443/main'
-keystone_default_admin_endpoint: 'https://keystone.default.svc.cluster.local:443/admin'
+cloud_identity_cache: false
+keystone_public_endpoint: 'https://keystone.default.svc.cluster.local:443/main'
+keystone_admin_endpoint: 'https://keystone.default.svc.cluster.local:443/admin'
 keystone_access_level: undef
-keystone_default_trusted_dashboard: 'https://horizon.default.svc.cluster.local/auth/websso'
+keystone_trusted_dashboard: 'https://horizon.default.svc.cluster.local/auth/websso'
 keystone_token_flush_job: 'keystone-token-flush'
 keystone_token_flush_job_hour: '*/6'
 
@@ -167,7 +166,7 @@ keystone_ssl_protocol:
 keystone_ssl_options:
   - '+StdEnvVars'
   - '+ExportCertData'
-cloud_identity_backend_default_api: ''
+cloud_identity_backend_api: ''
 keystone_ssl_cipher: 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:ECDHE-RSA-AES128-SHA:DHE-RSA-AES128-GCM-SHA256:AES256+EDH:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4'
 keystone_token_driver: 'keystone.token.persistence.backends.sql.Token'
 keystone_token_expiration: '86400'
