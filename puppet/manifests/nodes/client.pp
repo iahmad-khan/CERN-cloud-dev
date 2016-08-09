@@ -88,7 +88,7 @@ node /.*client.*/ inherits default {
   }
   ->
   exec { '/usr/bin/glance image-create --file cirros-0.3.4-x86_64-disk.img --disk-format qcow2 --container-format bare --name cirros':
-    unless => '/usr/bin/glance image-show cirros',
+    unless      => '/usr/bin/glance image-list | /usr/bin/grep cirros',
     environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=glance','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
   }
 
