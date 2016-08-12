@@ -79,7 +79,7 @@ cloud_container
 cloud_dashboard
 cloud_identity
 cloud_image
-cloud_networking:neutron-lbaas
+cloud_networking:neutronlbaas
 cloud_orchestration
 cloud_telemetry
 cloud_workflow
