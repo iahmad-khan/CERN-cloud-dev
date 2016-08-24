@@ -1,4 +1,4 @@
-iaas_release: 'liberty'
+iaas_release: 'mitaka'
 
 roger_enable: false
 haproxy_enable: false

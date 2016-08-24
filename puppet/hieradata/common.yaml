@@ -86,6 +86,10 @@ openstack_liberty_exclude_pkgs:
     - puppet
     - facter
 
+openstack_mitaka_exclude_pkgs:
+    - puppet
+    - facter
+
 # cloud_compute
 
 osclients_rdo_include_pkgs:
