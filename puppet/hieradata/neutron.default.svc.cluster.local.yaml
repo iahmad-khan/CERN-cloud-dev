@@ -1,10 +1,6 @@
-iaas_release: 'liberty'
 
-iaas_include_pkgs:
-  - python-neutronclient-cern
-  - openstack-neutron-cern
-
-openstack_rdo_include_pkgs:
+cloud_common::repo::openstack::release: 'liberty'
+cloud_common::repo::openstack::includepkgs:
   - python-logutils
   - python-neutron*
   - python-barbican*
@@ -19,6 +15,11 @@ openstack_rdo_include_pkgs:
   - python2-PyMySQL
   - python2-suds
   - openstack-neutron*
+
+cloud_common::repo::iaas::release: "%{hiera('cloud_common::repo::openstack::release')}"
+cloud_common::repo::iaas::includepkgs:
+  - python-neutronclient-cern
+  - openstack-neutron-cern
 
 haproxy_enable: false
 

@@ -1,4 +1,5 @@
-iaas_release: 'liberty'
+cloud_common::repo::openstack::release: 'mitaka'
+cloud_common::repo::iaas::release: "%{hiera('cloud_common::repo::openstack::release')}"
 
 roger_enable: false
 haproxy_enable: false

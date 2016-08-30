@@ -1,5 +1,3 @@
-iaas_release: 'mitaka'
-
 haproxy_enable: false
 
 pluginsync_filter:
@@ -7,18 +5,15 @@ pluginsync_filter:
     - openstacklib
     - rabbitmq
 
-iaas_include_pkgs:
+cloud_common::repo::openstack::release: 'mitaka' 
+cloud_common::repo::iaas::release: "%{hiera('cloud_common::repo::openstack::release')}"
+cloud_common::repo::iaas::includepkgs:
   - openstack-magnum*
   - python-magnum*
-
-openstack_mitaka_exclude_pkgs:
-    - puppet
-    - facter
-    - rabbitmq*
-
-rabbitmq7_include_pkgs:
-    - rabbitmq-server
-    - lemon-sensor-rabbitmq
+cloud_common::repo::iaas::excludepkgs:
+  - puppet
+  - facter
+  - rabbitmq*
 
 magnum::verbose: false
 magnum::debug: false
@@ -56,4 +51,4 @@ magnum::keystone::domain::manage_domain: false
 magnum::keystone::domain::manage_user: false
 magnum::keystone::domain::manage_role: false
 
-flume_agent_enable: true
+flume_agent_enable: false

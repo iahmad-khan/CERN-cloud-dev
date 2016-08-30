@@ -1,8 +1,5 @@
-iaas_release: 'mitaka'
-
-openstack_mitaka_exclude_pkgs:
-    - puppet
-    - facter
+cloud_common::repo::openstack::release: 'mitaka' 
+cloud_common::repo::iaas::release: "%{hiera('cloud_common::repo::openstack::release')}"
 
 haproxy_enable: false
 
