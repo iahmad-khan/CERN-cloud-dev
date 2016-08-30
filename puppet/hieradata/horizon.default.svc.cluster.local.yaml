@@ -75,8 +75,8 @@ horizon_http_port: 80
 horizon_https_port: 443
 dashboard_loadbalancer_https_listening_service: 443
 dashboard_loadbalancer_http_listening_service: 80
-horizon_cache_backend: 'django.core.cache.backends.memcached.MemcachedCache'
-horizon_cache_server_ip: false
+horizon_cache_backend: 'django.core.cache.backends.dummy.DummyCache'
+horizon_cache_server_ip: ''
 horizon_cache_server_port: '11211'
 horizon_ca: '/etc/openstack-dashboard/ssl/certs/ca.pem'
 horizon_cert: '/etc/openstack-dashboard/ssl/certs/hostcert.pem'
@@ -117,4 +117,26 @@ horizon_websso_default_redirect_logout: 'https://login/'
 horizon_nova_extension_blacklist:
   - 'SimpleTenantUsage'
 
+horizon::api_versions:
+  data-processing: 1.1
+  identity: 3
+  volume: 2
+horizon::params::root_url: '/'
+horizon::wsgi::apache::default_vhost: false
+horizon::image_backend:
+  image_formats:
+    # OS-3204 Disable not supported images at CERN
+    '':      'Select type'
+    #aki:    'AKI - Amazon Kernel Image'
+    #ami:    'AMI - Amazon Machine Image'
+    #ari:    'ARI - Amazon Ramdisk Image'
+    #docker: 'Docker'
+    #iso:    'ISO - Optical Disk Image'
+    qcow2:   'QCOW2 - QEMU Emulator'
+    raw:     'Raw'
+    #vdi:    'VDI - Virtual Disk Image'
+    #vhd:    'VHD - Virtual Hard Disk'
+    #vmdk:   'VMDK - Virtual Machines Disk'
+## Teigi secrets
 horizon::secret_key: 'horizon_secret_keystore'
+
