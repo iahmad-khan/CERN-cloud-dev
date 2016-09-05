@@ -114,3 +114,20 @@ osclients_include_pkgs:
   - python-neutronclient
 #  - python-kombu
 #  - python-urllib3
+#
+
+# rabbitmq
+rabbitmq::delete_guest_user: true
+rabbitmq::config_cluster: true
+rabbitmq::erlang_cookie: 'rabbit_erlang_cookie'
+rabbitmq::cluster_partition_handling: 'autoheal'
+rabbitmq::cluster_nodes:
+  - mq1
+  - mq2
+  - mq3
+rabbitmq::repos_ensure: false
+rabbitmq::package_provider: 'yum'
+rabbitmq::wipe_db_on_cookie_change: true
+rabbitmq::config_kernel_variables:
+  inet_dist_listen_min: 41055
+  inet_dist_listen_max: 41055

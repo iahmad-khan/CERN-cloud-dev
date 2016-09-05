@@ -53,9 +53,9 @@ cinder_qpid_tcp_nodelay: true
 cinder_rabbit_host: ''
 cinder_rabbit_port: '5672'
 cinder_rabbit_hosts:
-     - 'controller'
+     - 'mq1'
 cinder_rabbit_virtual_host: '/'
-cinder_rabbit_userid: 'guest'
+cinder_rabbit_userid: 'rabbit'
 cinder_rpc_backend: 'cinder.openstack.common.rpc.impl_kombu'
 cinder_state_path: '/var/lib/cinder'
 cinder_use_syslog: false

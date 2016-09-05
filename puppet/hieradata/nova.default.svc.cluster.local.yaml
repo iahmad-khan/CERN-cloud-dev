@@ -9,7 +9,7 @@ nova_enabled_ssl_apis: []
 nova_glance_api_servers: 'glance.default.svc.cluster.local:9292'
 nova_manage_selinux: false
 landb_username: 'neutron'
-rabbit_host: 'controller'
+rabbit_host: 'mq1'
 nova_identity_uri: 'https://keystone.default.svc.cluster.local/admin'
 
 # nova::conductor
@@ -67,11 +67,11 @@ neutron::debug: false
 neutron::core_plugin: 'ml2'
 neutron::service_plugins:
   - cern
-neutron::rabbit_user: 'guest'
+neutron::rabbit_user: 'rabbit'
 neutron::rabbit_password: 'neutron_rabbit_password'
-neutron::rabbit_host: 'controller'
+neutron::rabbit_host: 'mq1'
 neutron::rabbit_hosts:
-  - 'controller'
+  - 'mq1'
 neutron::metadata_host: 'nova'
 neutron::metadata_port: '8775'
 
@@ -86,11 +86,11 @@ neutron_admin_username: 'neutron'
 neutron_admin_tenant_name: 'services'
 neutron_use_ssl: false
 neutron_use_syslog: false
-neutron_rabbit_user: 'guest'
-neutron_rabbit_host: 'controller'
+neutron_rabbit_user: 'rabbit'
+neutron_rabbit_host: 'mq1'
 neutron_rabbit_port: '5672'
 neutron_rabbit_hosts:
-  - 'controller'
+  - 'mq1'
 neutron_rabbit_virtual_host: '/'
 neutron_qpid_hostname: "%{neutron_rabbit_host}"
 neutron_qpid_port: "%{neutron_rabbit_port}"

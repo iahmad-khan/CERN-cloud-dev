@@ -1,7 +1,7 @@
 haproxy_enable: false
 glance_swap: false
-glance_rabbit_host: 'controller'
-glance_rabbit_userid: 'guest'
+glance_rabbit_host: 'mq1'
+glance_rabbit_userid: 'rabbit'
 glance_rabbit_virtual_host: '/'
 
 glance::api::auth_type: 'keystone'

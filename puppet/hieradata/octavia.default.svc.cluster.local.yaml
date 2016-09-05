@@ -26,11 +26,11 @@ openstack_rdo_include_pkgs:
   - python-rfc3986
   - python-cryptography
 
-octavia::rabbit_user: 'guest'
+octavia::rabbit_user: 'rabbit'
 octavia::rabbit_password: 'octavia_rabbit_password'
-octavia::rabbit_host: 'controller'
+octavia::rabbit_host: 'mq1'
 octavia::rabbit_hosts: 
-  - 'controller'
+  - 'mq1'
 octavia::db::database_connection: 'octavia_sql_connection'
 octavia::health_manager::heartbeat_key: 'octavia_heartbeat_key'
 octavia::keystone::auth::auth_name: 'svcneu'

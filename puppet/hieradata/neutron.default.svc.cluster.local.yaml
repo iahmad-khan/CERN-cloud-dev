@@ -32,11 +32,11 @@ neutron::service_plugins:
   - neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2
 neutron::api_extensions_path:
   - /usr/lib/python2.7/site-packages/networking_cern/extensions
-neutron::rabbit_user: 'guest'
+neutron::rabbit_user: 'rabbit'
 neutron::rabbit_password: 'neutron_rabbit_password'
-neutron::rabbit_host: 'controller'
+neutron::rabbit_host: 'mq1'
 neutron::rabbit_hosts: 
-  - 'controller'
+  - 'mq1'
 neutron::metadata_host: 'nova.default.svc.cluster.local'
 neutron::metadata_port: '8775'
 

@@ -11,11 +11,11 @@ pluginsync_filter:
 
 heat::debug: false
 heat::verbose: false
-heat::rabbit_host: 'controller'
+heat::rabbit_host: 'mq1'
 heat::rabbit_port: '5672'
 heat::rabbit_hosts:
-  - 'controller:5672'
-heat::rabbit_userid: 'guest'
+  - 'mq1'
+heat::rabbit_userid: 'rabbit'
 heat::rabbit_password: 'heat_rabbit_password'
 heat::rabbit_virtual_host: '/'
 heat::keystone_user: 'admin'
