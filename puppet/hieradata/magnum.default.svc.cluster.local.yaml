@@ -25,7 +25,7 @@ magnum::rabbit_hosts:
   - 'mq1'
 magnum::rabbit_virtual_host: '/'
 magnum::rabbit_userid: 'rabbit'
-magnum::rabbit_password: 'magnum_rabbit_password'
+magnum::rabbit_password: 'rabbit_password'
 magnum::cert_manager_type: 'barbican'
 
 magnum::db::database_connection: 'magnum_database_connection'
