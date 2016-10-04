@@ -131,3 +131,5 @@ rabbitmq::wipe_db_on_cookie_change: true
 rabbitmq::config_kernel_variables:
   inet_dist_listen_min: 41055
   inet_dist_listen_max: 41055
+rabbitmq::config_variables:
+  vm_memory_high_watermark: 0.8
