@@ -1,10 +1,48 @@
 
 cloud_common::repo::openstack::release: 'liberty'
 cloud_common::repo::openstack::includepkgs:
+  - openstack-neutron*
+  - openstack-selinux
+  - openstack-utils
+  - pyparsing
+  - python-alembic
+  - python-babel
+  - python-ceilometerclient
+  - python-cinderclient
+  - python-cliff
+  - python-cmd2
+  - python-cryptography
+  - python-django-compressor
+  - python-glanceclient
+  - python-keystoneclient
+  - python-keystonemiddleware
+  - python-ldappool
   - python-logutils
+  - python-migrate
+  - python-netaddr
+  - python-netifaces
   - python-neutron*
+  - python-novaclient
+  - python-openstackclient
+  - python-oslo*
+  - python-paste-deploy
+  - python-pycadf
   - python-pysaml2
+  - python-routes
+  - python-requests
   - python-ryu
+  - python-saharaclient
+  - python-six
+  - python-sqlalchemy
+  - python-webob
+  - python-heatclient
+  - python-troveclient
+  - python-swiftclient
+  - python-unicodecsv
+  - python-urllib3
+  - python-stevedore
+  - python-XStatic-Font-Awesome
+  - python-XStatic-Angular
   - python2-debtcollector
   - python2-eventlet
   - python2-futurist
@@ -13,12 +51,27 @@ cloud_common::repo::openstack::includepkgs:
   - python2-pecan
   - python2-PyMySQL
   - python2-suds
-  - openstack-neutron*
+  - python2-pysocks
+cloud_common::repo::openstack::excludepkgs:
+  - puppet
+  - facter
+  - rabbitmq*
 
 cloud_common::repo::iaas::release: "%{hiera('cloud_common::repo::openstack::release')}"
 cloud_common::repo::iaas::includepkgs:
-  - python-neutronclient-cern
+  - openstack-dashboard
+  - openstack-dashboard-theme
+  - openstack-keystone
   - openstack-neutron-cern
+  - python-django-horizon
+  - python-django-maintenancemode
+  - python-django-openstack-auth
+  - python-django-piwik
+  - python-keystone
+  - python-keystoneclient
+  - python-neutronclient-cern
+  - python-pysaml2
+  - python-pyws
 
 haproxy_enable: false
 
@@ -31,7 +84,7 @@ neutron::service_plugins:
 neutron::api_extensions_path:
   - /usr/lib/python2.7/site-packages/networking_cern/extensions
 neutron::rabbit_user: 'guest'
-neutron::rabbit_password: 'neutron_rabbit_password'
+neutron::rabbit_password: 'rabbit_password'
 neutron::rabbit_host: 'controller'
 neutron::rabbit_hosts: 
   - 'controller'
