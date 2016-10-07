@@ -13,6 +13,8 @@ spec:
           value: '123456'
       ports:
         - containerPort: 3306
+    - name: rabbitmq
+      image: rabbitmq
     - name: ldap
       image: docker.cern.ch/cloud-infrastructure/ldap
       env:

@@ -22,10 +22,10 @@ magnum::use_syslog: false
 magnum::rabbit_host: ''
 magnum::rabbit_port: '5672'
 magnum::rabbit_hosts:
-  - 'mq1'
+  - 'controller'
 magnum::rabbit_virtual_host: '/'
-magnum::rabbit_userid: 'rabbit'
-magnum::rabbit_password: 'rabbit_password'
+magnum::rabbit_userid: 'guest'
+magnum::rabbit_password: 'magnum_rabbit_password'
 magnum::cert_manager_type: 'barbican'
 
 magnum::db::database_connection: 'magnum_database_connection'

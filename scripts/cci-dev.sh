@@ -60,10 +60,8 @@ octavia
 psacct
 puppet
 puppetdbquery
-rabbitmq
 rsyslog
 sssd
-staging
 stdlib
 sudo
 swap_file

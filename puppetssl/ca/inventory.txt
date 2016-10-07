@@ -15,7 +15,3 @@
 0x000e 2016-05-24T07:07:38UTC 2021-05-24T07:07:38UTC /CN=heat.default.svc.cluster.local
 0x000f 2016-07-06T15:10:02UTC 2021-07-06T15:10:02UTC /CN=mistral.default.svc.cluster.local
 0x0010 2016-08-04T12:35:36UTC 2021-08-04T12:35:36UTC /CN=octavia.default.svc.cluster.local
-0x0011 2016-09-04T09:28:56UTC 2021-09-04T09:28:56UTC /CN=mq.default.svc.cluster.local
-0x0012 2016-09-04T09:50:15UTC 2021-09-04T09:50:15UTC /CN=mq2.default.svc.cluster.local
-0x0013 2016-09-04T09:55:58UTC 2021-09-04T09:55:58UTC /CN=mq1.default.svc.cluster.local
-0x0014 2016-09-04T11:37:57UTC 2021-09-04T11:37:57UTC /CN=mq3.default.svc.cluster.local

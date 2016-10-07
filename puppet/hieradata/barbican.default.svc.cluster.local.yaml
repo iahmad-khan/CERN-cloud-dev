@@ -18,12 +18,12 @@ barbican::api::auth_protocol: 'http'
 barbican::api::keystone_password: 'barbican_keystone_password'
 barbican::api::identity_uri: 'https://keystone.default.svc.cluster.local:443/admin'
 barbican::api::client_package_ensure: false
-barbican::api::rabbit_userid: 'rabbit'
+barbican::api::rabbit_userid: 'guest'
 barbican::api::rabbit_virtual_host: '/'
 barbican::api::rabbit_password: 'barbican_rabbit_password'
 barbican::api::rabbit_host: 'controller'
 barbican::api::rabbit_hosts:
-  - 'mq1'
+  - 'controller'
 barbican::api::enabled_secretstore_plugins:
   - 'store_crypto'
 barbican::api::enabled_crypto_pugins:

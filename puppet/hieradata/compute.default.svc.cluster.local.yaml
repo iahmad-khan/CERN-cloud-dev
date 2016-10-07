@@ -20,11 +20,11 @@ neutron::debug: true
 neutron::core_plugin: 'ml2'
 neutron::service_plugins:
   - cern
-neutron::rabbit_user: 'rabbit'
+neutron::rabbit_user: 'guest'
 neutron::rabbit_password: 'neutron_rabbit_password'
-neutron::rabbit_host: 'mq1'
+neutron::rabbit_host: 'controller'
 neutron::rabbit_hosts: 
-  - 'mq1'
+  - 'controller'
 neutron::metadata_host: '172.17.0.10' # FIXME: discover the nova node ip instead, has to be ip
 neutron::metadata_port: '8775'
 neutron::metadata_auth_tenant: 'services'
