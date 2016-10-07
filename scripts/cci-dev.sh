@@ -53,10 +53,9 @@ network
 neutron
 nova
 openstack_clients
-openstacklib:newton-rc
+openstacklib:mitaka
 oslo
 osrepos
-octavia
 psacct
 puppet
 puppetdbquery
@@ -79,7 +78,7 @@ cloud_container
 cloud_dashboard
 cloud_identity
 cloud_image
-cloud_networking:neutron-lbaas
+cloud_networking
 cloud_orchestration
 cloud_telemetry
 cloud_workflow

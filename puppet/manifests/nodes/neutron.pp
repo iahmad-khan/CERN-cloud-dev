@@ -17,8 +17,6 @@ node /.*neutron.*/ inherits default {
   ->
   Package['openstack-neutron']
   ->
-  Package['python-neutron-lbaas']
-  ->
   Neutron_config<||>
   ->
   Neutron_api_config<||>
