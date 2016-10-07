@@ -86,7 +86,7 @@ cloud_workflow
 "
 
 # OS_PODS holds the list of pods to be started on 'launch'
-OS_PODS=${OS_PODS:-mq1 keystone glance cinder neutron nova compute heat magnum mistral client}
+OS_PODS=${OS_PODS:-keystone glance cinder neutron nova compute heat magnum mistral client}
 
 # docker registry to push container images to (see push)
 DOCKER_REGISTRY=${DOCKER_REGISTRY:-docker.cern.ch/cloud-infrastructure}
