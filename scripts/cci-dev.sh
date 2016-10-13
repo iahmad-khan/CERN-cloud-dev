@@ -55,7 +55,7 @@ nova
 openstack_clients
 openstacklib:mitaka
 oslo
-osrepos
+osrepos:fix-clouddev
 psacct
 puppet
 puppetdbquery
@@ -381,7 +381,7 @@ enabled=1
 gpgcheck=1
 gpgkey=https://yum.dockerproject.org/gpg
 EOF
-	yum install -y docker-engine
+	yum install docker-engine-1.10.3-* 
 	exit_on_err $?
 	sed -i "s#^ExecStart.*#ExecStart=/usr/bin/docker daemon --storage-driver=overlay --dns 137.138.17.5 --insecure-registry docker.cern.ch --bip 172.17.0.1/16 -H fd://#g" /lib/systemd/system/docker.service
 	iptables -F
