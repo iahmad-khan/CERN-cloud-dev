@@ -100,6 +100,29 @@ define cloud_monitoring::flume::agent(
 
 }
 
+define cloud_monitoring::flume::service_logs (
+  $files,
+  $agent_name          = $title,
+  $enabled             = true,
+  $include_host        = true,
+  $include_timestamp   = true,
+  $include_hostgroup   = true,
+  $destination_url     = 'monit-logs.cern.ch',
+  $destination_port    = 10001,
+  $log_owner_groups    = [],
+) {}
+
+define cloud_monitoring::flume::service_logs_raw (
+  $agent_name           = $title,
+  $enabled              = true,
+  $conf_template        = undef,
+  $conf_template_params = {},
+  $morphlines_template  = undef,
+  $log_owner_groups     = [],
+  $destination_url      = "monit-logs.cern.ch",
+  $destination_port     = 10001,
+) {}
+
 # workaround to ignore lemon for now
 define lemon::metric(
   $timing = undef,
