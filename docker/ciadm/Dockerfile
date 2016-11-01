@@ -37,14 +37,14 @@ RUN rpmdev-setuptree
 RUN echo $'\n\
 [cci7-openstack-clients-qa] \n\
 name=CERN rebuilds for OpenStack clients - QA \n\
-baseurl=http://linuxsoft.cern.ch/internal/repos/openstackclients7-mitaka-qa/x86_64/os/ \n\
+baseurl=http://linuxsoft.cern.ch/internal/repos/openstackclients7-newton-qa/x86_64/os/ \n\
 enabled=1 \n\
 gpgcheck=0 \n\
 priority=5 \n'\
->> /etc/yum.repos.d/openstackclients7-mitaka-qa.repo
+>> /etc/yum.repos.d/openstackclients7-newton-qa.repo
 
 RUN yum install -y \
-	centos-release-openstack-mitaka
+	centos-release-openstack-newton
 
 RUN yum install -y \
 	python-barbicanclient \
