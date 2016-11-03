@@ -1,4 +1,4 @@
-FROM docker.cern.ch/cloud-infrastructure/puppetbase:latest
+FROM gitlab-registry.cern.ch/cloud/puppetbase:latest
 MAINTAINER Ricardo Rocha <ricardo.rocha@cern.ch>
 
 RUN yum install -y \

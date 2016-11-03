@@ -1,4 +1,4 @@
-FROM docker.cern.ch/cloud-infrastructure/ciadm
+FROM gitlab-registry.cern.ch/cloud/ciadm
 MAINTAINER Ricardo Rocha <ricardo.rocha@cern.ch>
 
 RUN yum clean all

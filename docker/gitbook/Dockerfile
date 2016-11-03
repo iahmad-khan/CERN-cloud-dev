@@ -1,6 +1,6 @@
 # Based on dockerhub fellah/gitbook
 #
-# We keep our own in docker.cern.ch/cloud-infrastructure, just in case.
+# We keep our own in gitlab-registry.cern.ch/cloud, just in case.
 
 FROM node:6.3.0
 

@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
     - name: puppetmaster
-      image: docker.cern.ch/cloud-infrastructure/puppetmaster
+      image: gitlab-registry.cern.ch/cloud/puppetmaster
       env:
         - name: LANG
           value: en_US.UTF-8
@@ -23,7 +23,7 @@ spec:
         - name: puppetmodules
           mountPath: /usr/share/puppet/modules
     - name: puppetdb
-      image: docker.cern.ch/cloud-infrastructure/puppetdb
+      image: gitlab-registry.cern.ch/cloud/puppetdb
       ports:
         - containerPort: 8080
         - containerPort: 8081
@@ -33,7 +33,7 @@ spec:
         - name: puppetssl
           mountPath: /var/lib/puppet/ssl
     - name: teigi
-      image: docker.cern.ch/cloud-infrastructure/teigi
+      image: gitlab-registry.cern.ch/cloud/teigi
       ports:
         - containerPort: 8082
       volumeMounts:

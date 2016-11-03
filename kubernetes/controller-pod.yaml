@@ -7,14 +7,14 @@ metadata:
 spec:
   containers:
     - name: mysql
-      image: docker.cern.ch/cloud-infrastructure/mysql
+      image: gitlab-registry.cern.ch/cloud/mysql
       env:
         - name: 'MYSQL_ROOT_PASSWORD'
           value: '123456'
       ports:
         - containerPort: 3306
     - name: ldap
-      image: docker.cern.ch/cloud-infrastructure/ldap
+      image: gitlab-registry.cern.ch/cloud/ldap
       env:
         - name: LDAP_ROOT_PASSWORD
           value: '123456'

@@ -1,8 +1,8 @@
 # Based on dockerhub fellah/gitbook-ebook
 #
-# We keep our own in docker.cern.ch/cloud-infrastructure, just in case.
+# We keep our own in gitlab-registry.cern.ch/cloud, just in case.
 
-FROM docker.cern.ch/cloud-infrastructure/gitbook
+FROM gitlab-registry.cern.ch/cloud/gitbook
 
 MAINTAINER Ricardo Rocha <ricardo.rocha@cern.ch>
 

@@ -8,12 +8,12 @@ fi
 for dir in base puppetbase puppetdb puppetagent puppetmaster ../teigi; do
 	img=$(echo ${dir} | cut -d'/' -f 2)
 	echo "REBUILD: Building image ${img}"
-	sudo docker build -t docker.cern.ch/cloud-infrastructure/${img} ${dir}
+	sudo docker build -t gitlab-registry.cern.ch/cloud/${img} ${dir}
 	if [ $? != 0 ]; then
 		echo "REBUILD: Docker build of ${dir} failed"
 		exit $?
 	fi
 	if [ "$1" == "push" ]; then
-		sudo docker push docker.cern.ch/cloud-infrastructure/${img}
+		sudo docker push gitlab-registry.cern.ch/cloud/${img}
 	fi
 done

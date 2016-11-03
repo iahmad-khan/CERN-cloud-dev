@@ -8,7 +8,7 @@ spec:
   hostNetwork: true
   containers:
     - name: cephall
-      image: docker.cern.ch/cloud-infrastructure/cephdemo
+      image: gitlab-registry.cern.ch/cloud/cephdemo
       env:
         - name: MON_NAME
           value: a

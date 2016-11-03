@@ -1,7 +1,7 @@
 ## Based on the work by Manuel Vacelet, manuel.vacelet@enalean.com
 #
 # Example: 
-# sudo docker run -v `pwd`:/ldif -p 389:389 -e LDAP_ROOT_PASSWORD=123456 -e LDAP_MANAGER_PASSWORD=123456 docker.cern.ch/cloud-infrastructure/ldap
+# sudo docker run -v `pwd`:/ldif -p 389:389 -e LDAP_ROOT_PASSWORD=123456 -e LDAP_MANAGER_PASSWORD=123456 gitlab-registry.cern.ch/cloud/ldap
 #
 # You can mount /ldif with ldif files and it will load the data on start.
 #
