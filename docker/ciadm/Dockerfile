@@ -1,4 +1,4 @@
-FROM centos:7
+FROM gitlab-registry.cern.ch/linuxsupport/cc7-base:latest
 
 MAINTAINER Bertrand NOEL <bertrand.noel@cern.ch>, Ricardo Rocha <ricardo.rocha@cern.ch>
 
@@ -11,16 +11,18 @@ RUN yum install -y \
 	ca-certificates \
 	man-pages \
 	vim \
-	wget
+	wget \
+	yum-plugin-priorities
 
 # CERN CA
 ADD cerngridca.crt /etc/pki/ca-trust/source/anchors/cerngridca.crt
 ADD cernroot.crt /etc/pki/ca-trust/source/anchors/cernroot.crt
 RUN update-ca-trust
 
-# krb client
+# krb and afs configuration
 RUN yum -y install \
-	krb5-workstation
+	krb5-workstation \
+	openafs-krb5
 ADD krb5.conf /etc/krb5.conf
 
 # rpm/koji rpms and setup
@@ -30,26 +32,27 @@ RUN yum install -y \
 	rpmdevtools
 
 ADD koji.conf /etc/koji.conf
+ADD afs/etc /usr/vice/etc
 
 RUN rpmdev-setuptree
 
 # openstack clients
 RUN echo $'\n\
-[cci7-openstack-clients-qa] \n\
+[cci7-openstack-clients-stable] \n\
 name=CERN rebuilds for OpenStack clients - QA \n\
-baseurl=http://linuxsoft.cern.ch/internal/repos/openstackclients7-newton-qa/x86_64/os/ \n\
+baseurl=http://linuxsoft.cern.ch/internal/repos/openstackclients7-newton-stable/x86_64/os/ \n\
 enabled=1 \n\
 gpgcheck=0 \n\
 priority=5 \n'\
->> /etc/yum.repos.d/openstackclients7-newton-qa.repo
+>> /etc/yum.repos.d/openstackclients7-newton-stable.repo
 
 RUN yum install -y \
 	centos-release-openstack-newton
+RUN sed -i 's/enabled=1/enabled=1\npriority=1/' /etc/yum.repos.d/CentOS-OpenStack-newton.repo
 
 RUN yum install -y \
 	python-barbicanclient \
 	python-heatclient \
-	python-keystoneclient-kerberos \
 	python-keystoneclient-x509 \
 	python-openstackclient \
 	python-swiftclient \
@@ -77,3 +80,7 @@ RUN wget -q https://github.com/kubernetes/kubernetes/releases/download/v1.2.0/ku
 	tar zxvf kubernetes.tar.gz; \
 	cp /kubernetes/platforms/linux/amd64/kubectl /usr/bin; \
 	rm -rf /kubernetes
+
+ADD entry.sh /entry.sh
+
+ENTRYPOINT /entry.sh
