@@ -52,6 +52,8 @@ RUN sed -i 's/enabled=1/enabled=1\npriority=1/' /etc/yum.repos.d/CentOS-OpenStac
 
 RUN yum install -y \
 	python-barbicanclient \
+	python-cryptography \
+	python-decorator \
 	python-heatclient \
 	python-keystoneclient-x509 \
 	python-openstackclient \
