@@ -91,7 +91,7 @@ cloud_workflow
 OS_PODS=${OS_PODS:-mq1 keystone glance cinder neutron nova compute heat magnum mistral client}
 
 # docker registry to push container images to (see push)
-DOCKER_REGISTRY=${DOCKER_REGISTRY:-docker.cern.ch/cloud-infrastructure}
+DOCKER_REGISTRY=${DOCKER_REGISTRY:-gitlab-registry.cern.ch/cloud}
 
 # Checkout all the puppet modules and hostgroups
 puppet_manifest_checkout() {
@@ -386,12 +386,11 @@ gpgkey=https://yum.dockerproject.org/gpg
 EOF
 	yum install -y docker-engine
 	exit_on_err $?
-	sed -i "s#^ExecStart.*#ExecStart=/usr/bin/docker daemon --storage-driver=overlay --dns 137.138.17.5 --insecure-registry docker.cern.ch --bip 172.17.0.1/16 -H fd://#g" /lib/systemd/system/docker.service
+	sed -i "s#^ExecStart.*#ExecStart=/usr/bin/docker daemon --storage-driver=overlay --dns 137.138.17.5 --bip 172.17.0.1/16 -H fd://#g" /lib/systemd/system/docker.service
 	iptables -F
 	# launch docker
 	systemctl daemon-reload
 	systemctl start docker
-	docker login -u docker -p docker docker.cern.ch
 }
 
 exit_on_err() {
@@ -420,8 +419,6 @@ case "$1" in
 		sudo ln -s $CLOUDDEV_PUPPET /opt/puppet-modules
 		kubernetes_install
 		kubernetes_start
-		echo "Login to CERN docker registry"
-		sudo docker login -u docker -p docker docker.cern.ch
 		;;
 	'restart')
 		cluster_restart
