@@ -27,6 +27,7 @@ augeasproviders_sysctl
 base
 bridged
 cernlib
+cernpuppet
 cinder
 cloud_common:nosysstat
 cloud_monitoring
@@ -58,7 +59,6 @@ oslo
 osrepos
 octavia
 psacct
-puppet
 puppetdbquery
 rabbitmq
 rsyslog
