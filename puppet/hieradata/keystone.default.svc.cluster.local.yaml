@@ -1,4 +1,4 @@
-iaas_release: 'liberty'
+iaas_release: 'mitaka'
 
 # review        
 cloud_identity_cache: false
@@ -62,6 +62,58 @@ keystone_idle_timeout: 200
 keystone_krb_auth_realms: ''
 keystone_krb_enable: false
 keystone_krb_keytab: '/etc/httpd/http.keytab'
+
+# keystone::ldap
+keystone::ldap::url: 'ldap://controller'
+keystone::ldap::user: 'cn=admin,dc=default,dc=cluster,dc=local'
+keystone::ldap::password: 'keystone_ldap_password'
+keystone::ldap::suffix: 'DC=default,DC=cluster,DC=local'
+keystone::ldap::query_scope: 'one'
+keystone::ldap::page_size: 1000
+keystone::ldap::user_tree_dn: 'OU=users,DC=default,DC=cluster,DC=local'
+keystone::ldap::user_filter: ''
+keystone::ldap::user_objectclass: 'person'
+keystone::ldap::user_id_attribute: 'cn'
+keystone::ldap::user_name_attribute: 'cn'
+keystone::ldap::user_mail_attribute: 'mail'
+keystone::ldap::user_pass_attribute: 'userPassword'
+keystone::ldap::user_enabled_attribute: 'userAccountControl'
+keystone::ldap::user_enabled_mask: 2
+keystone::ldap::user_enabled_default: 512
+keystone::ldap::user_enabled_invert: false
+keystone::ldap::user_attribute_ignore: 'password,tenant_id,tenants'
+keystone::ldap::user_default_project_id_attribute: ''
+keystone::ldap::user_pass_attribute: 'userPassword'
+keystone::ldap::user_enabled_emulation: false
+keystone::ldap::user_enabled_emulation_dn: ''
+keystone::ldap::user_additional_attribute_mapping: ''
+keystone::ldap::group_tree_dn: 'OU=e-groups,DC=default,DC=cluster,DC=local'
+keystone::ldap::group_filter: '(objectclass=group)'
+keystone::ldap::group_objectclass: 'group'
+keystone::ldap::group_id_attribute: 'cn'
+keystone::ldap::group_name_attribute: 'cn'
+keystone::ldap::group_member_attribute: 'member'
+keystone::ldap::group_desc_attribute: 'description'
+keystone::ldap::group_attribute_ignore: ''
+keystone::ldap::group_additional_attribute_mapping: ''
+keystone::ldap::use_tls: false
+keystone::ldap::tls_cacertfile: "%{keystone_ssl_cafile}"
+keystone::ldap::tls_cacertdir: "%{keystone_ssl_ca_certs}"
+keystone::ldap::tls_req_cert: 'never'
+keystone::ldap::use_auth_pool: 'True'
+keystone::ldap::identity_driver: 'ldap'
+keystone::ldap::assignment_driver: 'sql'
+keystone::ldap::credential_driver: 'sql'
+keystone::ldap::use_pool: true
+keystone::ldap::pool_size: 10
+keystone::ldap::pool_retry_max: 3
+keystone::ldap::pool_retry_delay: 0.1
+keystone::ldap::pool_connection_timeout: '-1'
+keystone::ldap::pool_connection_lifetime: 600
+keystone::ldap::use_auth_pool: true
+keystone::ldap::auth_pool_size: 100
+keystone::ldap::auth_pool_connection_lifetime: 60
+
 keystone_ldap_user: 'cn=admin,dc=default,dc=cluster,dc=local'
 keystone_ldap_page_size: 1000
 keystone_ldap_group_filter: '(objectclass=group)'
@@ -93,6 +145,7 @@ keystone_ldap_group_allow_create: 'False'
 keystone_ldap_group_allow_update: 'False'
 keystone_ldap_group_allow_delete: 'False'
 keystone_ldap_suffix: 'DC=default,DC=cluster,DC=local'
+
 keystone_log_dir: '/var/log/keystone'
 keystone_log_facility: 'LOG_USER'
 keystone_log_file: '/var/log/keystone/keystone.log'
