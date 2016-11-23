@@ -12,51 +12,18 @@ keystone_token_flush_job_hour: '*/6'
 iaas_include_pkgs:
   - openstack-keystone
   - python-keystone
-  - python-keystoneclient
-  - python-pysaml2
-  - python-pyws
-  - python-repoze-who
 
 openstack_centos_include_pkgs:
   - openstack-selinux
+  - python-*
+  - python2-*
   - pyparsing
-  - python-alembic
-  - python-babel
-  - python-cinderclient
-  - python-cliff
-  - python-cmd2
-  - python-cryptography
-  - python-glanceclient
-  - python-keystoneclient
-  - python-keystonemiddleware
-  - python-ldappool
-  - python-migrate
-  - python-netaddr
-  - python-netifaces
-  - python-neutronclient
-  - python-novaclient
-  - python-openstackclient
-  - python-oslo*
-  - python-paste-deploy
-  - python-pycadf
-  - python-pysaml2
-  - python-requests
-  - python-routes
-  - python-six
-  - python-sqlalchemy
-  - python-stevedore
-  - python-unicodecsv
-  - python-urllib3
-  - python-webob
-  - python2-appdirs
-  - python2-debtcollector
-  - python2-eventlet
-  - python2-futurist
-  - python2-greenlet
-  - python2-iso8601
-  - python2-os-client-config
-  - python2-oslo*
-  - python2-PyMySQL
+  - pyOpenSSL
+  - mariadb-*
+
+openstack_centos_exclude_pkgs:
+  - openstack-keystone
+  - python-keystone
 
 # Puppet plugin whitelist
 pluginsync_filter_enable: true
@@ -168,6 +135,7 @@ keystone_ssl_options:
   - '+ExportCertData'
 cloud_identity_backend_api: ''
 keystone_ssl_cipher: 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:ECDHE-RSA-AES128-SHA:DHE-RSA-AES128-GCM-SHA256:AES256+EDH:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4'
+fernet_selinux_enable: false
 keystone_token_driver: 'keystone.token.persistence.backends.sql.Token'
 keystone_token_expiration: '86400'
 keystone_token_format: false
