@@ -1,20 +1,57 @@
-iaas_release: 'kilo'
-openstack_release: 'kilo'
+osrepos_disable_distro_sync: false
+iaas_release: 'liberty'
+openstack_release: 'liberty'
 
 pluginsync_filter_enable: true
 pluginsync_filter:
-  - filemapper
-  - network
-  - neutron
+    - lbd
+    - inifile
+    - bcache
+    - dmcache
+    - sysctl
+    - ceilometer
+    - ceilometer_hyper_v
+    - hyper_v
+    - mysql
+    - nova
+    - nova_hyper_v
+    - rabbitmq
+    - cornerstone
+    - openstack_hyper_v
+    - windows_common
+    - windows_env
+    - windows_path
+    - powershell
+    - registry
+    - network
+    - filemapper
+    - boolean
+    - chocolatey
+#OLD
+    - neutron
 
 iaas_stable_repo_includepkgs:
   - openstack-nova*
   - python-nova*
   - golang-neutron-dhcp
 
+osrepos_os_exclude_pkgs:
+  - rabbitmq-server
+
+# TODO: erlang excluded because bug on R16B-03.16. See: OS-2875
+osrepos_sync_exclude_packages:
+  - rabbitmq-server
+  - erlang*
+
+openstack_centos_kilo_excludepkgs:
+    - puppet
+    - facter
+    - python-nova
+    - openstack-nova*
+
 openstack_selinux: true
 
-neutron::enabled: true
+neutron::enabled: false
 neutron::verbose: true
 neutron::debug: true
 neutron::core_plugin: 'ml2'
@@ -47,10 +84,11 @@ nova::network::neutron::neutron_ca_certificates_file: '/var/lib/puppet/ssl/certs
 nova::network::neutron::vif_plugging_is_fatal: false
 nova::network::neutron::vif_plugging_timeout: 0
 
+landb_keystone:  'https://keystone.default.svc.cluster.local:443/admin/v2.0'
 #nova::neutron
-nova_network_enabled: false
-nova_neutron_enabled: true
-nova_dhcp_enabled: true
+nova_network_enabled: true
+nova_neutron_enabled: false
+nova_dhcp_enabled: false
 
 # old style definitions
 rabbit_host: 'controller'

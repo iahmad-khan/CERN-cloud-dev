@@ -5,6 +5,8 @@ enable_afs: false
 osclients_default_rc: false
 osclients_acron: false
 
+nova_neutron_enabled: false
+
 openstack_centos_mitaka_excludepkgs:
   - openstack-neutron*
     #- python-neutron*

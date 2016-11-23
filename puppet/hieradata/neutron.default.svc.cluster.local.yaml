@@ -22,7 +22,7 @@ openstack_rdo_include_pkgs:
 
 haproxy_enable: false
 
-neutron::enabled: true
+neutron::enabled: false
 neutron::verbose: false
 neutron::debug: false
 neutron::core_plugin: 'ml2'

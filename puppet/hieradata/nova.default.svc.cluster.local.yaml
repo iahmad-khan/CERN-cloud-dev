@@ -1,5 +1,5 @@
-iaas_release: 'kilo'
-openstack_release: 'kilo'
+iaas_release: 'liberty'
+openstack_release: 'liberty'
 
 # nova::base
 nova_debug: False
@@ -45,10 +45,11 @@ nova_vncproxy_host: "0.0.0.0"
 # nova_network
 nova_network_network_manager: 'nova.network.manager.CernManager'
 nova_network_create_networks: false
-nova_network_enabled: false
+nova_network_fixed_range: '172.17.100.0/24'
+nova_network_enabled: true
 
 #nova::neutron
-nova_neutron_enabled: true
+nova_neutron_enabled: false
 
 nova::network::neutron::neutron_admin_username: 'neutron'
 nova::network::neutron::neutron_admin_password: 'neutron_admin_password'
@@ -61,7 +62,7 @@ nova::network::neutron::vif_plugging_is_fatal: false
 nova::network::neutron::vif_plugging_timeout: 0
 
 #neutron
-neutron::enabled: true
+neutron::enabled: false
 neutron::verbose: true
 neutron::debug: false
 neutron::core_plugin: 'ml2'
@@ -114,4 +115,6 @@ pluginsync_filter:
 openstack_centos_kilo_excludepkgs:
   - python-requests
   - python-urllib3
+  - python-nova
+  - openstack-nova*
 iaas_stable_repo_includepkgs: []
