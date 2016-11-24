@@ -43,7 +43,7 @@ name=CERN rebuilds for OpenStack clients - QA \n\
 baseurl=http://linuxsoft.cern.ch/internal/repos/openstackclients7-newton-stable/x86_64/os/ \n\
 enabled=1 \n\
 gpgcheck=0 \n\
-priority=5 \n'\
+priority=1 \n'\
 >> /etc/yum.repos.d/openstackclients7-newton-stable.repo
 
 RUN yum install -y \
