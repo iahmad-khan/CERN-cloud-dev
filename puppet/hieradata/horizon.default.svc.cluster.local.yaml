@@ -1,129 +1,80 @@
-iaas_release: 'liberty'
+###### cloud_dashboard.yaml
 
-osrepos_os_exclude_pkgs:
-  - python-bson
+cloud_common::repo::iaas::release: "%{hiera('cloud_common::repo::openstack::release')}"
+cloud_common::repo::iaas::enable_stable: "%{hiera('cloud_common::repo::openstack::enable_stable')}"
+cloud_common::repo::iaas::enable_qa: "%{hiera('cloud_common::repo::openstack::enable_qa')}"
+cloud_common::repo::iaas::enable_testing: "%{hiera('cloud_common::repo::openstack::enable_testing')}"
 
-iaas_include_pkgs:
-  - openstack-dashboard
-  - openstack-dashboard-theme
-  - python-django-horizon
-  - python2-django-openstack-auth
-  - python-django-piwik
+cloud_common::repo::clients::release: "%{hiera('cloud_common::repo::openstack::release')}"
+cloud_common::repo::clients::enable_stable: "%{hiera('cloud_common::repo::openstack::enable_stable')}"
+cloud_common::repo::clients::enable_qa: "%{hiera('cloud_common::repo::openstack::enable_qa')}"
+cloud_common::repo::clients::enable_testing: "%{hiera('cloud_common::repo::openstack::enable_testing')}"
 
-openstack_rdo_include_pkgs:
-  - python-oslo*
-  - python-sqlalchemy
-  - python-routes
-  - python-paste-deploy
-  - python-six
-  - python-pycadf
-  - python-cinderclient
-  - python-troveclient
-  - python-django-compressor
-  - python-ceilometerclient
-  - python-swiftclient
-  - python-neutronclient
-  - python-glanceclient
-  - python-heatclient
-  - python-novaclient
-  - python-keystoneclient
-  - python-requests
-  - python-urllib3
-  - python-saharaclient
-  - python-XStatic-*
-  - python-netifaces
-  - python-stevedore
-  - python-netaddr
-  - python-babel
-  - python-keystoneclient
-  - python-requests
-  - python-urllib3
-  - python-cliff
-  - python-unicodecsv
-  - python-cmd2
-  - pyparsing
-  - python-django-pyscss
-  - python-scss
-  - python-django
-  - python-django-bash-completion
-  - python-openstackclient
-  - python2-os-client-config
-  - python2-appdirs
-  - python2-debtcollector
-  - python2-oslo*
-  - python2-XStatic-*
-  - bootswatch-common
-  - bootswatch-fonts
-  - fontawesome-fonts
-  - fontawesome-fonts-web
-  - mdi-common
-  - mdi-fonts
-  - roboto-fontface-*
-  - python2-pysocks
+cloud_common::repo::utils::release: "%{hiera('cloud_common::repo::openstack::release')}"
+cloud_common::repo::utils::enable_stable: "%{hiera('cloud_common::repo::openstack::enable_stable')}"
+cloud_common::repo::utils::enable_qa: "%{hiera('cloud_common::repo::openstack::enable_qa')}"
+cloud_common::repo::utils::enable_testing: "%{hiera('cloud_common::repo::openstack::enable_testing')}"
 
-osc_include_pkgs:
-  - python-keystoneclient-kerberos
+cloud_common::repo::openstack::excludepkgs:
+   - puppet
+   - facter
+   - python-django-horizon
+   - python-django-horizon-doc
+   - openstack-dashboard
+   - openstack-dashboard-theme
+   - python-django-openstack-auth
+   - openstack-manila-ui
 
-cci7_utils_pkgs:
-  - python2-hzrequestspanel
-  - cci-tools-0.0.45
-  - ai-tools
-  - python-cornerstoneclient
-  - maintenance-horizon
+pluginsync_filter_enable: true
+pluginsync_filter:
+  - apache
+  - inifile
+  - horizon
+  - lbd
+  - vcsrepo
+  - inifile
+  - memcached
 
-horizon_http_port: 80
-horizon_https_port: 443
-dashboard_loadbalancer_https_listening_service: 443
-dashboard_loadbalancer_http_listening_service: 80
+
+###### backend.yaml
+
 horizon_cache_backend: 'django.core.cache.backends.dummy.DummyCache'
-horizon_cache_server_ip: ''
+horizon_cache_server_ip: '127.0.0.1'
 horizon_cache_server_port: '11211'
-horizon_ca: '/etc/openstack-dashboard/ssl/certs/ca.pem'
-horizon_cert: '/etc/openstack-dashboard/ssl/certs/hostcert.pem'
-horizon_key: '/etc/openstack-dashboard/ssl/keys/hostkey.pem'
+horizon_http_port: '80'
+horizon_https_port: '443'
+horizon_bind_address: '0.0.0.0'
 horizon_app_links: false
-horizon_keystone_url: 'https://keystone.default.svc.cluster.local:443/admin/v3'
 horizon_keystone_default_role: 'Member'
-horizon_django_debug: false
+horizon_django_debug: 'False'
 horizon_api_result_limit: 1000
 horizon_log_handler: 'file'
 horizon_log_level: 'INFO'
-horizon_local_settings_template: 'horizon/local_settings.py.erb'
-horizon_help_url: 'https://clouddocs.web.cern.ch/clouddocs'
-horizon_bind_address: '0.0.0.0'
-horizon_server_name: 'horizon.default.svc.cluster.local'
-horizon_allowed_hosts:
-  - 'horizon.default.svc.cluster.local'
-horizon_listen_ssl: true
-horizon_compress_offline: 'False'
 horizon_can_set_mount_point: 'True'
-horizon_file_upload_temp_dir: '/tmp'
-horizon_session_timeout: 28800
-horizon_site_branding: 'CERN Cloud Infrastructure'
-horizon_piwik_site_id: 843
-horizon_piwik_url: 'https://piwik.web.cern.ch/'
-horizon_maintenance_mode: 'False'
+horizon_listen_ssl: true
+horizon_cert: '/etc/openstack-dashboard/ssl/certs/hostcert.pem'
+horizon_key: '/etc/openstack-dashboard/ssl/keys/hostkey.pem'
+horizon_ca: '/etc/openstack-dashboard/ssl/certs/ca.pem'
+horizon_help_url: 'https://clouddocs.web.cern.ch/clouddocs'
 horizon_subscribe_url: 'https://resources.web.cern.ch/resources/Manage/CloudInfrastructure/Default.aspx'
 horizon_ticket_url: 'https://cern.service-now.com/service-portal/function.do?name=cloud-infrastructure'
 horizon_ssb_url: 'https://cern.service-now.com/service-portal/ssb.do?area=IT'
 horizon_monitoring_url: 'https://openstack-monitoring.cern.ch/#/dashboard/elasticsearch/'
-horizon_websso_enable: 'False'
-horizon_websso_default_redirect: 'False'
-horizon_ssl_noverify: 'True'
-horizon_manage_selinux: false
-horizon_websso_default_redirect_protocol: 'saml2'
-horizon_websso_default_redirect_region: 'https://keystone/main/v3'
-horizon_websso_default_redirect_logout: 'https://login/'
+horizon_local_settings_template: 'horizon/local_settings.py.erb'
+horizon_session_timeout: 28800
+horizon_site_branding: 'CERN Cloud Infrastructure'
+horizon_piwik_url: 'https://piwik.web.cern.ch/'
+horizon_file_upload_temp_dir: '/tmp'
+horizon_maintenance_mode: 'False'
 horizon_nova_extension_blacklist:
   - 'SimpleTenantUsage'
-
-horizon::api_versions:
+horizon_secure_cookies: True
+horizon_root_url: ''
+horizon_api_versions:
   data-processing: 1.1
   identity: 3
   volume: 2
-horizon::params::root_url: '/'
-horizon::wsgi::apache::default_vhost: false
-horizon::image_backend:
+horizon_image_backend:
   image_formats:
     # OS-3204 Disable not supported images at CERN
     '':      'Select type'
@@ -137,6 +88,48 @@ horizon::image_backend:
     #vdi:    'VDI - Virtual Disk Image'
     #vhd:    'VHD - Virtual Hard Disk'
     #vmdk:   'VMDK - Virtual Machines Disk'
-## Teigi secrets
-horizon::secret_key: 'horizon_secret_keystore'
+horizon_secret_key: 'horizon_secret_keystore'
+horizon_images_panel: 'angular'
+horizon_django_session_engine: 'django.contrib.sessions.backends.cache'
+horizon_available_themes:
+  - { name: 'cern', label: 'CERN', path: 'themes/cern' }
+horizon_default_theme: 'cern'
+horizon_keystone_options:
+  name: 'native'
+  can_edit_user: false
+  can_edit_group: false
+  can_edit_project: false
+  can_edit_domain: false
+  can_edit_role: false
+horizon_timezone: 'Europe/Zurich'
 
+apache::default_vhost: false
+
+###### horizon_master.yaml
+
+cloud_common::repo::openstack::release: 'newton'
+cloud_common::repo::openstack::enable_stable: '1'
+cloud_common::repo::openstack::enable_qa: '0'
+cloud_common::repo::openstack::enable_testing: '0'
+
+cloud_dashboard_frontend_alias: ''
+dashboard_loadbalancer_http_listening_service: ''
+dashboard_loadbalancer_https_listening_service: ''
+horizon_server_name: 'horizon.default.svc.cluster.local'
+horizon_server_aliases: 'horizon.default.svc.cluster.local'
+horizon_allowed_hosts:
+  - horizon.default.svc.cluster.local
+horizon_piwik_site_id: 843
+horizon_keystone_url: 'https://keystone.default.svc.cluster.local:443/admin/v3'
+horizon_websso_enable: 'False'
+horizon_websso_default_redirect: 'False'
+horizon_websso_default_redirect_protocol: 'saml2'
+horizon_websso_default_redirect_region: 'https://keystone/main/v3'
+horizon_websso_default_redirect_logout: 'https://login/'
+
+horizon_compress_offline: 'False'
+horizon_cache_level: 'dummy'
+
+###### Custom
+
+horizon_manage_selinux: false

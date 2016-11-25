@@ -38,7 +38,7 @@ flume
 glance
 haproxy
 heat
-horizon
+horizon:horizon_master
 inifile
 kerberos
 keystone
@@ -78,7 +78,7 @@ cloud_adm
 cloud_blockstorage
 cloud_compute:dev-env-fixes
 cloud_container
-cloud_dashboard
+cloud_dashboard:horizon_master
 cloud_identity
 cloud_image
 cloud_networking:neutronlbaas

@@ -35,9 +35,11 @@ iaas_include_pkgs:
   - openstack-dashboard
   - openstack-dashboard-theme
   - python-django-horizon
+  - python-django-horizon-doc
+  - openstack-manila-ui
   - python-django-maintenancemode
   - python-django-piwik
-    python-django-openstack-auth
+  - python-django-openstack-auth
   - openstack-neutron*
 openstack_rdo_include_pkgs:
   - python-oslo*
