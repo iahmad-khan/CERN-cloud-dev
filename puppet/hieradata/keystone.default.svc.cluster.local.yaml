@@ -1,5 +1,3 @@
-iaas_release: 'mitaka'
-
 # review        
 cloud_identity_cache: false
 keystone_public_endpoint: 'https://keystone.default.svc.cluster.local:443/main'
@@ -9,21 +7,15 @@ keystone_trusted_dashboard: 'https://horizon.default.svc.cluster.local/auth/webs
 keystone_token_flush_job: 'keystone-token-flush'
 keystone_token_flush_job_hour: '*/6'
 
-iaas_include_pkgs:
+# Repo configuration
+cloud_common::repo::openstack::release: 'mitaka'
+cloud_common::repo::openstack::excludepkgs:
+  - puppet
+  - facter
   - openstack-keystone
   - python-keystone
 
-openstack_centos_include_pkgs:
-  - openstack-selinux
-  - python-*
-  - python2-*
-  - pyparsing
-  - pyOpenSSL
-  - mariadb-*
-
-openstack_centos_exclude_pkgs:
-  - openstack-keystone
-  - python-keystone
+cloud_common::repo::iaas::release: "%{hiera('cloud_common::repo::openstack::release')}"
 
 # Puppet plugin whitelist
 pluginsync_filter_enable: true
@@ -48,8 +40,7 @@ keystone_cache_backend: 'keystone.common.cache.noop'
 keystone_cache_dir: '/var/cache/keystone'
 keystone_cache_level: "hostgroup=\"cloud_identity/cache/main\""
 keystone_cache_port: 11211
-keystone_catalog_driver: 'endpoint_filter.sql'
-keystone_catalog_type: 'sql'
+keystone_catalog_driver: 'sql'
 keystone_control_exchange: false
 keystone_debug: false
 
@@ -87,6 +78,9 @@ keystone::ldap::user_pass_attribute: 'userPassword'
 keystone::ldap::user_enabled_emulation: false
 keystone::ldap::user_enabled_emulation_dn: ''
 keystone::ldap::user_additional_attribute_mapping: ''
+keystone::ldap::user_allow_create: false
+keystone::ldap::user_allow_update: false
+keystone::ldap::user_allow_delete: false
 keystone::ldap::group_tree_dn: 'OU=e-groups,DC=default,DC=cluster,DC=local'
 keystone::ldap::group_filter: '(objectclass=group)'
 keystone::ldap::group_objectclass: 'group'
@@ -96,6 +90,9 @@ keystone::ldap::group_member_attribute: 'member'
 keystone::ldap::group_desc_attribute: 'description'
 keystone::ldap::group_attribute_ignore: ''
 keystone::ldap::group_additional_attribute_mapping: ''
+keystone::ldap::group_allow_create: false
+keystone::ldap::group_allow_update: false
+keystone::ldap::group_allow_delete: false
 keystone::ldap::use_tls: false
 keystone::ldap::tls_cacertfile: "%{keystone_ssl_cafile}"
 keystone::ldap::tls_cacertdir: "%{keystone_ssl_ca_certs}"
