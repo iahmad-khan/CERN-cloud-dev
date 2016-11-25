@@ -25,7 +25,7 @@ node /.*keystone.*/ inherits default {
   ->
   Keystone_config <||>
   ~>
-  exec { '/usr/bin/keystone-manage db_sync; /usr/bin/keystone-manage db_sync --extension endpoint_filter':
+  exec { '/usr/bin/keystone-manage db_sync':
     refreshonly => true,
   }
   ->
