@@ -26,6 +26,7 @@ node /.*keystone.*/ inherits default {
   Keystone_config <||>
   ~>
   exec { '/usr/bin/keystone-manage db_sync':
+    user        => 'keystone',
     refreshonly => true,
   }
   ->
@@ -37,18 +38,18 @@ node /.*keystone.*/ inherits default {
     ensure => 'present',
   }
    ->
-  exec { "keystone_project_roles":
-    command     => "/usr/bin/sleep 5 && /usr/bin/keystone tenant-create --name services && /usr/bin/keystone role-create --name admin && /usr/bin/keystone role-create --name Member && /usr/bin/keystone user-role-add --user admin --role admin --tenant services && /usr/bin/keystone user-role-add --user glance --role admin --tenant services && /usr/bin/keystone user-role-add --user cinder --role admin --tenant services && /usr/bin/keystone user-role-add --user neutron --role admin --tenant services && /usr/bin/keystone user-role-add --user nova --role admin --tenant services && /usr/bin/keystone tenant-list",
+  exec { "keystone_bootstrap":
+    command     => "/usr/bin/sleep 5 && keystone-manage bootstrap --bootstrap-password 123456 --bootstrap-username admin --bootstrap-project-name services --bootstrap-role-name admin --bootstrap-service-name keystone --bootstrap-region-id main --bootstrap-admin-url https://keystone.default.svc.cluster.local:443/admin/v3 --bootstrap-public-url https://keystone.default.svc.cluster.local:443/main/v3 --bootstrap-internal-url https://keystone.default.svc.cluster.local:443/main/v3",
     path        => "/usr/bin:/usr/sbin",
-    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_SERVICE_TOKEN=512c2b7c2d94b5bb731469955d4b7455','OS_SERVICE_ENDPOINT=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
-    unless      => "/usr/bin/keystone tenant-list | /usr/bin/grep services",
+    environment => ['OS_AUTH_URL=https://keystone.default.svc.cluster.local/main/v3','OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_IDENTITY_API_VERSION=3','OS_PASSWORD=123456','OS_PROJECT_DOMAIN_ID=default','OS_PROJECT_NAME=services','OS_USERNAME=admin','OS_USER_DOMAIN_ID=default'],
+    unless      => "/usr/bin/openstack project-list | /usr/bin/grep services",
   }
   ->
-  exec { "keystone_service_create":
-    command     => "/usr/bin/keystone service-list && SERVICE=\$(/usr/bin/keystone service-create --type identity --name keystone --description 'Openstack Identity Service' | /usr/bin/grep 'id ' | /usr/bin/cut -d '|' -f3) && /usr/bin/keystone endpoint-create --region main --service \$SERVICE --publicurl 'https://keystone.default.svc.cluster.local:443/main/' --adminurl 'https://keystone.default.svc.cluster.local:443/admin/' --internalurl 'https://keystone.default.svc.cluster.local:443/main/'",
-    path        => "/usr/bin:/usr/sbin",
-    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_SERVICE_TOKEN=512c2b7c2d94b5bb731469955d4b7455','OS_SERVICE_ENDPOINT=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
-    unless      => "/usr/bin/keystone service-list | /usr/bin/grep identity",
+  exec { "keystone_user_roles":
+    command     => 'openstack role create Member; openstack role add --user glance --project services admin; openstack role add --user cinder --project services admin; openstack role add --user neutron --project services admin; openstack role add --user nova --project services admin',
+    path        => '/usr/bin:/usr/sbin',
+    environment => ['OS_AUTH_URL=https://keystone.default.svc.cluster.local/main/v3','OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_IDENTITY_API_VERSION=3','OS_PASSWORD=123456','OS_PROJECT_DOMAIN_ID=default','OS_PROJECT_NAME=services','OS_USERNAME=admin','OS_USER_DOMAIN_ID=default'],
+    unless      => '/usr/bin/openstack role-list | /usr/bin/grep Member',
   }
   ->
   exec { "keystone_heat_domain":
