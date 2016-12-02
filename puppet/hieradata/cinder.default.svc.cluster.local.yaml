@@ -2,18 +2,20 @@ log_regex_common: '(\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}.\\d{3})\\s*(\\d
 log_regex_instance: '\\[instance:\\s+([\\w\\-]*)\\]'
 log_regex_request: '\\[([\\w\\-]*)\\s+([\\w]*)\\s+([\\w\\-]*)'
 
-iaas_release: mitaka
+# Repo configuration
+cloud_common::repo::openstack::release: 'mitaka'
+cloud_common::repo::openstack::excludepkgs:
+  - puppet
+  - facter
 
-iaas_include_pkgs:
-    - openstack-cinder
-    - python-cinder
-    - python-cinderclient
-openstack_exclude_pkgs:
-    - puppet
-    - facter
-rabbitmq7_include_pkgs:
-    - rabbitmq-server
-    - lemon-sensor-rabbitmq
+cloud_common::repo::iaas::release: "%{hiera('cloud_common::repo::openstack::release')}"
+cloud_common::repo::iaas::includepkgs:
+  - openstack-cinder
+  - python-cinder
+  - python2-cinderclient
+
+cloud_common::repo::rabbitmq::includepkgs:
+  - lemon-sensor-rabbitmq
 
 haproxy_enable: false
 
@@ -61,6 +63,8 @@ cinder_state_path: '/var/lib/cinder'
 cinder_use_syslog: false
 cinder_verbose: false
 cinder_volume_tmp_dir: '$state_path/conversion/'
+
+cinder_enable_frontend_flume: false
 
 cinder_api_listening_service: 'openstack-cinder-api'
 cinder_api_bind_host: '0.0.0.0'
