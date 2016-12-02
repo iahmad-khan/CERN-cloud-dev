@@ -42,14 +42,14 @@ node /.*keystone.*/ inherits default {
     command     => "/usr/bin/sleep 5 && keystone-manage bootstrap --bootstrap-password 123456 --bootstrap-username admin --bootstrap-project-name services --bootstrap-role-name admin --bootstrap-service-name keystone --bootstrap-region-id main --bootstrap-admin-url https://keystone.default.svc.cluster.local:443/admin/v3 --bootstrap-public-url https://keystone.default.svc.cluster.local:443/main/v3 --bootstrap-internal-url https://keystone.default.svc.cluster.local:443/main/v3",
     path        => "/usr/bin:/usr/sbin",
     environment => ['OS_AUTH_URL=https://keystone.default.svc.cluster.local/main/v3','OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_IDENTITY_API_VERSION=3','OS_PASSWORD=123456','OS_PROJECT_DOMAIN_ID=default','OS_PROJECT_NAME=services','OS_USERNAME=admin','OS_USER_DOMAIN_ID=default'],
-    unless      => "/usr/bin/openstack project-list | /usr/bin/grep services",
+    unless      => "/usr/bin/openstack project list | /usr/bin/grep services",
   }
   ->
   exec { "keystone_user_roles":
     command     => 'openstack role create Member; openstack role add --user glance --project services admin; openstack role add --user cinder --project services admin; openstack role add --user neutron --project services admin; openstack role add --user nova --project services admin',
     path        => '/usr/bin:/usr/sbin',
     environment => ['OS_AUTH_URL=https://keystone.default.svc.cluster.local/main/v3','OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_IDENTITY_API_VERSION=3','OS_PASSWORD=123456','OS_PROJECT_DOMAIN_ID=default','OS_PROJECT_NAME=services','OS_USERNAME=admin','OS_USER_DOMAIN_ID=default'],
-    unless      => '/usr/bin/openstack role-list | /usr/bin/grep Member',
+    unless      => '/usr/bin/openstack role list | /usr/bin/grep Member',
   }
   ->
   exec { "keystone_heat_domain":
