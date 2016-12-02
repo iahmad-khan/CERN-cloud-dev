@@ -29,5 +29,9 @@ node /.*mistral.*/ inherits default {
   }
   ->
   Service['mistral-api']
+  ->
+  Service[mistral-engine]
+  ->
+  Service[mistral-executor]
 
 }
