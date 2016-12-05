@@ -83,6 +83,20 @@ node default {
 
 }
 
+define cloud_monitoring::flume::service_logs(
+  $files,
+  $agent_name          = $title,
+  $enabled             = true,
+  $include_host        = true,
+  $include_timestamp   = true,
+  $include_hostgroup   = true,
+  $destination_url     = '',
+  $destination_port    = 10001,
+  $log_owner_groups    = [],
+) {
+
+}
+
 define cloud_monitoring::flume::agent(
     # Service flag
     $enabled              = true,
