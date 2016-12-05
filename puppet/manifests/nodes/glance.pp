@@ -41,10 +41,4 @@ node /.*glance.*/ inherits default {
   ~>
   Service['openstack-glance-registry']
 
-  glance_api_config { 'keystone_authtoken/cafile': value => '/var/lib/puppet/ssl/certs/ca.pem'; }
-  ->
-  glance_registry_config { 'keystone_authtoken/cafile': value => '/var/lib/puppet/ssl/certs/ca.pem'; }
-  ->
-  Service['openstack-glance-api']
-
 }
