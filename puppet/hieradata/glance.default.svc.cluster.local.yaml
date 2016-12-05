@@ -21,7 +21,9 @@ glance::api::identity_uri: 'https://keystone.default.svc.cluster.local:443/admin
 glance::registry::identity_uri: 'https://keystone.default.svc.cluster.local:443/admin'
 
 glance::api::keystone_user: 'glance'
+glance::api::keystone_password: 'glance_keystone_password'
 glance::registry::keystone_user: 'glance'
+glance::registry::keystone_password: 'glance_keystone_password'
 glance::api::keystone_tenant: 'services'
 glance::registry::keystone_tenant: 'services'
 
