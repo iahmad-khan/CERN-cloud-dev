@@ -1,4 +1,7 @@
 haproxy_enable: false
+
+glance_release: newton
+
 glance_swap: false
 glance_rabbit_host: 'mq1'
 glance_rabbit_userid: 'rabbit'
