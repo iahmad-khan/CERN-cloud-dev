@@ -1,5 +1,7 @@
 iaas_release: 'mitaka'
 
+haproxy_enable: false
+
 openstack_rdo_include_pkgs:
   - openstack-octavia-*
   - python-octavia-*

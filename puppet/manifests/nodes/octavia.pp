@@ -3,7 +3,7 @@ node /.*octavia.*/ inherits default {
 
   class { 'hg_cloud_networking': }
   class { 'hg_cloud_networking::controller': }
-  class { 'hg_cloud_networking::octavia::controller': }
+  class { 'hg_cloud_networking::controller::octavia': }
 
   package { 'mariadb':
     ensure => 'present',
