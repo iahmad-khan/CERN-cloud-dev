@@ -1,45 +1,120 @@
-
-cloud_common::repo::openstack::release: 'liberty'
+pluginsync_filter_enable: true
+pluginsync_filter:
+  - filemapper
+  - inifile
+  - keystone
+  - network
+  - neutron
+  - openstacklib
+  - rabbitmq
+  - sysctl
+haproxy_enable: false
+cloud_common::repo::openstack::release: 'mitaka'
 cloud_common::repo::openstack::includepkgs:
-  - python-logutils
-  - python-neutron*
+  - openstack-neutron*
+  - openstack-selinux
+  - openstack-utils
+  - pyparsing
+  - python-alembic
+  - python-babel
   - python-barbican*
+  - python-ceilometerclient
+  - python-cinderclient
+  - python-cliff
+  - python-cmd2
+  - python-cryptography
+  - python-designateclient
+  - python-django-compressor
+  - python-dogpile-cache
+  - python-glanceclient
+  - python-keystone
+  - python-keystoneclient
+  - python-keystonemiddleware
+  - python-kombu
+  - python-ldappool
+  - python-logutils
+  - python-migrate
+  - python-monotonic
+  - python-netaddr
+  - python-netifaces
+  - python-neutron*
+  - python-novaclient
+  - python-openstackclient
+  - python-oslo*
+  - python-paste-deploy
+  - python-pycadf
   - python-pysaml2
+  - python-routes
+  - python-requests
   - python-ryu
+  - python-saharaclient
+  - python-six
+  - python-sqlalchemy
+  - python-webob
+  - python-heatclient
+  - python-troveclient
+  - python-swiftclient
+  - python-unicodecsv
+  - python-urllib3
+  - python-stevedore
+  - python-XStatic-Font-Awesome
+  - python-XStatic-Angular
   - python2-debtcollector
   - python2-eventlet
+  - python2-funcsigs
   - python2-futurist
-  - python2-oslo*
+  - python2-keystoneauth1
+  - python2-openstacksdk
+  - python2-os-client-config
   - python2-oslo*
   - python2-pecan
+  - python2-pika_pool
+  - python2-positional
+  - python2-pysocks
   - python2-PyMySQL
+  - python2-requestsexceptions
   - python2-suds
-  - openstack-neutron*
-
+  - python2-pysocks
+cloud_common::repo::openstack::excludepkgs:
+  - puppet
+  - facter
+  - rabbitmq*
 cloud_common::repo::iaas::release: "%{hiera('cloud_common::repo::openstack::release')}"
 cloud_common::repo::iaas::includepkgs:
-  - python-neutronclient-cern
+  - openstack-dashboard
+  - openstack-dashboard-theme
+  - openstack-keystone
   - openstack-neutron-cern
+  - python-django-horizon
+  - python-django-maintenancemode
+  - python-django-openstack-auth
+  - python-django-piwik
+  - python-keystone
+  - python-keystoneclient
+  - python-neutronclient-cern
+  - python-pysaml2
+  - python-pyws
+osrepos_ai_testing_enable: 1
+osrepos_ai_qa_enable: 0
 
-haproxy_enable: false
-
+# cloud_networking
 neutron::enabled: true
-neutron::verbose: false
-neutron::debug: false
+neutron::verbose: true
+neutron::debug: true
+neutron::use_syslog: false
 neutron::core_plugin: 'ml2'
+neutron::bind_port: 9696
 neutron::service_plugins:
-  - cern
-  - neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2
+  - 'cern'
+  - 'neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2'
 neutron::api_extensions_path:
   - /usr/lib/python2.7/site-packages/networking_cern/extensions
 neutron::rabbit_user: 'rabbit'
 neutron::rabbit_password: 'rabbit_password'
-neutron::rabbit_host: 'mq1'
 neutron::rabbit_hosts: 
   - 'mq1'
 neutron::metadata_host: 'nova.default.svc.cluster.local'
 neutron::metadata_port: '8775'
-
 neutron::quota::default_quota: -1
 neutron::quota::quota_items: ''
 neutron::quota::quota_network: -1
@@ -47,29 +122,27 @@ neutron::quota::quota_subnet: -1
 neutron::quota::quota_port: -1
 neutron::quota::quota_security_group: -1
 neutron::quota::quota_security_group_rule: -1
-
 neutron::server::auth_user: 'neutron'
 neutron::server::auth_password: 'neutron_admin_password'
 neutron::server::auth_tenant: 'services'
-neutron::server::auth_uri: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
-neutron::server::identity_uri: 'https://keystone.default.svc.cluster.local:443/admin'
-neutron::server::auth_cafile: '/var/lib/puppet/ssl/certs/ca.pem'
+neutron::server::auth_uri: 'https://keystone.default.svc.cluster.local/main/v2.0'
+neutron::server::identity_uri: 'https://keystone.default.svc.cluster.local/admin'
+neutron::server::auth_cafile: ''
 neutron::server::database_connection: 'neutron_sql_connection'
 neutron::server::landb_hostname: 'landb'
 neutron::server::landb_port: '8443'
 neutron::server::landb_protocol: 'https'
 neutron::server::landb_username: 'neutron'
 neutron::server::landb_password: 'neutron_landb_password'
-
 neutron::server::notifications::nova_admin_username: 'neutron'
 neutron::server::notifications::nova_admin_password: 'neutron_admin_password'
-neutron::server::notifications::nova_url: 'http://nova.default.svc.cluster.local:8774/v2'
-neutron::server::notifications::nova_admin_auth_url: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
 neutron::server::notifications::notify_nova_on_port_status_changes: false
 neutron::server::notifications::notify_nova_on_port_data_changes: false
-
+neutron::server::notifications::nova_url: 'http://nova.default.svc.cluster.local:8774/v2'
+neutron::server::notifications::nova_admin_auth_url: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
+neutron::server::service_providers:
+  - 'LOADBALANCERV2:Octavia:neutron_lbaas.drivers.octavia.driver.OctaviaDriver:default'
 neutron::db::database_idle_timeout: 3600
-
 neutron::plugins::ml2::type_drivers:
   - 'flat'
 neutron::plugins::ml2::tenant_network_types:
