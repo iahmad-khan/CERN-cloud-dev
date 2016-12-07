@@ -51,45 +51,45 @@ node /.*client.*/ inherits default {
     unless  => '/bin/ls tempest',
   }
   ->
-  exec { "/usr/bin/keystone tenant-create --name tempest1 && /usr/bin/keystone user-role-add --user tempest1 --role admin --tenant tempest1 && /usr/bin/keystone user-role-add --user tempest1 --role Member --tenant tempest1 && /usr/bin/keystone tenant-create --name tempest2 && /usr/bin/keystone user-role-add --user tempest2 --role admin --tenant tempest2 && /usr/bin/keystone user-role-add --user tempest2 --role Member --tenant tempest2":
+  exec { "/usr/bin/openstack project create tempest1 && /usr/bin/openstack role add --user tempest1 --project tempest1 admin && /usr/bin/openstack role add --user tempest1 --project tempest1 Member && /usr/bin/openstack project create tempest2 && /usr/bin/openstack role add --user tempest2 --project tempest2 admin && /usr/bin/openstack role add --user tempest2 --project tempest2 Member":
     path        => "/usr/bin:/usr/sbin",
-    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_SERVICE_TOKEN=512c2b7c2d94b5bb731469955d4b7455','OS_SERVICE_ENDPOINT=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
+    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=glance','OS_PASSWORD=123456','OS_PROJECT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v3', 'OS_USER_DOMAIN_ID=default', 'OS_PROJECT_DOMAIN_ID=default', 'OS_IDENTITY_API_VERSION=3'],
     unless      => "/usr/bin/keystone tenant-get tempest1",
   }
   ->
   exec { "/usr/bin/openstack volume type create --property volume_backend_name=standard standard; /usr/bin/openstack volume type create --property volume_backend_name=critical critical;/usr/bin/openstack volume type create --property volume_backend_name=wig-standard wig-standard; /usr/bin/openstack volume type create --property volume_backend_name=wig-critical wig-critical;":
     path        => "/usr/bin:/usr/sbin",
-    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=cinder','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin'],
+    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=glance','OS_PASSWORD=123456','OS_PROJECT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v3', 'OS_USER_DOMAIN_ID=default', 'OS_PROJECT_DOMAIN_ID=default', 'OS_IDENTITY_API_VERSION=3'],
     unless      => "/usr/bin/openstack volume type list | grep critical",
   }
   ->
   exec { '/usr/bin/neutron net-create KUB_NETWORK --router:external True --provider:physical_network external --provider:network_type flat':
     unless      => "/usr/bin/neutron net-show KUB_NETWORK",
-    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=neutron','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
+    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=glance','OS_PASSWORD=123456','OS_PROJECT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v3', 'OS_USER_DOMAIN_ID=default', 'OS_PROJECT_DOMAIN_ID=default', 'OS_IDENTITY_API_VERSION=3'],
   }
   ->
   exec { "/usr/bin/neutron subnet-create KUB_NETWORK 172.17.0.0/16 --name IPSRV1 --disable-dhcp --gateway ${::ipaddress} --allocation-pool start=172.17.100.2,end=172.17.100.254 --dns-nameserver 10.0.0.10":
     unless      => "/usr/bin/neutron subnet-show IPSRV1",
-    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=neutron','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
+    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=glance','OS_PASSWORD=123456','OS_PROJECT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v3', 'OS_USER_DOMAIN_ID=default', 'OS_PROJECT_DOMAIN_ID=default', 'OS_IDENTITY_API_VERSION=3'],
   }
   ->
   exec { '/usr/bin/neutron cluster-create CLUSTER1':
     unless      => "/usr/bin/neutron cluster-show CLUSTER1",
-    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=neutron','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
+    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=glance','OS_PASSWORD=123456','OS_PROJECT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v3', 'OS_USER_DOMAIN_ID=default', 'OS_PROJECT_DOMAIN_ID=default', 'OS_IDENTITY_API_VERSION=3'],
   }
   ->
   exec { '/usr/bin/neutron cluster-insert-subnet CLUSTER1 IPSRV1':
     unless      => "/usr/bin/neutron cluster-list | /usr/bin/grep 172.17.0.0/16",
-    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=neutron','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
+    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=glance','OS_PASSWORD=123456','OS_PROJECT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v3', 'OS_USER_DOMAIN_ID=default', 'OS_PROJECT_DOMAIN_ID=default', 'OS_IDENTITY_API_VERSION=3'],
   }
   ->
   exec { '/usr/bin/wget http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img':
     unless => '/bin/ls cirros-0.3.4-x86_64-disk.img',
   }
   ->
-  exec { '/usr/bin/glance image-create --file cirros-0.3.4-x86_64-disk.img --disk-format qcow2 --container-format bare --name cirros':
+  exec { '/usr/bin/openstack image create --file cirros-0.3.4-x86_64-disk.img --disk-format qcow2 --container-format bare cirros':
     unless      => '/usr/bin/glance image-list | /usr/bin/grep cirros',
-    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=glance','OS_PASSWORD=123456','OS_TENANT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v2.0'],
+    environment => ['OS_CACERT=/var/lib/puppet/ssl/certs/ca.pem',"OS_CERT=/var/lib/puppet/ssl/certs/${::fqdn}.pem","OS_KEY=/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",'OS_USERNAME=glance','OS_PASSWORD=123456','OS_PROJECT_NAME=services','OS_AUTH_URL=https://keystone.default.svc.cluster.local:443/admin/v3', 'OS_USER_DOMAIN_ID=default', 'OS_PROJECT_DOMAIN_ID=default', 'OS_IDENTITY_API_VERSION=3'],
   }
  ->
  exec { '/sbin/iptables -t nat -I POSTROUTING -s 172.17.100.0/24 ! -d 172.17.0.0/16 -o eth0 -j MASQUERADE -m comment --comment DEV01':
