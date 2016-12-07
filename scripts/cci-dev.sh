@@ -41,7 +41,7 @@ heat
 horizon
 inifile
 kerberos
-keystone
+keystone:cern_newton
 lemon
 limits
 logrotate
@@ -54,7 +54,7 @@ network
 neutron
 nova
 openstack_clients
-openstacklib:newton-rc
+openstacklib:newton
 oslo
 osrepos
 octavia
