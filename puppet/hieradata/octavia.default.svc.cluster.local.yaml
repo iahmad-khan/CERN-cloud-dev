@@ -51,3 +51,11 @@ octavia::worker::amp_image_tag: 'octavia'
 octavia::worker::amp_boot_network_list:
   - 'KUB_NETWORK'
 octavia::worker::manage_nova_flavor: false
+
+#Disable octavia-housekeeping for the moment
+#TODO: Reenable the service when we figure out the issue
+octavia::health_manager::enabled: false
+
+#Disable octavia-housekeeping for the moment
+#TODO: Reenable the service when we figure out the issue
+octavia::housekeeping::enabled: false
