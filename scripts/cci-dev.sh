@@ -384,7 +384,7 @@ enabled=1
 gpgcheck=1
 gpgkey=https://yum.dockerproject.org/gpg
 EOF
-	yum install -y docker-engine
+	yum install -y docker-engine-1.10.3 docker-engine-selinux-1.10.3
 	exit_on_err $?
 	sed -i "s#^ExecStart.*#ExecStart=/usr/bin/docker daemon --storage-driver=overlay --dns 137.138.17.5 --bip 172.17.0.1/16 -H fd://#g" /lib/systemd/system/docker.service
 	iptables -F
