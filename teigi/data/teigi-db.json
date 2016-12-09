@@ -16,6 +16,7 @@
         "glance_database_connection": "mysql://glance:123456@controller/glance",
         "glance_keystone_password": "123456",
         "glance_rabbit_password": "123456",
+        "glance_transport_url": "rabbit://rabbit:123456@mq1:5672/",
         "heat_keystone_password": "123456",
         "heat_sql_connection": "mysql://heat:123456@controller/heat",
         "heat_rabbit_password": "123456",
