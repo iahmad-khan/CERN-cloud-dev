@@ -56,7 +56,7 @@ nova
 openstack_clients
 openstacklib:newton
 oslo
-osrepos
+osrepos:fix-clouddev
 octavia
 psacct
 puppetdbquery
