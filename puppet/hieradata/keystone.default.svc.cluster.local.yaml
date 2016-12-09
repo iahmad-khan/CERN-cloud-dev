@@ -8,7 +8,7 @@ keystone_token_flush_job: 'keystone-token-flush'
 keystone_token_flush_job_hour: '*/6'
 
 # Repo configuration
-cloud_common::repo::openstack::release: 'mitaka'
+cloud_common::repo::openstack::release: 'newton'
 cloud_common::repo::openstack::excludepkgs:
   - puppet
   - facter
