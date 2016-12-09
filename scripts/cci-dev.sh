@@ -29,7 +29,7 @@ bridged
 cernlib
 cernpuppet
 cinder
-cloud_common:nosysstat
+cloud_common
 cloud_monitoring
 concat
 filemapper
