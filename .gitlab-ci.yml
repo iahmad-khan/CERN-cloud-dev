@@ -1,9 +1,11 @@
 variables:
-        OS_PODS: "keystone glance cinder neutron octavia nova compute heat magnum client"
+        OS_PODS: "mq1 keystone glance cinder neutron octavia nova client"
         CLOUDDEV: "$CI_PROJECT_DIR"
         CLOUDDEV_KUB: "/tmp/kubernetes"
         CLOUDDEV_PUPPET: "$CI_PROJECT_DIR/ws/cern-puppet"
 
+before_script:
+        - echo $SVCBUILD_PASSWORD | kinit svcbuild@CERN.CH
 
 rebuild:
         only:
