@@ -31,6 +31,7 @@ cloud_common::repo::openstack::includepkgs:
   - python-keystoneclient
   - python-keystonemiddleware
   - python-kombu
+  - python-ldap
   - python-ldappool
   - python-logutils
   - python-migrate
