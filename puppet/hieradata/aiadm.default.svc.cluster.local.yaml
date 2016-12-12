@@ -1,9 +1,19 @@
-openstack_clients::repo::iaas_release: 'liberty'
+---
+openstack_clients::iaas_release: 'newton'
 
-osclients_default_rc: false
+osclients_rdo_include_pkgs_common:
+    - pyparsing # overrides epel
+    - python-backports
+    - python-cliff # overrides epel
+    - python-cmd2 # overrides epel
+    - python-netaddr
+    - python-netifaces
+    - python-six # overrides epel
+    - python-webob # overrides epel
 
-osclients_rdo_include_pkgs:
-    # Clients
+# packages only available from 'liberty' and up
+osclients_rdo_include_pkgs_liberty:
+    - python-babel
     - python-cinderclient
     - python-glanceclient
     - python-heatclient
@@ -11,29 +21,80 @@ osclients_rdo_include_pkgs:
     - python-neutronclient
     - python-novaclient
     - python-openstackclient
-    - python-swiftclient
-    # Dependences
-    - pyparsing # overrides epel
+    - python-swiftclient # required by python-heatclient
+    - python-tablib
+    - python-unicodecsv
     - python2-appdirs
-    - python-babel
-    - python-backports
-    - python-cliff # overrides epel
-    - python-cmd2 # overrides epel
     - python2-debtcollector
-    - python-netaddr
-    - python-netifaces
+    - python2-funcsigs
+    - python2-keystoneauth1
     - python2-os-client-config
     - python2-oslo-config
     - python2-oslo-i18n
     - python2-oslo-serialization
     - python2-oslo-utils
-    - python-six # overrides epel
+    - python2-positional
+    - python2-requestsexceptions
     - python-stevedore
-    - python-tablib
-    - python-unicodecsv
-    - python-webob # overrides epel
+
+# packages only available from 'mitaka' and up
+osclients_rdo_include_pkgs_mitaka:
+    - python-babel
+    - python-cinderclient
+    - python-glanceclient
+    - python-heatclient
+    - python-keystoneclient
+    - python-neutronclient
+    - python-novaclient
+    - python-openstackclient
+    - python-swiftclient # required by python-heatclient
+    - python2-openstacksdk
+    - python-stevedore
+
+# packages only available from 'newton' and up
+osclients_rdo_include_pkgs_newton:
+    - python2-cinderclient
+    - python2-glanceclient
+    - python2-heatclient
+    - python2-keystoneclient
+    - python2-neutronclient
+    - python2-novaclient
+    - python-openstackclient
+    - python2-swiftclient # required by python-heatclient
+    - python2-babel
+    - python2-cffi
+    - python2-cryptography
+    - python2-debtcollector
+    - python-decorator
+    - python2-funcsigs
+    - python-keyring
+    - python2-keystoneauth1
+    - python2-manilaclient
+    - python2-openstacksdk
+    - python2-os-client-config
+    - python2-osc-lib
+    - python2-oslo-config
+    - python2-oslo-i18n
+    - python2-oslo-serialization
+    - python2-oslo-utils
+    - python-oslo-utils-lang
+    - python2-positional
+    - python2-pyasn1
+    - python-requests
+    - python2-requestsexceptions
+    - python2-rfc3986
+    - python2-stevedore
+    - python-urllib3
+
+# packages only available for 'juno' and 'kilo'
+osclients_rdo_include_pkgs_juno:
+    - python-oslo-config
+    - python-oslo-i18n
+    - python-oslo-serialization
+    - python-oslo-utils
 
 osclients_include_pkgs:
     # Clients
     - python-keystoneclient-kerberos
     - python-keystoneclient-x509
+    - python2-magnumclient
