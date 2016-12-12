@@ -81,7 +81,7 @@ cloud_container
 cloud_dashboard
 cloud_identity
 cloud_image
-cloud_networking:neutronlbaas
+cloud_networking
 cloud_orchestration
 cloud_telemetry
 cloud_workflow
