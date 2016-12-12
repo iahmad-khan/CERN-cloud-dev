@@ -83,6 +83,8 @@ RUN wget -q https://github.com/kubernetes/kubernetes/releases/download/v1.2.0/ku
 	cp /kubernetes/platforms/linux/amd64/kubectl /usr/bin; \
 	rm -rf /kubernetes
 
+ENV SHELL=bash
+
 ADD entry.sh /entry.sh
 
 ENTRYPOINT /entry.sh
