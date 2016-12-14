@@ -25,7 +25,7 @@ spec:
       command:
         - /usr/sbin/init
       ports:
-        - containerPort: 9696
+        - containerPort: 9876
   volumes:
     - name: puppetcfg
       hostPath:
