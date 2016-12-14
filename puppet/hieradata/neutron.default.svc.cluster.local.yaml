@@ -143,6 +143,11 @@ neutron::server::notifications::nova_url: 'http://nova.default.svc.cluster.local
 neutron::server::notifications::nova_admin_auth_url: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
 neutron::server::service_providers:
   - 'LOADBALANCERV2:Octavia:neutron_lbaas.drivers.octavia.driver.OctaviaDriver:default'
+neutron::services::lbaas::octavia::base_url: 'http://octavia.default.svc.cluster.local:9876'
+neutron::services::lbaas::auth_url: 'https://keystone.default.svc.cluster.local/main/v2.0'
+neutron::services::lbaas::admin_user: 'neutron'
+neutron::services::lbaas::admin_tenant_name: 'services'
+neutron::services::lbaas::admin_password: '123456'
 neutron::db::database_idle_timeout: 3600
 neutron::plugins::ml2::type_drivers:
   - 'flat'
