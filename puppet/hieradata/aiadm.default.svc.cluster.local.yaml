@@ -97,4 +97,6 @@ osclients_include_pkgs:
     # Clients
     - python-keystoneclient-kerberos
     - python-keystoneclient-x509
+
+osclients_include_pkgs_newton:
     - python2-magnumclient
