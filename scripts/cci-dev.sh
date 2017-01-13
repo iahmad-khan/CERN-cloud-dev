@@ -62,6 +62,7 @@ psacct
 puppetdbquery
 rabbitmq
 rsyslog
+selinux
 sssd
 staging
 stdlib
@@ -189,7 +190,8 @@ kubernetes_start() {
 		fi
 
 		echo "building Kubernetes binaries..."
-		sudo make > /tmp/kubernetes-build.log 2>&1
+		#sudo make > /tmp/kubernetes-build.log 2>&1
+		sudo make
 		exit_on_err $? "kubernetes could not be built. Check /tmp/kubernetes-build.log for errors"
 		echo "finished"
 
