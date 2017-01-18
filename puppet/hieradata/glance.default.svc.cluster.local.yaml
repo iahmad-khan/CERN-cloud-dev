@@ -7,8 +7,8 @@ glance_rabbit_host: 'mq1'
 glance_rabbit_userid: 'rabbit'
 glance_rabbit_virtual_host: '/'
 
-glance::api::auth_type: 'keystone'
-glance::api::auth_uri: 'https://keystone.default.svc.cluster.local/main/v3'
+glance::api::auth_strategy: 'keystone'
+glance::api::authtoken::auth_uri: 'https://keystone.default.svc.cluster.local/main/v3'
 glance::api::backlog: '4096'
 glance::api::bind_port: 9292
 glance::api::bind_host: '0.0.0.0'
@@ -17,15 +17,15 @@ glance::api::database_idle_timeout: '3600'
 glance::api::debug: true
 glance::api::enabled: true
 
-glance::api::identity_uri: 'https://keystone.default.svc.cluster.local:443/admin'
-glance::registry::identity_uri: 'https://keystone.default.svc.cluster.local:443/admin'
+glance::api::authtoken::auth_url: 'https://keystone.default.svc.cluster.local:443/admin'
+glance::registry::authtoken::auth_url: 'https://keystone.default.svc.cluster.local:443/admin'
 
-glance::api::keystone_user: 'glance'
-glance::api::keystone_password: 'glance_keystone_password'
-glance::registry::keystone_user: 'glance'
-glance::registry::keystone_password: 'glance_keystone_password'
-glance::api::keystone_tenant: 'services'
-glance::registry::keystone_tenant: 'services'
+glance::api::authtoken::username: 'glance'
+glance::api::authtoken::password: 'glance_keystone_password'
+glance::registry::authtoken::username: 'glance'
+glance::registry::authtoken::password: 'glance_keystone_password'
+glance::api::authtoken::project_name: 'services'
+glance::registry::authtoken::project_name: 'services'
 
 glance::api::image_cache_dir: '/var/lib/glance/image-cache'
 # Left this way on purpose:
@@ -44,8 +44,8 @@ glance::api::registry_host: '0.0.0.0'
 glance::api::registry_port: 9191
 glance::api::use_syslog: false
 glance::api::verbose: false
-glance::registry::auth_type: 'keystone'
-glance::registry::auth_uri: 'https://keystone.default.svc.cluster.local/main/v3'
+glance::registry::auth_strategy: 'keystone'
+glance::registry::authtoken::auth_uri: 'https://keystone.default.svc.cluster.local/main/v3'
 glance::registry::bind_host: '0.0.0.0'
 glance::registry::bind_port: 9191
 glance::registry::ca_file: '/var/lib/puppet/ssl/certs/ca.pem'
