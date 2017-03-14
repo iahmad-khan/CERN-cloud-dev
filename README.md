@@ -24,7 +24,7 @@ Prepare the environment (might be handy to put this somewhere to source later).
 export CLOUDDEV=~/ws/cloud-dev
 export CLOUDDEV_PUPPET=~/ws/cern-puppet
 export CLOUDDEV_KUB=~/ws/kubernetes
-export PATH=$PATH:$CLOUDDEV_KUB/_output/local/bin/linux/amd64
+export PATH=$PATH:$CLOUDDEV_KUB/_output/bin
 ```
 
 Fetch the code:

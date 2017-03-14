@@ -12,9 +12,9 @@ export CLOUDDEV_KUB=~/ws/kubernetes
 fi
 
 
-export PATH=$PATH:$CLOUDDEV_KUB/_output/local/go/bin
+export PATH=$PATH:$CLOUDDEV_KUB/_output/bin
 
-KUBERNETES_VERSION=1.2.6
+KUBERNETES_VERSION=1.6.1
 
 # PUPPET_MODULES holds the list of module dependencies that we need to run the build
 PUPPET_MODULES="
@@ -82,6 +82,7 @@ cloud_container
 cloud_dashboard
 cloud_identity
 cloud_image
+cloud_monitoring
 cloud_networking
 cloud_orchestration
 cloud_telemetry
@@ -155,10 +156,16 @@ kubernetes_install() {
 	echo "installing kubernetes at ${CLOUDDEV_KUB}..."
 	mkdir -p $CLOUDDEV_KUB
 	cd $CLOUDDEV_KUB
-	wget https://github.com/kubernetes/kubernetes/archive/v$KUBERNETES_VERSION.tar.gz
-	tar zxf v$KUBERNETES_VERSION.tar.gz
-	mv kubernetes-$KUBERNETES_VERSION/* .
-	rm -rf kubernetes-$KUBERNETES_VERSION v$KUBERNETES_VERSION.tar.gz
+	wget https://dl.k8s.io/v$KUBERNETES_VERSION/kubernetes-server-linux-amd64.tar.gz
+	tar zxf kubernetes-server-linux-amd64.tar.gz
+	mv kubernetes/* .
+	rm -rf kubernetes/
+	tar zxf kubernetes-src.tar.gz ./hack ./cluster
+	rm -rf kubernetes-server-linux-amd64.tar.gz kubernetes-src.tar.gz
+	ln -s server _output
+	wget http://pkg.cfssl.org/R1.2/cfssl_linux-amd64 -O $CLOUDDEV_KUB/_output/bin/cfssl
+	wget http://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 -O $CLOUDDEV_KUB/_output/bin/cfssljson
+	chmod +x $CLOUDDEV_KUB/_output/bin/cfssl*
 	exit_on_err $?
 }
 
@@ -178,25 +185,21 @@ kubernetes_start() {
 	cd $CLOUDDEV_KUB
 	kubectl version > /dev/null 2>&1
 	if [ $? -ne 0 ]; then
-		# Test if tools to build are installed
-		which make 2>&1 > /dev/null
-		if [[ $? -ne 0 ]]; then
-			echo "Tools to build are not installed (make), installing them..."
-			if [ -e /etc/redhat-release ]; then
-				sudo yum groupinstall "Development Tools"
-			else
-				sudo apt-get install build-essential
-			fi
-		fi
+		pkill -f ".*local-up-cluster\.sh.*"
+		sleep 2
 
-		echo "building Kubernetes binaries..."
-		#sudo make > /tmp/kubernetes-build.log 2>&1
-		sudo make
-		exit_on_err $? "kubernetes could not be built. Check /tmp/kubernetes-build.log for errors"
-		echo "finished"
+		sudo PATH=$PATH ALLOW_PRIVILEGED="true" KUBE_ENABLE_CLUSTER_DNS="true" \
+			setsid ./hack/local-up-cluster.sh -o _output/bin > /tmp/kubernetes-local.log 2>&1 &
 
-		sudo PATH=$PATH GOROOT=$GOROOT GOPATH=$GOPATH ETCD=$ETCD ALLOW_PRIVILEGED="true" KUBE_ENABLE_CLUSTER_DNS="true" \
-			setsid ./hack/local-up-cluster.sh > /tmp/kubernetes-local.log 2>&1 &
+		mkdir -p ~/.kube
+
+		while [ ! -f /var/run/kubernetes/admin.kubeconfig ]
+		do
+			sleep 2
+		done
+		sleep 2
+
+		cp /var/run/kubernetes/admin.kubeconfig ~/.kube/config
 
 		echo 'Waiting for kubernetes start...'
 		while ! kubectl get pod > /dev/null 2>&1
@@ -209,6 +212,7 @@ kubernetes_start() {
 		sudo chown -R $USER $CLOUDDEV_KUB
 		exit_on_err $?
 		echo "kubernetes started"
+
 	fi
 }
 
@@ -367,31 +371,32 @@ cluster_pod_push() {
 
 # install required centos dependencies
 centos_install() {
-	# Check for the CentOS version. It works on 7.2, but not 7.1
+	# Check for the CentOS version. It works on 7.3 (7.2 ?), but not 7.1
 	ver=$(grep -oe '[0-9]\.[0-9]' /etc/centos-release)
-	if [[ $ver != "7.2" ]]; then
-		exit_on_err 1 "WARNING, the dev environment has been tested on 7.2, and it seems there are problems on previous version. You should update"
+	if [[ $ver != "7.3" ]]; then
+		exit_on_err 1 "WARNING, the dev environment has been tested on 7.3, and it seems there are problems on previous version. You should update"
 	fi
+
+	# switch selinux in permissive
+	# ldap container is having trouble otherwise
+	setenforce 0
+	sed -i 's#^SELINUX=.*#SELINUX=permissive#g' /etc/selinux/config
 
 	echo "installing dependencies for centos..."
 	sed -i '/^Defaults\s*requiretty/d' /etc/sudoers
-	sudo yum install -y wget git etcd golang patch psmisc
+	sudo yum install -y wget git etcd patch psmisc docker
 	exit_on_err $?
-	echo "Installing Docker"
-       cat > /etc/yum.repos.d/docker.repo <<- EOF
-[dockerrepo]
-name=Docker Repository
-baseurl=https://yum.dockerproject.org/repo/main/centos/\$releasever/
-enabled=1
-gpgcheck=1
-gpgkey=https://yum.dockerproject.org/gpg
-EOF
-	yum install -y docker-engine-1.10.3 docker-engine-selinux-1.10.3
-	exit_on_err $?
-	sed -i "s#^ExecStart.*#ExecStart=/usr/bin/docker daemon --storage-driver=overlay --dns 137.138.17.5 --bip 172.17.0.1/16 -H fd://#g" /lib/systemd/system/docker.service
+
+	#sed -i 's#^DOCKER_STORAGE_OPTIONS.*#DOCKER_STORAGE_OPTIONS="--storage-driver=overlay"#g' /etc/sysconfig/docker-storage
+	sed -i "s#^OPTIONS='--selinux-enabled #OPTIONS='#g" /etc/sysconfig/docker
+	sed -i 's#^DOCKER_NETWORK_OPTIONS.*#DOCKER_NETWORK_OPTIONS="--dns 137.138.17.5 --bip 172.17.0.1/16"#g' /etc/sysconfig/docker-network
+
+	systemctl stop NetworkManager firewalld
+	systemctl disable NetworkManager firewalld
 	iptables -F
+
 	# launch docker
-	systemctl daemon-reload
+	systemctl enable docker
 	systemctl start docker
 }
 
