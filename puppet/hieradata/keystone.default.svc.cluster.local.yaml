@@ -193,14 +193,14 @@ keystone_token_provider: 'keystone.token.providers.uuid.Provider'
 keystone_trusted_dashboard: 'https://horizon.default.svc.cluster.local/auth/websso'
 keystone_use_syslog: false
 keystone_verbose: false
-keystone_wsgi_application_group: '%%{}{RESOURCE}'
 keystone_x509_enable: false
 log_regex_keystone: '(\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}.\\d{3})\\s*\\d*\\s*([A-Z]+)'
 nova_compute_api_port: 8774
 keystone_log_formats:
     proxy: '%%{}{X-Forwarded-For}i %h %l %u %t \"%r\" %>s %b %D \"%%{}{Referer}i\" \"%%{}{User-Agent}i\"'
 keystone_access_log_format: 'proxy'
-keystone_wsgi_application_group: '%%{}{RESOURCE}'
+keystone_wsgi_application_group: '%%{}{GLOBAL}'
+keystone_wsgi_script_ensure: 'link'
 keystone_services:
   identity:
     name: 'keystone'
