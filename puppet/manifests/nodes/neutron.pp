@@ -1,6 +1,10 @@
 
 node /.*neutron.*/ inherits default {
 
+  package { 'python-glanceclient':
+    ensure => 'present',
+  }
+
   class { 'hg_cloud_networking': }
   class { 'hg_cloud_networking::controller': }
   class { 'hg_cloud_networking::controller::frontend': }

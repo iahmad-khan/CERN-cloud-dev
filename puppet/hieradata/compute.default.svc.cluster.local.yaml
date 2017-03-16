@@ -1,18 +1,32 @@
-iaas_release: 'kilo'
-openstack_release: 'kilo'
+iaas_release: 'mitaka'
+openstack_release: 'mitaka'
 
 pluginsync_filter_enable: true
 pluginsync_filter:
-  - filemapper
-  - network
-  - neutron
+    - lbd
+    - inifile
+    - bcache
+    - dmcache
+    - sysctl
+    - ceilometer
+    - mysql
+    - nova
+    - rabbitmq
+    - openstacklib
+    - registry
+    - network
+    - filemapper
+    - boolean
+    - openstacklib
 
 iaas_stable_repo_includepkgs:
   - openstack-nova*
   - python-nova*
   - golang-neutron-dhcp
 
-openstack_selinux: true
+neutron_auth_plugin: 'v2password'
+neutron_cafile: '/var/lib/puppet/ssl/certs/ca.pem'
+neutron_auth_url: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
 
 neutron::enabled: true
 neutron::verbose: true
@@ -21,11 +35,11 @@ neutron::core_plugin: 'ml2'
 neutron::service_plugins:
   - cern
 neutron::rabbit_user: 'rabbit'
-neutron::rabbit_password: 'neutron_rabbit_password'
-neutron::rabbit_host: 'mq1'
+neutron::rabbit_password: 'rabbit_password'
 neutron::rabbit_hosts: 
   - 'mq1'
-neutron::metadata_host: '172.17.0.10' # FIXME: discover the nova node ip instead, has to be ip
+# FIXME: discover the nova node ip instead, has to be ip
+neutron::metadata_host: '10.0.0.94'
 neutron::metadata_port: '8775'
 neutron::metadata_auth_tenant: 'services'
 neutron::metadata_auth_user: 'svcneu'
@@ -47,13 +61,17 @@ nova::network::neutron::neutron_ca_certificates_file: '/var/lib/puppet/ssl/certs
 nova::network::neutron::vif_plugging_is_fatal: false
 nova::network::neutron::vif_plugging_timeout: 0
 
+nova::rabbit_hosts:
+  - 'mq1'
+
+nova::rabbit_userid: 'rabbit'
+
 #nova::neutron
 nova_network_enabled: false
 nova_neutron_enabled: true
 nova_dhcp_enabled: true
 
 # old style definitions
-rabbit_host: 'controller'
 flume_agent_install: false
 libvirtd_logs: false
 nova_compute_libvirt_virt_type: 'qemu'
@@ -87,4 +105,4 @@ cernfw::output_ipv6_ignore:
   - 'neutron-.*'
 cernfw::forward_ipv4_final: 'drop'
 
-
+console_direct_whitelist: []

@@ -34,8 +34,6 @@ node /.*glance.*/ inherits default {
   exec { '/usr/bin/glance-manage db_sync':
     refreshonly => true,
   }
-  ->
-  Cloud_monitoring::Flume::Agent['glance']
   ~>
   Service['openstack-glance-api']
   ~>

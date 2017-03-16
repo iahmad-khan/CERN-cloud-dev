@@ -2,8 +2,8 @@
 node /.*heat.*/ inherits default {
 
   class {'hg_cloud_orchestration': }
-  class {'hg_cloud_orchestration::heat': }
-  class {'hg_cloud_orchestration::heat::all_in_one': }
+  class {'hg_cloud_orchestration::controller': }
+  class {'hg_cloud_orchestration::controller::frontend': }
 
   package {'mariadb':
     ensure => 'present',

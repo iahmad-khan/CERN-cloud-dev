@@ -64,8 +64,6 @@ node default {
   ->
   Yumrepo<||>
   ->
-  Osrepos::Ai121yumrepo<||>
-  ->
   Package<||>
 
   Yumrepo <||>

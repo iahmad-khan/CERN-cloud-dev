@@ -1,19 +1,21 @@
-iaas_release: 'kilo'
-openstack_release: 'kilo'
+iaas_release: 'mitaka'
+openstack_release: 'mitaka'
 
-# nova::base
-nova_debug: False
-nova_verbose: True
-nova_config_use_local: true
-nova_enabled_ssl_apis: []
-nova_glance_api_servers: 'glance.default.svc.cluster.local:9292'
-nova_manage_selinux: false
 landb_username: 'neutron'
-rabbit_host: 'mq1'
-nova_identity_uri: 'https://keystone.default.svc.cluster.local/admin'
+landb_keystone: 'https://keystone.default.svc.cluster.local:443/main/v3'
 
-# nova::conductor
-nova_conductor_monitoring: false
+neutron_auth_plugin: 'v2password'
+neutron_cafile: '/var/lib/puppet/ssl/certs/ca.pem'
+neutron_auth_url: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
+
+#nova::base
+nova::glance_api_servers: 'glance.default.svc.cluster.local:9292'
+nova::rabbit_userid: 'rabbit'
+nova::verbose: 'true'
+nova::enabled_ssl_apis: []
+nova::service_down_time: 120
+nova::rabbit_hosts:
+  - 'mq1'
 
 # nova::api
 haproxy_enable: false
@@ -22,23 +24,25 @@ firewall_nova_api_enable: true
 firewall_nova_metadata_enable: true
 firewall_nova_novnc_enable: true
 
-nova_api_port: 8774
-nova_api_admin_port: 443
-nova_api_admin_user: 'nova'
-nova_api_admin_tenant_name: 'services'
-nova_api_admin_prefix: '/admin'
-nova_api_auth_strategy: keystone
-nova_api_auth_host: 'keystone.default.svc.cluster.local'
-nova_api_auth_protocol: 'https'
-nova_api_auth_admin_prefix: '/admin'
-nova_api_auth_uri: 'https://keystone.default.svc.cluster.local:443/admin/v2.0'
+nova_config_default_availability_zone: '-'
+
+nova::api::admin_password: 'nova_api_admin_password'
+nova::api::auth_uri: 'https://keystone.default.svc.cluster.local:443/main'
+nova::api::identity_uri: 'https://keystone.default.svc.cluster.local:443/admin'
+nova::api::auth_version: 'v3'
+nova::api::admin_user: nova
+nova::api::use_forwarded_for: true
+nova::api::sync_db: false
+nova::api::keystone_ec2_url: 'https://keystone.default.svc.cluster.local:443/main/v2.0/ec2tokens'
+nova::api::ec2_workers: 1
+nova::api::metadata_workers: 1
+nova::api::osapi_compute_workers: 1
+nova::api::enabled_apis: 'osapi_compute'
+
 nova_api_ca_file: '/var/lib/puppet/ssl/certs/ca.pem'
-nova_api_enabled_apis: 'osapi_compute,metadata'
-nova_api_keystone_ec2_url: 'https://keystone.default.svc.cluster.local:443/v2.0/ec2tokens'
-nova_api_metadata_workers: 2
-nova_api_sync_db: false
+
 overwrite_nova_policy: true
-nova_static_conf: "[DEFAULT]\nglance_api_servers=glance.default.svc.cluster.local:9292\n"
+
 nova_conductor_workers: 1
 nova_vncproxy_host: "0.0.0.0"
 
@@ -69,7 +73,6 @@ neutron::service_plugins:
   - cern
 neutron::rabbit_user: 'rabbit'
 neutron::rabbit_password: 'neutron_rabbit_password'
-neutron::rabbit_host: 'mq1'
 neutron::rabbit_hosts:
   - 'mq1'
 neutron::metadata_host: 'nova'
@@ -79,18 +82,11 @@ neutron::agents::ml2::linuxbridge::physical_interface_mappings:
   - "external:eth0"
 
 #neutron
-nova::network::neutron::neutron_admin_password: 'neutron_admin_password'
-neutron::rabbit_password: 'neutron_rabbit_password'
-neutron_auth_cafile: '/var/lib/puppet/ssl/certs/ca.pem'
 neutron_admin_username: 'neutron'
 neutron_admin_tenant_name: 'services'
 neutron_use_ssl: false
 neutron_use_syslog: false
-neutron_rabbit_user: 'rabbit'
-neutron_rabbit_host: 'mq1'
-neutron_rabbit_port: '5672'
-neutron_rabbit_hosts:
-  - 'mq1'
+
 neutron_rabbit_virtual_host: '/'
 neutron_qpid_hostname: "%{neutron_rabbit_host}"
 neutron_qpid_port: "%{neutron_rabbit_port}"
@@ -111,7 +107,4 @@ neutron_metadata_port: '8775'
 
 pluginsync_filter:
   - neutron
-openstack_centos_kilo_excludepkgs:
-  - python-requests
-  - python-urllib3
 iaas_stable_repo_includepkgs: []

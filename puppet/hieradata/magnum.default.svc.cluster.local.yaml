@@ -5,13 +5,13 @@ pluginsync_filter:
     - openstacklib
     - rabbitmq
 
-cloud_common::repo::openstack::release: 'mitaka' 
+cloud_common::repo::openstack::release: 'newton'
 cloud_common::repo::iaas::release: "%{hiera('cloud_common::repo::openstack::release')}"
 cloud_common::repo::iaas::includepkgs:
   - openstack-magnum*
   - python-magnum*
 cloud_common::repo::iaas::excludepkgs:
-  - puppet
+  - puppet*
   - facter
   - rabbitmq*
 

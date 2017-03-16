@@ -4,6 +4,12 @@ node /.*nova.*/ inherits default {
   class { 'hg_cloud_compute': }
   class { 'hg_cloud_compute::nova::base': }
   class { 'hg_cloud_compute::nova::api': }
+
+  if hiera('nova_neutron_enabled', false) {
+    class { 'hg_cloud_compute::nova::neutron': }
+  } else {
+    class { 'hg_cloud_compute::nova::network': }
+  }
   class { 'hg_cloud_compute::nova::conductor': }
   class { 'hg_cloud_compute::nova::scheduler': }
   class { 'hg_cloud_compute::nova::cert': }
@@ -26,8 +32,6 @@ node /.*nova.*/ inherits default {
   }
   ~>
   Package['nova-common']
-  ->
-  File['/etc/nova/nova-static.conf']
   ->
   Sudo::Directive['nova']
   ->

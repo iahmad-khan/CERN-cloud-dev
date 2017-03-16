@@ -16,7 +16,7 @@ heat::rabbit_port: '5672'
 heat::rabbit_hosts:
   - 'mq1'
 heat::rabbit_userid: 'rabbit'
-heat::rabbit_password: 'heat_rabbit_password'
+heat::rabbit_password: 'rabbit_password'
 heat::rabbit_virtual_host: '/'
 heat::keystone_user: 'admin'
 heat::keystone_password: 'heat_keystone_password'

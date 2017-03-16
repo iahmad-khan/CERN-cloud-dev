@@ -1,4 +1,5 @@
 osrepos::params::major: 7
+cloud_common::mq::selinux: false
 psacct_enabled: false
 abrt_enabled: false
 sysstat: false
