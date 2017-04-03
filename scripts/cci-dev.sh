@@ -41,7 +41,7 @@ heat
 horizon
 inifile
 kerberos
-keystone:cern_newton
+keystone
 lemon
 limits
 logrotate
@@ -77,7 +77,7 @@ xinetd
 PUPPET_HOSTGROUPS="
 cloud_adm
 cloud_blockstorage
-cloud_compute:dev-env-fixes
+cloud_compute:dev-env-master
 cloud_container
 cloud_dashboard
 cloud_identity
