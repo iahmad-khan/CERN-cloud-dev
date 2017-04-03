@@ -4,8 +4,9 @@ keystone_public_endpoint: 'https://keystone.default.svc.cluster.local:443/main'
 keystone_admin_endpoint: 'https://keystone.default.svc.cluster.local:443/admin'
 keystone_access_level: undef
 keystone_trusted_dashboard: 'https://horizon.default.svc.cluster.local/auth/websso'
-keystone_token_flush_job: 'keystone-token-flush'
+keystone_token_flush_job: 'keystone-token-flush-next'
 keystone_token_flush_job_hour: '*/6'
+keystone_max_fernet_keys: 6
 
 # Repo configuration
 cloud_common::repo::openstack::release: 'newton'
@@ -34,7 +35,7 @@ keystone_apache_admin_port: 443
 keystone_apache_public_path: '/main'
 keystone_apache_public_port: 443
 keystone_apache_servername: "%{::hostname}"
-keystone_assignment_driver: 'keystone.assignment.backends.sql.Assignment'
+keystone_assignment_driver: 'sql'
 keystone_bind_host: '0.0.0.0'
 keystone_cache_backend: 'keystone.common.cache.noop'
 keystone_cache_dir: '/var/cache/keystone'
@@ -48,7 +49,7 @@ keystone_enable_pki_setup: false
 keystone_enable_ssl: true
 keystone_enabled: false
 keystone_enable_pki_setup: false
-keystone_identity_driver: 'keystone.identity.backends.ldap.Identity'
+keystone_identity_driver: 'ldap'
 keystone_idle_timeout: 200
 keystone_krb_auth_realms: ''
 keystone_krb_enable: false
@@ -155,7 +156,7 @@ keystone_rabbit_level: "hostgroup=\"cloud_identity/cache/main\""
 keystone_rabbit_port: '5672'
 keystone_rabbit_userid: 'keystone'
 keystone_rabbit_virtual_host: '/'
-keystone_revoke_driver: 'keystone.contrib.revoke.backends.sql.Revoke'
+keystone_revoke_driver: 'sql'
 keystone_seltype_etc: 'etc_t'
 keystone_seltype_lib: 'httpd_var_lib_t'
 keystone_seltype_log: 'httpd_log_t'
@@ -186,10 +187,10 @@ keystone_ssl_options:
 cloud_identity_backend_api: ''
 keystone_ssl_cipher: 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:ECDHE-RSA-AES128-SHA:DHE-RSA-AES128-GCM-SHA256:AES256+EDH:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4'
 fernet_selinux_enable: false
-keystone_token_driver: 'keystone.token.persistence.backends.sql.Token'
+keystone_token_driver: 'sql'
 keystone_token_expiration: '86400'
 keystone_token_format: false
-keystone_token_provider: 'keystone.token.providers.uuid.Provider'
+keystone_token_provider: 'fernet'
 keystone_trusted_dashboard: 'https://horizon.default.svc.cluster.local/auth/websso'
 keystone_use_syslog: false
 keystone_verbose: false
