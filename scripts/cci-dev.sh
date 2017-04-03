@@ -316,6 +316,13 @@ cluster_pod_launch() {
 	# run puppet in the openstack pods, even if built from tag
 	for pod in $OS_PODS
 	do
+		openstack_release=$(sed -n "s/.*\(cloud_common::repo::openstack::release\|openstack_release\|glance_release\): '\(.*\)'/\2/p" $CLOUDDEV/puppet/hieradata/$pod.default.svc.cluster.local.yaml 2> /dev/null)
+		if [ -z "$openstack_release" ]; then
+			openstack_release="master"
+		fi
+		cd $CLOUDDEV_PUPPET/openstacklib
+		git checkout $openstack_release
+
 		# run puppet on pod
 		echo "Running Puppet on pod ${pod}..."
 		sudo docker exec $(sudo docker ps | grep ${pod} | grep init | awk '{print $1}') puppet agent -t
