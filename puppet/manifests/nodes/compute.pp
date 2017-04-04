@@ -70,6 +70,15 @@ GATEWAYDEV=br100
   ->
   File['ssh_config']
 
+  if hiera('nova_neutron_enabled', true) {
+    Package['openstack-neutron-common']
+    ->
+    file { "/usr/bin/neutron-enable-bridge-firewall.sh":
+      ensure => present,
+      content => "#!/bin/sh",
+    }
+  }
+
   if hiera('nova_network_enabled', true) {
 
     Package['python-nova']
