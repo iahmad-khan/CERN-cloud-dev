@@ -188,6 +188,7 @@ kubernetes_start() {
 		pkill -f ".*local-up-cluster\.sh.*"
 		sleep 2
 
+		rm -rf /var/run/kubernetes
 		sudo PATH=$PATH ALLOW_PRIVILEGED="true" KUBE_ENABLE_CLUSTER_DNS="true" \
 			setsid ./hack/local-up-cluster.sh -o _output/bin > /tmp/kubernetes-local.log 2>&1 &
 
