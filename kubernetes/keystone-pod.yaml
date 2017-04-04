@@ -7,14 +7,16 @@ metadata:
 spec:
   containers:
     - name: keystone
-      image: gitlab-registry.cern.ch/cloud/puppetagent
+      image: gitlab-registry.cern.ch/cloud/puppetagent:1
       securityContext:
         capabilities:
           add:
             - NET_ADMIN
       volumeMounts:
         - name: puppetcfg
-          mountPath: /etc/puppet
+          mountPath: /etc/puppetlabs/puppet
+        - name: puppetssl
+          mountPath: /etc/puppetlabs/puppet/ssl
         - name: puppetssl
           mountPath: /var/lib/puppet/ssl
         - name: factercfg

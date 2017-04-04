@@ -314,7 +314,7 @@ cluster_pod_launch() {
 	do
 		# run puppet on pod
 		echo "Running Puppet on pod ${pod}..."
-		sudo docker exec $(sudo docker ps | grep ${pod} | grep init | awk '{print $1}') puppet agent -t
+		sudo docker exec $(sudo docker ps | grep ${pod} | grep init | awk '{print $1}') /opt/puppetlabs/bin/puppet agent -t
 		# Puppet return code:
 		# 1 -> did not even start doing some things
 		# 2 -> applied things, and everything went fine

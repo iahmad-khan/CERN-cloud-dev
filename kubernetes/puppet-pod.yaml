@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
     - name: puppetmaster
-      image: gitlab-registry.cern.ch/cloud/puppetmaster
+      image: gitlab-registry.cern.ch/cloud/puppetmaster:1
       env:
         - name: LANG
           value: en_US.UTF-8
@@ -15,23 +15,23 @@ spec:
         - containerPort: 8140
       volumeMounts:
         - name: puppet
-          mountPath: /etc/puppet
+          mountPath: /etc/puppetlabs/puppet
         - name: factercfg
           mountPath: /etc/facter
         - name: puppetssl
-          mountPath: /var/lib/puppet/ssl
+          mountPath: /opt/puppetlabs/server/data/puppetserver/ssl
         - name: puppetmodules
-          mountPath: /usr/share/puppet/modules
+          mountPath: /opt/puppetlabs/code
     - name: puppetdb
-      image: gitlab-registry.cern.ch/cloud/puppetdb
+      image: gitlab-registry.cern.ch/cloud/puppetdb:1
       ports:
         - containerPort: 8080
         - containerPort: 8081
       volumeMounts:
         - name: puppet
-          mountPath: /etc/puppet
+          mountPath: /etc/puppetlabs/puppet
         - name: puppetssl
-          mountPath: /var/lib/puppet/ssl
+          mountPath: /etc/puppetlabs/puppet/ssl
     - name: teigi
       image: gitlab-registry.cern.ch/cloud/teigi
       ports:
@@ -43,6 +43,15 @@ spec:
           mountPath: /opt/teigi
         - name: teigidb
           mountPath: /data
+    - name: postgres
+      image: postgres
+      env:
+        - name: POSTGRES_PASSWORD
+          value: puppetdb
+        - name: POSTGRES_DB
+          value: puppetdb
+        - name: POSTGRES_DB
+          value: puppetdb
   volumes:
     - name: puppet
       hostPath:
