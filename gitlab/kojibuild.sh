@@ -16,6 +16,7 @@
 #        weither this should be a scratch build (1 if yes)
 #
 cd $CI_PROJECT_DIR
+cp *patch ~/rpmbuild/SOURCES
 export SPEC=$(ls *spec)
 export PKG=$(rpm -q --specfile $SPEC --queryformat "%{name}-%{version}\n" | head -n 1)
 export PKG_REL=$(rpm -q --specfile $SPEC --queryformat "%{name}-%{version}-%{release}\n" | head -n 1)
